@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "name": "jamesqmurphy.web",
+  "private": true,
+  "scripts": {
+    "copydist": "npm run copydist-bootstrap && npm run copydist-jquery && npm run copydist-jquery-validation && npm run copydist-jquery-validation-unobtrusive",
+    "copydist-bootstrap": "copyfiles node_modules/bootstrap/dist/** wwwroot/dist/lib/bootstrap --up 2 --verbose",
+    "copydist-jquery": "copyfiles node_modules/jquery/dist/** wwwroot/dist/lib/jquery --up 2 --verbose",
+    "copydist-jquery-validation": "copyfiles node_modules/jquery-validation/dist/** wwwroot/dist/lib/jquery-validation --up 2 --verbose",
+    "copydist-jquery-validation-unobtrusive": "copyfiles node_modules/jquery-validation-unobtrusive/dist/** wwwroot/dist/lib/jquery-validation-unobtrusive --up 2 --verbose"
+  },
+  "devDependencies": {
+    "bootstrap": "^4.3.1",
+    "copyfiles": "^2.1.0",
+    "jquery": "^3.4.1",
+    "jquery-validation": "^1.19.0",
+    "jquery-validation-unobtrusive": "^3.2.11",
+    "popper.js": "^1.15.0"
+  }
+}
