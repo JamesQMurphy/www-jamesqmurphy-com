@@ -7,6 +7,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Amazon.Lambda.RuntimeSupport;
+using Amazon.Lambda.Serialization.Json;
+using Amazon.Lambda.APIGatewayEvents;
 
 namespace JamesQMurphy.Web
 {
@@ -14,7 +17,26 @@ namespace JamesQMurphy.Web
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            // AWS Lambda will call the "bootstrap" shell script, which
+            // will pass the string "lambda" as an argument
+            if (args.Length > 0 && args[0] == "lambda")
+            {
+                var lambdaEntryPoint = new LambdaEntryPoint();
+
+                var handlerWrapper = HandlerWrapper.GetHandlerWrapper<APIGatewayProxyRequest, APIGatewayProxyResponse>(lambdaEntryPoint.FunctionHandlerAsync, new JsonSerializer());
+                using (handlerWrapper)
+                {
+                    using (var lambdaBootstrap = new LambdaBootstrap(handlerWrapper))
+                    {
+                        lambdaBootstrap.RunAsync().GetAwaiter().GetResult();
+                    }
+                }
+            }
+            // Otherwise, it gets called like most ASP.NET Core web apps
+            else
+            {
+                CreateWebHostBuilder(args).Build().Run();
+            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
