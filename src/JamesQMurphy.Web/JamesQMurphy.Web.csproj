@@ -32,7 +32,7 @@
   <Target Name="AddDistToPublishFiles" BeforeTargets="ComputeFilesToPublish">
     <ItemGroup>
       <DistFiles Include="wwwroot\dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')">
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
