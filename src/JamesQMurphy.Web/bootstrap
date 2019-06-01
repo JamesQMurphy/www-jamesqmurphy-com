@@ -1,0 +1,4 @@
+#!/bin/sh
+# This is the script that the Lmabda host calls to start the custom runtime
+
+/var/task/JamesQMurphy.Web lambda
