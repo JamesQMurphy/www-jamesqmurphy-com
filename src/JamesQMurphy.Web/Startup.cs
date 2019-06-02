@@ -56,6 +56,16 @@ namespace JamesQMurphy.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "blogIndex",
+                    template: "blog",
+                    defaults: new { controller = "Blog", action = "Index" });
+
+                routes.MapRoute(
+                    name: "blogDetails",
+                    template: "blog/{slug}",
+                    defaults: new { controller = "Blog", action = "Details" });
+
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
