@@ -106,5 +106,55 @@ publish-date: {publishDate:O}
             Assert.IsFalse(memoryStreamClosed.CanWrite);
 
         }
+
+        [Test]
+        public void CreateFromString()
+        {
+            var title = "Some Title";
+            var slug = "Some-Slug";
+            var content = "Here is some content\nwhich spans multiple lines";
+            var publishDate = System.DateTime.UtcNow;
+
+            var theString = $@"---
+title: {title}
+slug: {slug}
+publish-date: {publishDate:O}
+...
+{content}";
+
+            var article = Article.ReadFrom(theString);
+
+            Assert.AreEqual(title, article.Title);
+            Assert.AreEqual(slug, article.Slug);
+            Assert.AreEqual(content, article.Content);
+            Assert.AreEqual(publishDate, article.PublishDate);
+        }
+
+
+        [Test]
+        public void TestToString()
+        {
+            var title = "Some Title";
+            var slug = "Some-Slug";
+            var content = "Here is some content\nwhich spans multiple lines";
+            var publishDate = System.DateTime.UtcNow;
+            var article = new Article()
+            {
+                Content = content,
+                Slug = slug,
+                Title = title,
+                PublishDate = publishDate
+            };
+
+            var compareString = $@"---
+title: {title}
+slug: {slug}
+publish-date: {publishDate:O}
+...
+{content}";
+
+            Assert.AreEqual(compareString, article.ToString());
+        }
+
     }
 }
