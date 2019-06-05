@@ -45,7 +45,7 @@ namespace Tests
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = "Here is some content\nwhich spans multiple lines";
+            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
 
             var streamString = $@"---
@@ -60,7 +60,7 @@ publish-date: {publishDate:O}
 
             Assert.AreEqual(title, article.Title);
             Assert.AreEqual(slug, article.Slug);
-            Assert.AreEqual(content, article.Content);
+            Assert.AreEqual(content.Trim(), article.Content.Trim());
             Assert.AreEqual(publishDate, article.PublishDate);
         }
 
@@ -69,7 +69,7 @@ publish-date: {publishDate:O}
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = "Here is some content\nwhich spans multiple lines";
+            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
             var article = new Article()
             {
@@ -91,7 +91,7 @@ publish-date: {publishDate:O}
 ...
 {content}";
 
-            Assert.AreEqual(compareString, streamString);
+            Assert.AreEqual(compareString.Trim(), streamString.Trim());
         }
 
         [Test]
@@ -112,7 +112,7 @@ publish-date: {publishDate:O}
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = "Here is some content\nwhich spans multiple lines";
+            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
 
             var theString = $@"---
@@ -126,7 +126,7 @@ publish-date: {publishDate:O}
 
             Assert.AreEqual(title, article.Title);
             Assert.AreEqual(slug, article.Slug);
-            Assert.AreEqual(content, article.Content);
+            Assert.AreEqual(content.Trim(), article.Content.Trim());
             Assert.AreEqual(publishDate, article.PublishDate);
         }
 

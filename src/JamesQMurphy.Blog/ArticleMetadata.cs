@@ -45,6 +45,7 @@ namespace JamesQMurphy.Blog
                         var match = Regex.Match(line, @"(.+?):(.*)");
                         if (match.Success)
                         {
+                            bPropertiesRead = true;
                             var key = match.Groups[1].Value.Trim().ToLowerInvariant();
                             var value = match.Groups[2].Value.Trim();
                             switch (key)
@@ -67,7 +68,10 @@ namespace JamesQMurphy.Blog
                         }
                         break;
                 }
-                line = await reader.ReadLineAsync();
+                if (!bDone)
+                {
+                    line = await reader.ReadLineAsync();
+                }
             }
             return articleMetadata;
         }
