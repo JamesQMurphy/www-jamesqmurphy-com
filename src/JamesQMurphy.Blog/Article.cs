@@ -8,26 +8,21 @@ namespace JamesQMurphy.Blog
 {
     public class Article
     {
-        private const string titleFieldName = "title";
-        private const string slugFieldName = "slug";
-        private const string publishDateFieldName = "publish-date";
         private const string yamlHeader = "---";
         private const string yamlFooter = "...";
 
-        public Article()
-        {
-        }
-
-        public string Title { get; set; }
-        public string Slug { get; set; }
-        public DateTime PublishDate { get; set; }
+        public ArticleMetadata Metadata { get; set; } = new ArticleMetadata();
         public string Content { get; set; }
+
+        // Project metadata fields
+        public string Title { get => Metadata.Title; set => Metadata.Title = value; }
+        public string Slug { get => Metadata.Slug; set => Metadata.Slug = value; }
+        public DateTime PublishDate { get => Metadata.PublishDate; set => Metadata.PublishDate = value; }
 
         public static async Task<Article> ReadFromAsync(TextReader reader)
         {
             var article = new Article();
             var sbContent = new StringBuilder();
-            bool bInsideYaml = false;
 
             var line = await reader.ReadLineAsync();
             while (line != null)
@@ -35,45 +30,14 @@ namespace JamesQMurphy.Blog
                 switch (line)
                 {
                     case yamlHeader:
-                        bInsideYaml = !bInsideYaml;
+                        article.Metadata = ArticleMetadata.ReadFrom(reader);
                         break;
 
                     case yamlFooter:
-                        bInsideYaml = false;
-                        sbContent.Append(await reader.ReadToEndAsync());
                         break;
 
                     default:
-                        if (bInsideYaml)
-                        {
-                            var match = Regex.Match(line, @"(.+?):(.*)");
-                            if (match.Success)
-                            {
-                                var key = match.Groups[1].Value.Trim().ToLowerInvariant();
-                                var value = match.Groups[2].Value.Trim();
-                                switch (key)
-                                {
-                                    case titleFieldName:
-                                        article.Title = value;
-                                        break;
-
-                                    case slugFieldName:
-                                        article.Slug = value;
-                                        break;
-
-                                    case publishDateFieldName:
-                                        article.PublishDate = DateTime.Parse(value).ToUniversalTime();
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            sbContent.AppendLine(line);
-                        }
+                        sbContent.AppendLine(line);
                         break;
                 }
                 line = await reader.ReadLineAsync();
@@ -113,11 +77,7 @@ namespace JamesQMurphy.Blog
 
         public async Task WriteToAsync(TextWriter writer)
         {
-            await writer.WriteLineAsync(yamlHeader);
-            await writer.WriteLineAsync($"{titleFieldName}: {Title}");
-            await writer.WriteLineAsync($"{slugFieldName}: {Slug}");
-            await writer.WriteLineAsync($"{publishDateFieldName}: {PublishDate:O}");
-            await writer.WriteLineAsync(yamlFooter);
+            await Metadata.WriteToAsync(writer);
             await writer.WriteAsync(Content);
         }
 

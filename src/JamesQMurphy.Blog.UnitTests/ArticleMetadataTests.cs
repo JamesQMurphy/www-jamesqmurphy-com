@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Tests
 {
-    public class ArticleTests
+    public class ArticleMetadataTests
     {
         [SetUp]
         public void Setup()
@@ -15,7 +15,7 @@ namespace Tests
         [Test]
         public void CanCreate()
         {
-            Assert.IsInstanceOf<Article>(new Article());
+            Assert.IsInstanceOf<ArticleMetadata>(new ArticleMetadata());
         }
 
         [Test]
@@ -23,21 +23,18 @@ namespace Tests
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = "Here is some content\nwhich spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
 
-            var article = new Article()
+            var articleMetadata = new ArticleMetadata()
             {
-                Content = content,
                 Slug = slug,
                 Title = title,
                 PublishDate = publishDate
             };
 
-            Assert.AreEqual(title, article.Title);
-            Assert.AreEqual(slug, article.Slug);
-            Assert.AreEqual(content, article.Content);
-            Assert.AreEqual(publishDate, article.PublishDate);
+            Assert.AreEqual(title, articleMetadata.Title);
+            Assert.AreEqual(slug, articleMetadata.Slug);
+            Assert.AreEqual(publishDate, articleMetadata.PublishDate);
         }
 
         [Test]
@@ -45,7 +42,6 @@ namespace Tests
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
 
             var streamString = $@"---
@@ -53,15 +49,14 @@ title: {title}
 slug: {slug}
 publish-date: {publishDate:O}
 ...
-{content}";
+";
 
             var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(streamString));
-            var article = Article.ReadFrom(memoryStream);
+            var articleMetadata = ArticleMetadata.ReadFrom(memoryStream);
 
-            Assert.AreEqual(title, article.Title);
-            Assert.AreEqual(slug, article.Slug);
-            Assert.AreEqual(content.Trim(), article.Content.Trim());
-            Assert.AreEqual(publishDate, article.PublishDate);
+            Assert.AreEqual(title, articleMetadata.Title);
+            Assert.AreEqual(slug, articleMetadata.Slug);
+            Assert.AreEqual(publishDate, articleMetadata.PublishDate);
         }
 
         [Test]
@@ -69,18 +64,16 @@ publish-date: {publishDate:O}
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
-            var article = new Article()
+            var articleMetadata = new ArticleMetadata()
             {
-                Content = content,
                 Slug = slug,
                 Title = title,
                 PublishDate = publishDate
             };
 
             var memoryStream = new MemoryStream();
-            article.WriteTo(memoryStream, true);
+            articleMetadata.WriteTo(memoryStream, true);
             memoryStream.Seek(0, SeekOrigin.Begin);
             var streamString = new StreamReader(memoryStream).ReadToEnd();
 
@@ -89,20 +82,20 @@ title: {title}
 slug: {slug}
 publish-date: {publishDate:O}
 ...
-{content}";
+";
 
-            Assert.AreEqual(compareString.Trim(), streamString.Trim());
+            Assert.AreEqual(compareString, streamString);
         }
 
         [Test]
         public void LeaveStreamOpen()
         {
             var memoryStreamOpen = new MemoryStream();
-            (new Article()).WriteTo(memoryStreamOpen, true);
+            (new ArticleMetadata()).WriteTo(memoryStreamOpen, true);
             Assert.IsTrue(memoryStreamOpen.CanWrite);
 
             var memoryStreamClosed = new MemoryStream();
-            (new Article()).WriteTo(memoryStreamClosed, false);
+            (new ArticleMetadata()).WriteTo(memoryStreamClosed, false);
             Assert.IsFalse(memoryStreamClosed.CanWrite);
 
         }
@@ -112,7 +105,6 @@ publish-date: {publishDate:O}
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
 
             var theString = $@"---
@@ -120,14 +112,13 @@ title: {title}
 slug: {slug}
 publish-date: {publishDate:O}
 ...
-{content}";
+";
 
-            var article = Article.ReadFrom(theString);
+            var articleMetadata = ArticleMetadata.ReadFrom(theString);
 
-            Assert.AreEqual(title, article.Title);
-            Assert.AreEqual(slug, article.Slug);
-            Assert.AreEqual(content.Trim(), article.Content.Trim());
-            Assert.AreEqual(publishDate, article.PublishDate);
+            Assert.AreEqual(title, articleMetadata.Title);
+            Assert.AreEqual(slug, articleMetadata.Slug);
+            Assert.AreEqual(publishDate, articleMetadata.PublishDate);
         }
 
 
@@ -136,11 +127,9 @@ publish-date: {publishDate:O}
         {
             var title = "Some Title";
             var slug = "Some-Slug";
-            var content = "Here is some content\nwhich spans multiple lines";
             var publishDate = System.DateTime.UtcNow;
-            var article = new Article()
+            var articleMetadata = new ArticleMetadata()
             {
-                Content = content,
                 Slug = slug,
                 Title = title,
                 PublishDate = publishDate
@@ -151,9 +140,9 @@ title: {title}
 slug: {slug}
 publish-date: {publishDate:O}
 ...
-{content}";
+";
 
-            Assert.AreEqual(compareString, article.ToString());
+            Assert.AreEqual(compareString, articleMetadata.ToString());
         }
 
     }

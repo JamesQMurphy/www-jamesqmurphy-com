@@ -23,7 +23,10 @@ namespace JamesQMurphy.Web
             {
                 var lambdaEntryPoint = new LambdaEntryPoint();
 
-                var handlerWrapper = HandlerWrapper.GetHandlerWrapper<APIGatewayProxyRequest, APIGatewayProxyResponse>(lambdaEntryPoint.FunctionHandlerAsync, new JsonSerializer());
+                // This explicit cast is needed with slightly older C# versions
+                var lambdaFunctionHandler = (Func<APIGatewayProxyRequest, Amazon.Lambda.Core.ILambdaContext, Task<APIGatewayProxyResponse>>)lambdaEntryPoint.FunctionHandlerAsync;
+
+                var handlerWrapper = HandlerWrapper.GetHandlerWrapper<APIGatewayProxyRequest, APIGatewayProxyResponse>(lambdaFunctionHandler, new JsonSerializer());
                 using (handlerWrapper)
                 {
                     using (var lambdaBootstrap = new LambdaBootstrap(handlerWrapper))
