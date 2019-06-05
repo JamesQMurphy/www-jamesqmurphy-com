@@ -18,7 +18,8 @@ namespace JamesQMurphy.Web.Controllers
 
         public IActionResult Index()
         {
-            return View(articleList);
+            var articleMetadataList = articleList.Select(a => a.Metadata);
+            return View(articleMetadataList);
         }
 
         public IActionResult Details(string slug)
