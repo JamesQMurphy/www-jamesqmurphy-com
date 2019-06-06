@@ -160,5 +160,53 @@ publish-date: {publishDate:O}
             Assert.AreEqual("11", articleMetaData.MonthString);
         }
 
+        [Test]
+        public void TestEquality()
+        {
+            var articleMetaData1 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1)
+            };
+
+            var articleMetaData2 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1)
+            };
+
+            Assert.AreEqual(articleMetaData1, articleMetaData2);
+            Assert.IsTrue(articleMetaData1.Equals(articleMetaData2));
+            Assert.IsTrue(articleMetaData1 == articleMetaData2);
+            Assert.IsFalse(articleMetaData1 != articleMetaData2);
+
+            Assert.AreEqual(articleMetaData1.GetHashCode(), articleMetaData2.GetHashCode());
+        }
+
+        [Test]
+        public void TestInequality()
+        {
+            var articleMetaData1 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1)
+            };
+
+            var articleMetaData2 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug2",
+                PublishDate = new System.DateTime(2019, 6, 1)
+            };
+
+            Assert.AreNotEqual(articleMetaData1, articleMetaData2);
+            Assert.IsFalse(articleMetaData1.Equals(articleMetaData2));
+            Assert.IsFalse(articleMetaData1 == articleMetaData2);
+            Assert.IsTrue(articleMetaData1 != articleMetaData2);
+        }
+
     }
 }
