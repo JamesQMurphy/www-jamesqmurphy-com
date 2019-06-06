@@ -18,6 +18,9 @@ namespace JamesQMurphy.Blog
         public string Slug { get; set; }
         public DateTime PublishDate { get; set; }
 
+        public string MonthString => PublishDate.Month.ToString("D2");
+        public string YearString => PublishDate.Year.ToString();
+
         public static async Task<ArticleMetadata> ReadFromAsync(TextReader reader)
         {
             var articleMetadata = new ArticleMetadata();
