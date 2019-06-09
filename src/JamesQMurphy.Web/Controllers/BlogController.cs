@@ -10,9 +10,9 @@ namespace JamesQMurphy.Web.Controllers
     public class BlogController : Controller
     {
         private Article[] articleList = new Article[3] {
-                new Article() { Title = "Article 1", Slug = "article-1"},
-                new Article() { Title = "Article 2", Slug = "article-2" },
-                new Article() { Title = "Article 3", Slug = "article-3" }
+                new Article() { Title = "Article 1", Slug = "article-1", Content = "This is article one."},
+                new Article() { Title = "Article 2", Slug = "article-2", Content = "This is article two." },
+                new Article() { Title = "Article 3", Slug = "article-3", Content = "This is article three." }
             };
 
 
