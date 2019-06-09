@@ -15,7 +15,10 @@ namespace JamesQMurphy.Blog
 
         public IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null)
         {
-            var list = Articles.FindAll(a => a.YearString == yearString).ConvertAll(a => a.Metadata);
+            var list = Articles.FindAll(a =>
+                (yearString == null || yearString == a.YearString) &&
+                (monthString == null || monthString == a.MonthString)
+                ).ConvertAll(a => a.Metadata);
             list.Sort();
             return list;
         }

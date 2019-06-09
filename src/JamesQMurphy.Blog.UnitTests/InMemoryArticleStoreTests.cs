@@ -73,28 +73,66 @@ namespace Tests
             Assert.IsNull(Store.GetArticle("0000", "00", "not-a-slug"));
         }
 
+        private void AssertArticleListsAreEqual(IList<ArticleMetadata> expected, IList<ArticleMetadata> actual)
+        {
+            Assert.AreEqual(expected.Count, actual.Count);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.AreEqual(expected[i], actual[i]);
+            }
+        }
+
+
         [Test]
         public void GetArticlesByYear()
         {
             for (int year = 2015; year < 2025; year++)
             {
                 // Manually get articles and sort them
-                var articlesThisYear = Store.Articles.FindAll(a => a.PublishDate.Year == year);
+                var articlesThisYear = Store.Articles.FindAll(a => a.PublishDate.Year == year).ConvertAll(a => a.Metadata);
                 articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                 // Get articles thru service.  They should be sorted
-                var returnedArticleMetadatas = Store.GetArticles(yearString: year.ToString());
-                var returnedArticleMetadatasList = new List<ArticleMetadata>(returnedArticleMetadatas);
+                var returnedArticles = Store.GetArticles(yearString: year.ToString());
+                var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
-                // See if article lists are the same (compare metadata objects)
-                Assert.AreEqual(articlesThisYear.Count, returnedArticleMetadatasList.Count);
-                for (int i = 0; i < articlesThisYear.Count; i++)
+                AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
+            }
+        }
+
+        [Test]
+        public void GetArticlesByYearAndMonth()
+        {
+            for (int year = 2015; year < 2025; year++)
+            {
+                for (int month = 1; month <= 12; month++)
                 {
-                    Assert.AreEqual(articlesThisYear[i].Metadata, returnedArticleMetadatasList[i]);
+                    // Manually get articles and sort them
+                    var articlesThisYear = Store.Articles.FindAll(a => (a.PublishDate.Year == year) && (a.PublishDate.Month == month)).ConvertAll(a => a.Metadata);
+                    articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
+
+                    // Get articles thru service.  They should be sorted
+                    var returnedArticles = Store.GetArticles(yearString: year.ToString(), monthString:month.ToString("D2"));
+                    var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
+
+                    AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
                 }
             }
         }
 
+        [Test]
+        public void GetAllArticles()
+        {
+            // Manually get articles and sort them
+            var articlesThisYear = Store.Articles.ConvertAll(a => a.Metadata);
+            articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
+
+            // Get articles thru service.  They should be sorted
+            var returnedArticles = Store.GetArticles();
+            var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
+
+            AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
+        }
 
     }
 }
