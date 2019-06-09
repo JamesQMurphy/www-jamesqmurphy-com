@@ -181,6 +181,8 @@ publish-date: {publishDate:O}
             Assert.IsTrue(articleMetaData1.Equals(articleMetaData2));
             Assert.IsTrue(articleMetaData1 == articleMetaData2);
             Assert.IsFalse(articleMetaData1 != articleMetaData2);
+            Assert.IsTrue(articleMetaData1 <= articleMetaData2);
+            Assert.IsTrue(articleMetaData1 >= articleMetaData2);
 
             Assert.AreEqual(articleMetaData1.GetHashCode(), articleMetaData2.GetHashCode());
         }
@@ -208,5 +210,94 @@ publish-date: {publishDate:O}
             Assert.IsTrue(articleMetaData1 != articleMetaData2);
         }
 
+        public void Comparison()
+        {
+            var articleMetaData1 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1)
+            };
+
+            var articleMetaData2 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 2)
+            };
+
+            Assert.IsTrue(articleMetaData1 < articleMetaData2);
+            Assert.IsTrue(articleMetaData2 > articleMetaData1);
+            Assert.IsFalse(articleMetaData1 > articleMetaData2);
+            Assert.IsFalse(articleMetaData2 < articleMetaData1);
+            Assert.IsTrue(articleMetaData1 <= articleMetaData2);
+            Assert.IsTrue(articleMetaData2 >= articleMetaData1);
+            Assert.IsFalse(articleMetaData1 >= articleMetaData2);
+            Assert.IsFalse(articleMetaData2 <= articleMetaData1);
+        }
+
+        [Test]
+        public void Sort()
+        {
+            ArticleMetadata metadata0 = null;
+            var metadata1 = new ArticleMetadata()
+            {
+                Title = "xyz",
+                Slug = "xyz",
+                PublishDate = new System.DateTime(2000, 1, 1)
+            };
+            var metadata2 = new ArticleMetadata()
+            {
+                Title = "abc",
+                Slug = "abc",
+                PublishDate = new System.DateTime(2000, 1, 2)
+            };
+            var metadata3 = new ArticleMetadata()
+            {
+                Title = "abc",
+                Slug = "abc",
+                PublishDate = new System.DateTime(2000, 1, 3)
+            };
+            var metadata4 = new ArticleMetadata()
+            {
+                Title = "abd",
+                Slug = "abc",
+                PublishDate = new System.DateTime(2000, 1, 3)
+            };
+            var metadata5 = new ArticleMetadata()
+            {
+                Title = "abc",
+                Slug = "abc",
+                PublishDate = new System.DateTime(2000, 1, 4)
+            };
+            var metadata6 = new ArticleMetadata()
+            {
+                Title = "abd",
+                Slug = "abc",
+                PublishDate = new System.DateTime(2000, 1, 4)
+            };
+
+
+            var arr = new ArticleMetadata[]
+            {
+                metadata4,
+                metadata3,
+                metadata1,
+                metadata0,
+                metadata6,
+                metadata5,
+                metadata2
+            };
+
+            System.Array.Sort(arr);
+
+            Assert.AreEqual(metadata0, arr[0]);
+            Assert.AreEqual(metadata1, arr[1]);
+            Assert.AreEqual(metadata2, arr[2]);
+            Assert.AreEqual(metadata3, arr[3]);
+            Assert.AreEqual(metadata4, arr[4]);
+            Assert.AreEqual(metadata5, arr[5]);
+            Assert.AreEqual(metadata6, arr[6]);
+        }
     }
 }
