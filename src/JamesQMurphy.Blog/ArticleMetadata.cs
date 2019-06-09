@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
-    public class ArticleMetadata
+    public class ArticleMetadata : IComparable<ArticleMetadata>, IEquatable<ArticleMetadata>
     {
         private const string titleFieldName = "title";
         private const string slugFieldName = "slug";
@@ -130,6 +130,35 @@ namespace JamesQMurphy.Blog
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ArticleMetadata);
+        }
+
+        public bool Equals(ArticleMetadata other)
+        {
+            return (CompareTo(other) == 0);
+        }
+
+        public static bool operator ==(ArticleMetadata left, ArticleMetadata right)
+        {
+            if (object.ReferenceEquals(left, right)) return true;
+            if ((left is null) || (right is null)) return false;
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ArticleMetadata left, ArticleMetadata right)
+        {
+            if (object.ReferenceEquals(left, right)) return false;
+            if ((left is null) || (right is null)) return true;
+            return !left.Equals(right);
+        }
+
+        public override int GetHashCode()
+        {
+            return Title.GetHashCode() ^ Slug.GetHashCode() ^ PublishDate.GetHashCode();
+        }
+
         public override string ToString()
         {
             var writer = new StringWriter();
@@ -137,9 +166,45 @@ namespace JamesQMurphy.Blog
             return writer.ToString();
         }
 
-        public override int GetHashCode()
+        public int CompareTo(ArticleMetadata other)
         {
-            return Title.GetHashCode() ^ Slug.GetHashCode() ^ PublishDate.GetHashCode();
+            if (other == null) return 1;
+            if (ReferenceEquals(this, other)) return 0;
+
+            int retval = this.PublishDate.CompareTo(other.PublishDate);
+            if (retval == 0)
+            {
+                retval = this.Title.CompareTo(other.Title);
+            }
+            if (retval == 0)
+            {
+                retval = this.Slug.CompareTo(other.Slug);
+            }
+            return retval;
         }
+
+        public static bool operator <(ArticleMetadata left, ArticleMetadata right)
+        {
+            if (object.ReferenceEquals(left, right)) return false;
+            if (left is null) return true;
+            return left.CompareTo(right) == -1;
+        }
+
+        public static bool operator >(ArticleMetadata left, ArticleMetadata right)
+        {
+            if (left is null) return false;
+            return left.CompareTo(right) == 1;
+        }
+
+        public static bool operator <=(ArticleMetadata left, ArticleMetadata right)
+        {
+            return (left < right) || (left == right);
+        }
+
+        public static bool operator >=(ArticleMetadata left, ArticleMetadata right)
+        {
+            return (left > right) || (left == right);
+        }
+
     }
 }
