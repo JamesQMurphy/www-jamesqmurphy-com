@@ -24,18 +24,18 @@ namespace Tests
 
                 new Article()
                 {
-                    Title = "Article Two",
-                    Slug = "article-two",
-                    PublishDate = new DateTime(2019, 1, 10, 14, 57, 32),
-                    Content = "This is article two, published on January 10, 2019 at 2:57pm UTC"
-                },
-
-                new Article()
-                {
                     Title = "Article Three",
                     Slug = "article-three",
                     PublishDate = new DateTime(2019, 7, 6, 18, 34, 56),
                     Content = "This is article three, published on January 10, 2019 at 6:34pm UTC"
+                },
+
+                new Article()
+                {
+                    Title = "Article Two",
+                    Slug = "article-two",
+                    PublishDate = new DateTime(2019, 1, 10, 14, 57, 32),
+                    Content = "This is article two, published on January 10, 2019 at 2:57pm UTC"
                 },
 
                 new Article()
@@ -78,13 +78,15 @@ namespace Tests
         {
             for (int year = 2015; year < 2025; year++)
             {
+                // Manually get articles and sort them
                 var articlesThisYear = Store.Articles.FindAll(a => a.PublishDate.Year == year);
                 articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
+                // Get articles thru service.  They should be sorted
                 var returnedArticleMetadatas = Store.GetArticles(yearString: year.ToString());
                 var returnedArticleMetadatasList = new List<ArticleMetadata>(returnedArticleMetadatas);
-                returnedArticleMetadatasList.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
+                // See if article lists are the same (compare metadata objects)
                 Assert.AreEqual(articlesThisYear.Count, returnedArticleMetadatasList.Count);
                 for (int i = 0; i < articlesThisYear.Count; i++)
                 {
