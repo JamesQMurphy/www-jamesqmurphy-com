@@ -9,17 +9,16 @@ namespace JamesQMurphy.Web.Controllers
 {
     public class BlogController : Controller
     {
-        private Article[] articleList = new Article[3] {
-                new Article() { Title = "Article 1", Slug = "article-1", Content = "This is article one."},
-                new Article() { Title = "Article 2", Slug = "article-2", Content = "This is article two." },
-                new Article() { Title = "Article 3", Slug = "article-3", Content = "This is article three." }
-            };
+        private readonly IArticleStore articleStore;
 
+        public BlogController(IArticleStore iarticleStore)
+        {
+            articleStore = iarticleStore;
+        }
 
         public IActionResult Index()
         {
-            var articleMetadataList = articleList.Select(a => a.Metadata);
-            return View(articleMetadataList);
+            return View(articleStore.GetArticles());
         }
 
         public IActionResult Details(string slug)
@@ -29,9 +28,10 @@ namespace JamesQMurphy.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            var article = articleList.Where(a => a.Slug == slug).FirstOrDefault();
-            if (article != null)
+            var articleMetadata = articleStore.GetArticles().Where(a => a.Slug == slug).FirstOrDefault();
+            if (articleMetadata != null)
             {
+                var article = articleStore.GetArticle(articleMetadata.YearString, articleMetadata.MonthString, slug);
                 return View(article);
             }
             else
