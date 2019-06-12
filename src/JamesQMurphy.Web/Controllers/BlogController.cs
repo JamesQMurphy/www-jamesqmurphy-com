@@ -16,9 +16,9 @@ namespace JamesQMurphy.Web.Controllers
             articleStore = iarticleStore;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string year = null, string month = null)
         {
-            return View(articleStore.GetArticles());
+            return View(articleStore.GetArticles(year, month));
         }
 
         public IActionResult Details(string year, string month, string slug)

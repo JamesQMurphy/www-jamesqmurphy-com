@@ -87,7 +87,7 @@ namespace JamesQMurphy.Web
             {
                 routes.MapRoute(
                     name: "blogIndex",
-                    template: "blog",
+                    template: "blog/{year?}/{month?}",
                     defaults: new { controller = "Blog", action = "Index" });
 
                 routes.MapRoute(
