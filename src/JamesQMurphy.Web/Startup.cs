@@ -51,7 +51,7 @@ namespace JamesQMurphy.Web
                     Title = "Article Two",
                     Slug = "article-2",
                     PublishDate = new DateTime(2019, 7, 6, 18, 34, 56),
-                    Content = "This is article two, published on January 10, 2019 at 6:34pm UTC"
+                    Content = "This is article two, published on July 6, 2019 at 6:34pm UTC"
                 },
 
                 new Article()
@@ -92,7 +92,7 @@ namespace JamesQMurphy.Web
 
                 routes.MapRoute(
                     name: "blogDetails",
-                    template: "blog/{slug}",
+                    template: "blog/{year}/{month}/{slug}",
                     defaults: new { controller = "Blog", action = "Details" });
 
                 routes.MapRoute(

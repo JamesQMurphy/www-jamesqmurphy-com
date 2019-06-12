@@ -21,17 +21,11 @@ namespace JamesQMurphy.Web.Controllers
             return View(articleStore.GetArticles());
         }
 
-        public IActionResult Details(string slug)
+        public IActionResult Details(string year, string month, string slug)
         {
-            if (string.IsNullOrWhiteSpace(slug))
+            var article = articleStore.GetArticle(year, month, slug);
+            if (article != null)
             {
-                return RedirectToAction("Index");
-            }
-
-            var articleMetadata = articleStore.GetArticles().Where(a => a.Slug == slug).FirstOrDefault();
-            if (articleMetadata != null)
-            {
-                var article = articleStore.GetArticle(articleMetadata.YearString, articleMetadata.MonthString, slug);
                 return View(article);
             }
             else
