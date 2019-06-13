@@ -16,3 +16,11 @@ steps:
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
   workingDirectory: src/JamesQMurphy.Web
+- task: LambdaNETCoreDeploy@1
+  displayName: Create Lambda.NET package
+  inputs:
+    command: 'deployFunction'
+    packageOnly: true
+    lambdaProjectPath: 'src/JamesQMurphy.Web'    
+    packageOutputFile: '$(Build.ArtifactStagingDirectory)/JamesQMurphy.Web.zip'
+    additionalArgs: '--configuration $(buildConfiguration) --self-contained --runtime rhel-x64'
