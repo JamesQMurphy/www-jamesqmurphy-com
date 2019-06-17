@@ -20,6 +20,9 @@ steps:
   displayName: Run dotnet-lambda package
   workingDirectory: $(JQM.toolInstallDir)
 
+- script: dotnet test -c $(buildConfiguration)
+  workingDirectory: $(Build.SourcesDirectory)/src
+
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
   inputs:
