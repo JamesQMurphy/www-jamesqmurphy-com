@@ -35,14 +35,7 @@ namespace JamesQMurphy.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            var awsOptions = Configuration.GetAWSOptions();
-            if (awsOptions.Region != null)
-            {
-                services.AddDefaultAWSOptions(awsOptions);
-                services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
-                services.AddSingleton<IArticleStore, JamesQMurphy.Blog.Aws.DynamoDbArticleStore>();
-            }
-            else
+            if (Configuration["ArticleStore:Service"] == "InMemory")
             {
                 var articleStore = new InMemoryArticleStore();
                 articleStore.Articles.AddRange(new Article[]
@@ -72,6 +65,12 @@ namespace JamesQMurphy.Web
                 }
                 });
                 services.AddSingleton<IArticleStore>(articleStore);
+            }
+            else
+            {
+                services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+                services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
+                services.AddSingleton<IArticleStore, JamesQMurphy.Blog.Aws.DynamoDbArticleStore>();
             }
         }
 
