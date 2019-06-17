@@ -35,9 +35,18 @@ namespace JamesQMurphy.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            var articleStore = new InMemoryArticleStore();
-            articleStore.Articles.AddRange(new Article[]
+            var awsOptions = Configuration.GetAWSOptions();
+            if (awsOptions.Region != null)
             {
+                services.AddDefaultAWSOptions(awsOptions);
+                services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
+                services.AddSingleton<IArticleStore, JamesQMurphy.Blog.Aws.DynamoDbArticleStore>();
+            }
+            else
+            {
+                var articleStore = new InMemoryArticleStore();
+                articleStore.Articles.AddRange(new Article[]
+                {
                 new Article()
                 {
                     Title = "Article One",
@@ -61,8 +70,9 @@ namespace JamesQMurphy.Web
                     PublishDate = new DateTime(2019, 8, 31, 10, 2, 0),
                     Content = "This is article three, published on August 31, 2019 at 10:02am UTC"
                 }
-            });
-            services.AddSingleton<IArticleStore>(articleStore);
+                });
+                services.AddSingleton<IArticleStore>(articleStore);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
