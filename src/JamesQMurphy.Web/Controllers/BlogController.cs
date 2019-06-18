@@ -9,27 +9,21 @@ namespace JamesQMurphy.Web.Controllers
 {
     public class BlogController : Controller
     {
-        private Article[] articleList = new Article[3] {
-                new Article() { Title = "Article 1", Slug = "article-1", Content = "This is article one."},
-                new Article() { Title = "Article 2", Slug = "article-2", Content = "This is article two." },
-                new Article() { Title = "Article 3", Slug = "article-3", Content = "This is article three." }
-            };
+        private readonly IArticleStore articleStore;
 
-
-        public IActionResult Index()
+        public BlogController(IArticleStore iarticleStore)
         {
-            var articleMetadataList = articleList.Select(a => a.Metadata);
-            return View(articleMetadataList);
+            articleStore = iarticleStore;
         }
 
-        public IActionResult Details(string slug)
+        public IActionResult Index(string year = null, string month = null)
         {
-            if (string.IsNullOrWhiteSpace(slug))
-            {
-                return RedirectToAction("Index");
-            }
+            return View(articleStore.GetArticles(year, month));
+        }
 
-            var article = articleList.Where(a => a.Slug == slug).FirstOrDefault();
+        public IActionResult Details(string year, string month, string slug)
+        {
+            var article = articleStore.GetArticle(year, month, slug);
             if (article != null)
             {
                 return View(article);
