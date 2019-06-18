@@ -20,9 +20,19 @@ steps:
   displayName: Run dotnet-lambda package
   workingDirectory: $(JQM.toolInstallDir)
 
+- script: dotnet test -c $(buildConfiguration) --logger trx --results-directory $(Common.TestResultsDirectory)
+  displayName: Run dotnet test
+  workingDirectory: $(Build.SourcesDirectory)/src
+
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(JQM.packageName)' 
     artifactName: 'package' 
 
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '*.trx'
+    searchFolder: '$(Common.TestResultsDirectory)'
+    failTaskOnFailedTests: true
