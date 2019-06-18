@@ -1,0 +1,6 @@
+﻿@model IEnumerable<JamesQMurphy.Blog.ArticleMetadata>
+
+<h1>Blog Articles</h1>
+@foreach (var item in Model) {
+    <a href="/blog/@item.Slug">@item.Title</a><br/>
+}
