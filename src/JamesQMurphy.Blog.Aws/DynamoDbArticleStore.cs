@@ -14,7 +14,7 @@ namespace JamesQMurphy.Blog.Aws
 
         public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient)
         {
-            table = Table.LoadTable(dynamoDbClient, "articles");
+            table = Table.LoadTable(dynamoDbClient, "demo-articles");
         }
 
         public Article GetArticle(string yearString, string monthString, string slug)
