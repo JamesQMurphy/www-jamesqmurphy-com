@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using JamesQMurphy.Blog;
 using System.Text;
-using System.Xml;
 
 namespace Tests
 {
@@ -18,13 +17,15 @@ namespace Tests
 
         private static void AssertEquivalentHtml(string expected, string actual)
         {
-            XmlDocument expectedXml = new XmlDocument();
-            expectedXml.LoadXml(expected);
+            var expectedHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            expectedHtmlDoc.LoadHtml($"<html><body>{expected}</body></html>");
+            var expectedHtml = expectedHtmlDoc.DocumentNode.ChildNodes[0].InnerHtml.Replace("\n", "");
 
-            XmlDocument actualXml = new XmlDocument();
-            actualXml.LoadXml(actual);
+            var actualHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            actualHtmlDoc.LoadHtml($"<html><body>{actual}</body></html>");
+            var actualHtml = actualHtmlDoc.DocumentNode.ChildNodes[0].InnerHtml.Replace("\n", "");
 
-            Assert.AreEqual(expectedXml.OuterXml, actualXml.OuterXml);
+            Assert.AreEqual(expectedHtml, actualHtml);
         }
 
 
@@ -51,7 +52,7 @@ namespace Tests
             var language = "DwimScript";
             var fenced = $"```{language}\n{text}\n```";
 
-            AssertEquivalentHtml($"<pre><code class='language-{language}'>{text}\n</code></pre>", renderer.RenderHtml(fenced));
+            AssertEquivalentHtml($"<pre><code class=\"language-{language}\">{text}\n</code></pre>", renderer.RenderHtml(fenced));
         }
 
         [Test]
@@ -64,14 +65,14 @@ namespace Tests
             AssertEquivalentHtml($"<pre><code>{codeline1}\n{codeline2}\n</code></pre>", renderer.RenderHtml(fenced));
         }
 
-        [Test, Ignore("Need to figure this out")]
+        [Test]
         public void Images()
         {
             var altText = "This is alt text";
             var imgSrc = "/a/b/image.png";
             var markdown = $"![{altText}]({imgSrc})";
 
-            AssertEquivalentHtml($"<p><img src='{imgSrc}' alt='{altText}'/>", renderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><img src=\"{imgSrc}\" alt=\"{altText}\"/>", renderer.RenderHtml(markdown));
         }
 
 
