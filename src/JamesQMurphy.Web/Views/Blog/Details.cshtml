@@ -1,5 +1,6 @@
 ﻿@model JamesQMurphy.Blog.Article
+@inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
 
 <h1>@Model.Title</h1>
 <br/>
-@Model.Content
+@Html.Raw(Renderer.RenderHtml(Model.Content))
