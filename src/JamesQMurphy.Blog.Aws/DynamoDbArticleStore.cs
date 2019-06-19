@@ -20,7 +20,7 @@ namespace JamesQMurphy.Blog.Aws
         public Article GetArticle(string yearString, string monthString, string slug)
         {
             var yearMonthString = $"{yearString}{monthString}";
-            var result = table.GetItemAsync(slug, yearMonthString).GetAwaiter().GetResult();
+            var result = table.GetItemAsync(yearMonthString, slug).GetAwaiter().GetResult();
             return new Article()
             {
                 Slug = result["slug"],
