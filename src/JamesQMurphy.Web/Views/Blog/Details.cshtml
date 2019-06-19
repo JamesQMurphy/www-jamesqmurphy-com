@@ -2,5 +2,6 @@
 @inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
 
 <h1>@Model.Title</h1>
+<h6 class="text-muted font-weight-light"><small>by JamesQMurphy | @Model.PublishDate.ToString("MMMM d, yyyy")</small></h6>
 <br/>
 @Html.Raw(Renderer.RenderHtml(Model.Content))
