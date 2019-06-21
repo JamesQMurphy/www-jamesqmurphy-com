@@ -3,7 +3,7 @@
 # Read version number from build file
 
 
-. ./common-functions.ps1
+. './common-functions.ps1'
 
 Write-Output "This branch version is $($env:VERSIONMAJOR).$($env:VERSIONMINOR).$($env:VERSIONPATCH)"
 
