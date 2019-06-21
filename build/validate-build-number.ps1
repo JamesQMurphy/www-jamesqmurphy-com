@@ -11,7 +11,7 @@ Write-Output "This branch version is $($env:VERSIONMAJOR).$($env:VERSIONMINOR).$
 $masterVersionMajor = -1
 $masterVersionMinor = -1
 $masterVersionPatch = -1
-$masterYamlBytes = Invoke-TfsWebApi "/_apis/git/repositories/$($env:BUILD_REPOSITORY_NAME)/items" -Method Get -Version '2.0' -QueryString 'scopePath=build\azure-pipelines.yaml' 
+$masterYamlBytes = Invoke-AzureDevOpsWebApi "/_apis/git/repositories/$($env:BUILD_REPOSITORY_NAME)/items" -Method Get -Version '2.0' -QueryString 'scopePath=build\azure-pipelines.yaml' 
 [System.Text.Encoding]::ASCII.GetString($masterYamlBytes) -split "`n" | Where-Object { $_ -match '\s+version(Major|Minor|Patch):\s+(\d+)' } | ForEach-Object {
     switch($Matches[1]) {
         'Major' { $masterVersionMajor = $Matches[2] }
