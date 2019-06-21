@@ -8,14 +8,19 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  versionMajor: 0
-  versionMinor: 0
-  versionPatch: 10
+  versionMajor: 1
+  versionMinor: 2
+  versionPatch: 4
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.zip
   JQM.toolInstallDir: build/bin
 
 steps:
+- task: PowerShell@2
+  displayName: Validate version numbers against default branch
+  inputs:
+    filePath: build/validate-build-number.ps1
+
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
   displayName: Install Amazon.Lambda.Tools
 
