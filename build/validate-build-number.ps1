@@ -34,3 +34,6 @@ since we need to compare against the version numbers in the master branch, we ne
 }
 
 Write-Output "The master branch version is $($masterVersionMajor).$($masterVersionMinor).$($masterVersionPatch)"
+
+& git --rev-list --left-right --count "FETCH_HEAD...$($env:BUILD_SOURCEVERSION)"
+
