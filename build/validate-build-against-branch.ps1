@@ -87,3 +87,4 @@ if (-not $thisBranchVersionGreater) {
     exit 1
 }
 
+Write-Output "This branch successfully validated against branch $CompareBranch"
