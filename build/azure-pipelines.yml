@@ -14,12 +14,14 @@ variables:
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.zip
   JQM.toolInstallDir: build/bin
+  JQM.compareBranch: master
 
 steps:
 - task: PowerShell@2
-  displayName: Validate version numbers against default branch
+  displayName: Validate build against $(JQM.compareBranch) branch
   inputs:
     filePath: build/validate-build-number.ps1
+    arguments: -CompareBranch $(JQM.compareBranch)
 
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
   displayName: Install Amazon.Lambda.Tools
