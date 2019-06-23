@@ -20,7 +20,7 @@ steps:
 - task: PowerShell@2
   displayName: Validate build against $(JQM.compareBranch) branch
   inputs:
-    filePath: build/validate-build-number.ps1
+    filePath: build/validate-build-against-branch.ps1
     arguments: -CompareBranch $(JQM.compareBranch)
 
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
