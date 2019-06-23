@@ -79,9 +79,9 @@ $compareBranchVersionPatch = -1
 Write-Output "This branch version is $($thisBranchVersionMajor).$($thisBranchVersionMinor).$($thisBranchVersionPatch)"
 Write-Output "Branch $CompareBranch version is $($compareBranchVersionMajor).$($compareBranchVersionMinor).$($compareBranchVersionPatch)"
 
-$thisBranchVersionGreater = ($compareBranchVersionMajor -gt $thisBranchVersionMajor) -or
-                            (($compareBranchVersionMajor -eq $thisBranchVersionMajor) -and ($compareBranchVersionMinor -gt $thisBranchVersionMinor)) -or
-                            (($compareBranchVersionMajor -eq $thisBranchVersionMajor) -and ($compareBranchVersionMinor -eq $thisBranchVersionMinor) -and ($compareBranchVersionPatch -gt $thisBranchVersionPatch))
+$thisBranchVersionGreater = ($thisBranchVersionMajor -gt $compareBranchVersionMajor) -or
+                            (($thisBranchVersionMajor -eq $compareBranchVersionMajor) -and ($thisBranchVersionMinor -gt $compareBranchVersionMinor)) -or
+                            (($thisBranchVersionMajor -eq $compareBranchVersionMajor) -and ($thisBranchVersionMinor -eq $compareBranchVersionMinor) -and ($thisBranchVersionPatch -gt $compareBranchVersionPatch))
 if (-not $thisBranchVersionGreater) {
     Write-Error "This branch must have a higher version number than branch $CompareBranch"
     exit 1
