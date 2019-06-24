@@ -1,5 +1,50 @@
 # Common PowerShell functions
 
+function Write-AzureDevOpsLoggingCommand {
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("task","artifact","build")]
+        [string]$Area,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Action,
+
+        [Parameter(Mandatory=$false)]
+        [string]$Message = '',
+
+        [Parameter(Mandatory=$false)]
+        [HashTable]$Properties = @{}
+    )
+
+    $Area = $Area.ToLowerInvariant()
+    $Action = $Action.ToLowerInvariant()
+
+    $sb = New-Object 'System.Text.StringBuilder' -ArgumentList ' '
+    $Properties.Keys.GetEnumerator() | ForEach-Object {
+        $thisValue = $Properties[$_]
+        $sb.Append("$_=$thisValue;") | Out-Null
+    }
+    $propString = $sb.ToString()
+    if ([String]::IsNullOrWhiteSpace($propString)) {
+        $propString = ''
+    }
+
+    Write-Output "##vso[$Area.$Action$propString]$Message"
+}
+
+
+function Write-AzureDevOpsBuildError {
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Message
+    )
+
+    Write-AzureDevOpsLoggingCommand -Area task -Action logissue -Message $Message -Properties @{type='error'}
+}
+
+
 function Invoke-AzureDevOpsWebApi {
     param(
         [Parameter(Mandatory=$true)]

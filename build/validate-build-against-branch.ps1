@@ -15,7 +15,9 @@ param (
     [String] $VersionFile  = 'build/azure-pipelines.yml'
 )
 
-# Remove "refs/heads/" if in front of compare branch name
+. "$PSScriptRoot/common-functions.ps1"
+
+# Remove "refs/heads/" in front of compare branch name (if present)
 if ($CompareBranch.StartsWith('refs/heads/')) {
     $CompareBranch = $CompareBranch.Replace('refs/heads/','')
 }
@@ -32,14 +34,15 @@ we need to fetch that branch.  Note that git will name the pointer to the fetche
 #>
 & git fetch origin $CompareBranch
 
-# Get the commits of each branch
+
+# Get the commits of this branch and the compare branch
 $thisBranchCommit = & git log -1 --format="%H"
 $compareBranchCommit = & git log -1 FETCH_HEAD --format="%H"
 Write-Output "This branch is at commit $thisBranchCommit"
 Write-Output "Branch $CompareBranch is at commit $compareBranchCommit"
 
 if ($thisBranchCommit -eq $compareBranchCommit) {
-    Write-Output "This branch is equivalent to branch $CompareBranch"
+    Write-Output "This branch is equivalent to branch $CompareBranch; validation successful"
     exit 0
 }
 
@@ -51,15 +54,16 @@ if ($behindAhead -match '(\d+)\s+(\d+)') {
     $commitsAhead = [int]::Parse($Matches[2])
 }
 else {
-    Write-Error "Could not parse `$behindAhead ($behindAhead)"
+    Write-AzureDevOpsBuildError "Could not parse `$behindAhead ($behindAhead)"
     exit 1
 }
 Write-Output "This branch is $commitsBehind commits behind and $commitsAhead commits ahead of branch $CompareBranch"
 if ($commitsBehind -gt 0) {
-    Write-Error "This branch must be 0 commits behind branch $CompareBranch"
+    Write-AzureDevOpsBuildError "This branch must be 0 commits behind branch $CompareBranch"
     exit 1
 }
 
+# Get this branch's version
 $thisBranchVersionMajor = [int]::Parse($env:VERSIONMAJOR)
 $thisBranchVersionMinor = [int]::Parse($env:VERSIONMINOR)
 $thisBranchVersionPatch = [int]::Parse($env:VERSIONPATCH)
@@ -79,11 +83,13 @@ $compareBranchVersionPatch = -1
 Write-Output "This branch version is $($thisBranchVersionMajor).$($thisBranchVersionMinor).$($thisBranchVersionPatch)"
 Write-Output "Branch $CompareBranch version is $($compareBranchVersionMajor).$($compareBranchVersionMinor).$($compareBranchVersionPatch)"
 
+
+# Check if this branch's version is greater than the compare branch's version
 $thisBranchVersionGreater = ($thisBranchVersionMajor -gt $compareBranchVersionMajor) -or
                             (($thisBranchVersionMajor -eq $compareBranchVersionMajor) -and ($thisBranchVersionMinor -gt $compareBranchVersionMinor)) -or
                             (($thisBranchVersionMajor -eq $compareBranchVersionMajor) -and ($thisBranchVersionMinor -eq $compareBranchVersionMinor) -and ($thisBranchVersionPatch -gt $compareBranchVersionPatch))
 if (-not $thisBranchVersionGreater) {
-    Write-Error "This branch must have a higher version number than branch $CompareBranch"
+    Write-AzureDevOpsBuildError "This branch must have a higher version number than branch $CompareBranch"
     exit 1
 }
 

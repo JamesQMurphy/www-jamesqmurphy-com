@@ -8,8 +8,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  versionMajor: 1
-  versionMinor: 2
+  versionMajor: 0
+  versionMinor: 0
   versionPatch: 4
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.zip
