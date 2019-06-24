@@ -10,7 +10,7 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 0
-  versionPatch: 4
+  versionPatch: 11
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.zip
   JQM.toolInstallDir: build/bin
