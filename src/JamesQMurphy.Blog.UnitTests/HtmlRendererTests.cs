@@ -19,11 +19,11 @@ namespace Tests
         {
             var expectedHtmlDoc = new HtmlAgilityPack.HtmlDocument();
             expectedHtmlDoc.LoadHtml($"<html><body>{expected}</body></html>");
-            var expectedHtml = expectedHtmlDoc.DocumentNode.ChildNodes[0].InnerHtml.Replace("\n", "");
+            var expectedHtml = expectedHtmlDoc.DocumentNode.ChildNodes[0].InnerHtml.Replace("\n", "").Replace("\r","");
 
             var actualHtmlDoc = new HtmlAgilityPack.HtmlDocument();
             actualHtmlDoc.LoadHtml($"<html><body>{actual}</body></html>");
-            var actualHtml = actualHtmlDoc.DocumentNode.ChildNodes[0].InnerHtml.Replace("\n", "");
+            var actualHtml = actualHtmlDoc.DocumentNode.ChildNodes[0].InnerHtml.Replace("\n", "").Replace("\r", "");
 
             Assert.AreEqual(expectedHtml, actualHtml);
         }
@@ -73,6 +73,16 @@ namespace Tests
             var markdown = $"![{altText}]({imgSrc})";
 
             AssertEquivalentHtml($"<p><img src=\"{imgSrc}\" alt=\"{altText}\"/>", renderer.RenderHtml(markdown));
+        }
+
+        [Test]
+        public void Footnotes()
+        {
+            var markdown = "Here[^1] is a footnote.\n\n[^1]: Footnote\n\nOther text.";
+            var expected = @"<p>Here<a id=""fnref:1"" href=""#fn:1"" class=""footnote-ref""><sup>1</sup></a> is a footnote.</p><p>Other text.</p><div class=""footnotes""><hr /><ol><li id=""fn:1""><p>Footnote<a href = ""#fnref:1"" class=""footnote-back-ref"">&#8617;</a></p></li></ol></div>";
+            var actual = renderer.RenderHtml(markdown);
+
+            AssertEquivalentHtml(expected, actual);
         }
 
 

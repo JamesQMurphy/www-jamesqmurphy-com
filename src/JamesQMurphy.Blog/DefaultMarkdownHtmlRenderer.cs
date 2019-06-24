@@ -6,6 +6,14 @@ namespace JamesQMurphy.Blog
 {
     public class DefaultMarkdownHtmlRenderer : IMarkdownHtmlRenderer
     {
-        public string RenderHtml(string markdown) => Markdig.Markdown.ToHtml(markdown);
+        private readonly Markdig.MarkdownPipeline pipeline;
+
+        public DefaultMarkdownHtmlRenderer()
+        {
+            var pipelineBuilder = new Markdig.MarkdownPipelineBuilder();
+            Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilder);
+            pipeline = pipelineBuilder.Build();
+        }
+        public string RenderHtml(string markdown) => Markdig.Markdown.ToHtml(markdown, pipeline);
     }
 }
