@@ -88,6 +88,18 @@ namespace Tests
         }
 
         [Test]
+        public void ImagesWithBaseUrl2()
+        {
+            var altText = "This is alt text";
+            var imgSrc = "image.png";
+            var baseUrl = "/base/";
+            var markdown = $"![{altText}]({imgSrc})";
+            var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(baseUrl);
+
+            AssertEquivalentHtml($"<p><img src=\"{baseUrl}{imgSrc}\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
+        }
+
+        [Test]
         public void Footnotes()
         {
             var markdown = "Here[^1] is a footnote.\n\n[^1]: Footnote\n\nOther text.";
