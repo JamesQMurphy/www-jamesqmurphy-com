@@ -8,6 +8,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
+  versionMajor: 0
+  versionMinor: 0
+  versionPatch: 10
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.zip
   JQM.toolInstallDir: build/bin
