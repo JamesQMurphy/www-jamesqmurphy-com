@@ -61,19 +61,33 @@ function Invoke-AzureDevOpsWebApi {
         [string] $QueryString,
  
         [Parameter(Mandatory=$false)]
+        [string] $Body,
+ 
+        [Parameter(Mandatory=$false)]
+        [string] $ContentType,
+ 
+        [Parameter(Mandatory=$false)]
         [switch] $Raw
      )
  
     $azureUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
     $teamProjectId = $env:SYSTEM_TEAMPROJECTID
-    $authHeaders = @{Authorization = "Bearer $($env:SYSTEM_ACCESSTOKEN)"}
+    $headers = @{Authorization = "Bearer $($env:SYSTEM_ACCESSTOKEN)"}
+    if ( -not ([String]::IsNullOrWhiteSpace($ContentType)) ) {
+        $headers.Add('Content-Type',$ContentType)
+    }
  
     $url = "$($azureUrl)$($teamProjectId)$($Api)?api-version=$Version"
     if (![String]::IsNullOrEmpty($QueryString)) {
         $url = "$url&$QueryString"
     }
     Write-Verbose "Attempting to $Method $url"
-    $results = Invoke-WebRequest -Method $Method -UseBasicParsing -Uri $url -Headers $authHeaders 
+    if ([String]::IsNullOrWhiteSpace($Body)) {
+        $results = Invoke-WebRequest -Method $Method -UseBasicParsing -Uri $url -Headers $headers 
+    }
+    else {
+        $results = Invoke-WebRequest -Method $Method -UseBasicParsing -Uri $url -Headers $headers -Body $Body
+    }
     if ($Raw) {
         return $results
     }
