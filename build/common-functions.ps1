@@ -81,7 +81,7 @@ function Invoke-AzureDevOpsWebApi {
     if (![String]::IsNullOrEmpty($QueryString)) {
         $url = "$url&$QueryString"
     }
-    Write-Verbose "Attempting to $Method $url"
+    Write-Host "Attempting to $Method $url"
     if ([String]::IsNullOrWhiteSpace($Body)) {
         $results = Invoke-WebRequest -Method $Method -UseBasicParsing -Uri $url -Headers $headers 
     }
