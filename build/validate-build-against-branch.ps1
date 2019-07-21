@@ -117,8 +117,8 @@ if (-not $thisBranchVersionGreater) {
 Write-Output "This branch successfully validated against branch $CompareBranch"
 
 
-Write-Output "For fun, try canceling the build"
-Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method PATCH -Version '4.1' -Body '{"status":"Cancelling"}' -ContentType 'application/json'
+Write-Output "For fun, try deleting the build"
+Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method DELETE -Version '4.1'
 
 
 exit 0
