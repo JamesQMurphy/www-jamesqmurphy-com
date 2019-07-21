@@ -29,6 +29,8 @@ $baseBuildNumber = switch -regex ($env:BUILD_SOURCEBRANCH) {
 
 }
 
+Write-Output "Base build number: $baseBuildNumber"
+
 #Determine value of N to tack on the end
 $N = 0
 
