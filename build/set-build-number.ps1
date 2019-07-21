@@ -35,18 +35,18 @@ Write-Output "Base build number: $baseBuildNumber"
 $N = 0
 
 # Retrieve builds for this definition that match the pattern
-$previousBuilds = Invoke-AzureDevOpsWebApi 'build/builds' -Version '5.0' -QueryString "definitions=$($env:SYSTEM_DEFINITIONID)&buildNumber=$baseBuildNumber*" | Select-Object -ExpandProperty Value
+$previousBuildNumbers = Invoke-AzureDevOpsWebApi 'build/builds' -Version '5.0' -QueryString "definitions=$($env:SYSTEM_DEFINITIONID)&buildNumber=$baseBuildNumber*" | Select-Object -ExpandProperty Value | Select-Object -ExpandProperty buildNumber
 
 # Find the highest build number in the previous builds
-if ($previousBuilds -ne $null) {
+if (($previousBuildNumbers -ne $null) -and (@($previousBuildNumbers).Count -gt 0)) {
     
     Write-Output "Previous builds found that match $($baseBuildNumber):"
-    @($previousBuilds) | ForEach-Object {
+    @($previousBuildNumbers) | ForEach-Object {
         Write-Output " $_"
     }
 
     $N = 1
-    @($previousBuilds) | Where-Object {$_ -like "$baseBuildNumber.*" } | ForEach-Object {
+    @($previousBuildNumbers) | Where-Object {$_ -like "$baseBuildNumber.*" } | ForEach-Object {
         $previousN = [Int32]::Parse(($_ -split '.')[1])
         if ($previousN -ge $N) {
             $N = $previousN + 1
