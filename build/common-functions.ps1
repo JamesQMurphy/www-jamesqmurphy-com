@@ -77,7 +77,7 @@ function Invoke-AzureDevOpsWebApi {
         $headers.Add('Content-Type',$ContentType)
     }
  
-    $url = "$($azureUrl)$($teamProjectId)$($Api)?api-version=$Version"
+    $url = "$($azureUrl)$($teamProjectId)/_apis/$($Api)?api-version=$Version"
     if (![String]::IsNullOrEmpty($QueryString)) {
         $url = "$url&$QueryString"
     }

@@ -53,7 +53,7 @@ Write-Output "Branch $CompareBranch is at commit $compareBranchCommit"
 # If this branch has the same commit as the compare branch, then cancel the build
 if ($thisBranchCommit -eq $compareBranchCommit) {
     Write-Output "This branch is equivalent to branch $CompareBranch; canceling build"
-    Invoke-AzureDevOpsWebApi -Api "_apis/build/builds/$($env:BUILD_BUILDID)" -Method PATCH -Version '4.1'
+    Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method PATCH -Version '4.1' -Body '{"status":"Cancelling"}' -ContentType 'application/json'
     exit 0
 }
 
@@ -118,7 +118,7 @@ Write-Output "This branch successfully validated against branch $CompareBranch"
 
 
 Write-Output "For fun, try canceling the build"
-Invoke-AzureDevOpsWebApi -Api "_apis/build/builds/$($env:BUILD_BUILDID)" -Method PATCH -Version '4.1' -Body '{"status":"Cancelling"}' -ContentType 'application/json'
+Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method PATCH -Version '4.1' -Body '{"status":"Cancelling"}' -ContentType 'application/json'
 
 
 exit 0
