@@ -14,7 +14,7 @@ variables:
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.zip
   JQM.toolInstallDir: build/bin
-  JQM.compareBranch: master
+  JQM.compareBranch: features/validate-build-number
 
 steps:
 - task: PowerShell@2
