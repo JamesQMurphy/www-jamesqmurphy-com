@@ -33,7 +33,7 @@ $baseBuildNumber = switch -regex ($env:BUILD_SOURCEBRANCH) {
 $N = 0
 
 # Retrieve builds for this definition that match the pattern
-$previousBuilds = Invoke-AzureDevOpsWebApi '/_apis/build/builds' -Version '5.0' -QueryString "definitions=$($env:SYSTEM_DEFINITIONID)&buildNumber=$baseBuildNumber*" | Select-Object -ExpandProperty Value
+$previousBuilds = Invoke-AzureDevOpsWebApi '/_apis/build/builds' -Version '5.0' -QueryString "definitions=$($env:SYSTEM_DEFINITIONID)&buildNumber=$baseBuildNumber*" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value
 
 # Find the highest build number in the previous builds
 if ($previousBuilds -ne $null) {
