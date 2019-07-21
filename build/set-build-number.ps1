@@ -39,13 +39,22 @@ $previousBuilds = Invoke-AzureDevOpsWebApi '/_apis/build/builds' -Version '5.0' 
 
 # Find the highest build number in the previous builds
 if ($previousBuilds -ne $null) {
+    
+    Write-Output "Previous builds found that match $($baseBuildNumber):"
+    @($previousBuilds) | ForEach-Object {
+        Write-Output " $_"
+    }
+
     $N = 1
-    $previousBuilds | Where-Object {$_ -like "$baseBuildNumber.*" } | ForEach-Object {
+    @($previousBuilds) | Where-Object {$_ -like "$baseBuildNumber.*" } | ForEach-Object {
         $previousN = [Int32]::Parse(($_ -split '.')[1])
         if ($previousN -ge $N) {
             $N = $previousN + 1
         }
     }
+}
+else {
+    Write-Output "No previous builds found beginning with $baseBuildNumber"
 }
 
 # Set actual build number        
