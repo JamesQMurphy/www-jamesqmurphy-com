@@ -4,7 +4,7 @@ Validates the build against a compare branch (typically master).  Does the follo
 
  1.  If this branch is the compare branch, then succeed
  2.  If this branch is not the compare branch, but is equivalent to the compare branch (i.e.,
-     same commit), then cancel the build
+     same commit), then cancel (delete) the build
  3.  If this branch is one or more commits behind the compare branch, fail the build
  4.  If this branch has a SemVer version number less than or equal to the compare branch,
      fail the build. 
@@ -53,7 +53,7 @@ Write-Output "Branch $CompareBranch is at commit $compareBranchCommit"
 # If this branch has the same commit as the compare branch, then cancel the build
 if ($thisBranchCommit -eq $compareBranchCommit) {
     Write-Output "This branch is equivalent to branch $CompareBranch; canceling build"
-    Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method PATCH -Version '4.1' -Body '{"status":"Cancelling"}' -ContentType 'application/json'
+    Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method DELETE -Version '4.1'
     exit 0
 }
 
@@ -115,10 +115,4 @@ if (-not $thisBranchVersionGreater) {
 }
 
 Write-Output "This branch successfully validated against branch $CompareBranch"
-
-
-Write-Output "For fun, try deleting the build"
-Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method DELETE -Version '4.1'
-
-
 exit 0
