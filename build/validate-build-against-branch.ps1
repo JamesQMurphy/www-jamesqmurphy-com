@@ -1,11 +1,11 @@
 <#
 
-Validates the build against a compare branch (typically master).  Does the following
+Validates the build against a compare branch (typically master).  Evaluates the following:
 
- 1.  If this branch is the compare branch, then succeed
+ 1.  If this branch *is* the compare branch, then succeed
  2.  If this branch is not the compare branch, but is equivalent to the compare branch (i.e.,
-     same commit), then cancel (delete) the build
- 3.  If this branch is one or more commits behind the compare branch, fail the build
+     same commit), then succeed
+ 3.  If this branch is one or more commits behind the compare branch, then fail the build
  4.  If this branch has a SemVer version number less than or equal to the compare branch,
      fail the build. 
 
@@ -16,7 +16,7 @@ See https://www.jamesqmurphy.com/blog/brewing-the-blog-6 for an explanation
 param (
     [String] $CompareBranch = 'master',
 
-    [String] $VersionFile  = 'build/azure-pipelines.yml'
+    [String] $VersionFile  = 'azure-pipelines.yml'
 )
 
 . "$PSScriptRoot/common-functions.ps1"
@@ -28,7 +28,7 @@ if ($CompareBranch.StartsWith('refs/heads/')) {
 
 # Check if this is, in fact, the compare branch itself
 if ($env:BUILD_SOURCEBRANCH -eq "refs/heads/$CompareBranch") {
-    Write-Output "This branch is the compare branch ($CompareBranch); validation successful"
+    Write-Output "This branch is the compare branch ($CompareBranch); validation successful."
     exit 0
 }
 
@@ -50,10 +50,9 @@ $compareBranchCommit = & git log -1 FETCH_HEAD --format="%H"
 Write-Output "This branch is at commit $thisBranchCommit"
 Write-Output "Branch $CompareBranch is at commit $compareBranchCommit"
 
-# If this branch has the same commit as the compare branch, then cancel the build
+# If this branch has the same commit as the compare branch, then succeed
 if ($thisBranchCommit -eq $compareBranchCommit) {
-    Write-Output "This branch is equivalent to branch $CompareBranch; canceling build"
-    Invoke-AzureDevOpsWebApi -Api "build/builds/$($env:BUILD_BUILDID)" -Method DELETE -Version '4.1'
+    Write-Output "This branch is equivalent to branch $CompareBranch; validation successful."
     exit 0
 }
 
@@ -69,7 +68,8 @@ else {
 }
 Write-Output "This branch is $commitsBehind commits behind and $commitsAhead commits ahead of branch $CompareBranch"
 if ($commitsBehind -gt 0) {
-    Write-AzureDevOpsBuildError "This branch must be 0 commits behind branch $CompareBranch.  Do a git merge from branch $CompareBranch into this branch."
+    Write-AzureDevOpsBuildError "This branch must be 0 commits behind branch $CompareBranch; validation failed."
+    Write-AzureDevOpsBuildError "Perform a git merge from branch $CompareBranch into this branch."
     exit 1
 }
 
@@ -110,9 +110,10 @@ $thisBranchVersionGreater = ($thisBranchVersion.Major -gt $compareBranchVersion.
                             (($thisBranchVersion.Major -eq $compareBranchVersion.Major) -and ($thisBranchVersion.Minor -gt $compareBranchVersion.Minor)) -or
                             (($thisBranchVersion.Major -eq $compareBranchVersion.Major) -and ($thisBranchVersion.Minor -eq $compareBranchVersion.Minor) -and ($thisBranchVersion.Patch -gt $compareBranchVersion.Patch))
 if (-not $thisBranchVersionGreater) {
-    Write-AzureDevOpsBuildError "This branch must have a higher version number than branch $CompareBranch"
+    Write-AzureDevOpsBuildError "This branch must have a higher version number than branch $CompareBranch; validation failed."
+    Write-AzureDevOpsBuildError "Increase the version number on this branch to something higher than $($compareBranchVersion.Major).$($compareBranchVersion.Minor).$($compareBranchVersion.Patch)."
     exit 1
 }
 
-Write-Output "This branch successfully validated against branch $CompareBranch"
+Write-Output "This branch successfully validated against branch $CompareBranch."
 exit 0

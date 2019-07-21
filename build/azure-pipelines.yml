@@ -14,16 +14,20 @@ variables:
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.zip
   JQM.toolInstallDir: build/bin
-  JQM.compareBranch: features/validate-build-number
+  JQM.compareBranch: master
+  JQM.versionFile: build/azure-pipelines.yml
 
 steps:
 - task: PowerShell@2
   displayName: Validate build against $(JQM.compareBranch) branch
   inputs:
     filePath: build/validate-build-against-branch.ps1
-    arguments: -CompareBranch $(JQM.compareBranch)
-  env:
-    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    arguments: -CompareBranch $(JQM.compareBranch) -VersionFile $(JQM.versionFile)
+
+- task: PowerShell@2
+  displayName: Set build number
+  inputs:
+    filePath: build/set-build-number.ps1
 
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
   displayName: Install Amazon.Lambda.Tools
