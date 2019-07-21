@@ -44,7 +44,6 @@ we need to explicitly fetch the compare branch.  Note that git will name the poi
 #>
 & git fetch origin $CompareBranch
 
-
 # Get the commit IDs of this branch and the compare branch
 $thisBranchCommit = & git log -1 --format="%H"
 $compareBranchCommit = & git log -1 FETCH_HEAD --format="%H"
@@ -74,35 +73,52 @@ if ($commitsBehind -gt 0) {
     exit 1
 }
 
-# Get this branch's version
-$thisBranchVersionMajor = [int]::Parse($env:VERSIONMAJOR)
-$thisBranchVersionMinor = [int]::Parse($env:VERSIONMINOR)
-$thisBranchVersionPatch = [int]::Parse($env:VERSIONPATCH)
+# Define function to read version number from file contents
+# This function will be called for this branch and for the compare branch
+function Get-VersionInfoFromFileContents {
+    param(
+        [string[]] $FileContents
+    )
 
-# Read version from other branch's file
-$compareBranchVersionMajor = -1
-$compareBranchVersionMinor = -1
-$compareBranchVersionPatch = -1
-& git --no-pager show "FETCH_HEAD:$VersionFile" | Where-Object { $_ -match '\s+version(Major|Minor|Patch):\s+(\d+)' } | ForEach-Object {
-    switch($Matches[1]) {
-        'Major' { $compareBranchVersionMajor = [int]::Parse($Matches[2]) }
-        'Minor' { $compareBranchVersionMinor = [int]::Parse($Matches[2]) }
-        'Patch' { $compareBranchVersionPatch = [int]::Parse($Matches[2]) }
+    $versionMajor = -1
+    $versionMinor = -1
+    $versionPatch = -1
+    $FileContents | Where-Object { $_ -match '\s+version(Major|Minor|Patch):\s+(\d+)' } | ForEach-Object {
+        switch($Matches[1]) {
+            'Major' { $versionMajor = [int]::Parse($Matches[2]) }
+            'Minor' { $versionMinor = [int]::Parse($Matches[2]) }
+            'Patch' { $versionPatch = [int]::Parse($Matches[2]) }
+        }
     }
+
+    return New-Object PSObject -Property @{Major=$versionMajor; Minor=$versionMinor; Patch=$versionPatch}
 }
 
-Write-Output "This branch version is $($thisBranchVersionMajor).$($thisBranchVersionMinor).$($thisBranchVersionPatch)"
-Write-Output "Branch $CompareBranch version is $($compareBranchVersionMajor).$($compareBranchVersionMinor).$($compareBranchVersionPatch)"
+# Get this branch's version
+$contents = Get-Content $VersionFile
+$thisBranchVersion = Get-VersionInfoFromFileContents $contents
+Write-Output "This branch version is $($thisBranchVersion.Major).$($thisBranchVersion.Minor).$($thisBranchVersion.Patch)"
+
+# Get compare branch's version
+$contents = & git --no-pager show "FETCH_HEAD:$VersionFile"
+$compareBranchVersion = Get-VersionInfoFromFileContents $contents
+Write-Output "Branch $CompareBranch version is $($compareBranchVersion.Major).$($compareBranchVersion.Minor).$($compareBranchVersion.Patch)"
 
 
 # Check if this branch's version is greater than the compare branch's version
-$thisBranchVersionGreater = ($thisBranchVersionMajor -gt $compareBranchVersionMajor) -or
-                            (($thisBranchVersionMajor -eq $compareBranchVersionMajor) -and ($thisBranchVersionMinor -gt $compareBranchVersionMinor)) -or
-                            (($thisBranchVersionMajor -eq $compareBranchVersionMajor) -and ($thisBranchVersionMinor -eq $compareBranchVersionMinor) -and ($thisBranchVersionPatch -gt $compareBranchVersionPatch))
+$thisBranchVersionGreater = ($thisBranchVersion.Major -gt $compareBranchVersion.Major) -or
+                            (($thisBranchVersion.Major -eq $compareBranchVersion.Major) -and ($thisBranchVersion.Minor -gt $compareBranchVersion.Minor)) -or
+                            (($thisBranchVersion.Major -eq $compareBranchVersion.Major) -and ($thisBranchVersion.Minor -eq $compareBranchVersion.Minor) -and ($thisBranchVersion.Patch -gt $compareBranchVersion.Patch))
 if (-not $thisBranchVersionGreater) {
     Write-AzureDevOpsBuildError "This branch must have a higher version number than branch $CompareBranch"
     exit 1
 }
 
 Write-Output "This branch successfully validated against branch $CompareBranch"
+
+
+Write-Output "For fun, try canceling the build"
+Invoke-AzureDevOpsWebApi -Api "_apis/build/builds/$($env:BUILD_BUILDID)" -Method PATCH -Version '4.1'
+
+
 exit 0

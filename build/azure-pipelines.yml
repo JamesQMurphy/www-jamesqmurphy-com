@@ -22,6 +22,8 @@ steps:
   inputs:
     filePath: build/validate-build-against-branch.ps1
     arguments: -CompareBranch $(JQM.compareBranch)
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
   displayName: Install Amazon.Lambda.Tools
