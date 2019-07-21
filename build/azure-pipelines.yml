@@ -13,7 +13,7 @@ variables:
   versionMinor: 0
   versionPatch: 11
   buildConfiguration: 'Release'
-  JQM.packageName: JamesQMurphy.Web.zip
+  JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.toolInstallDir: build/bin
   JQM.compareBranch: master
   JQM.versionFile: build/azure-pipelines.yml
