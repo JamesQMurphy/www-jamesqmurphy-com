@@ -98,6 +98,92 @@
                     }
                 ]
             }
+        },
+
+        "TheGatewayRestAPI": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+                "Name": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                            { "Ref": "AppNameParameter" },
+                            { "Ref": "StageParameter" }
+                        ]
+                    ]
+                },
+                "Description": { "Fn::Sub": "${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}." },
+                "EndpointConfiguration": { "Types": [ "REGIONAL" ] }
+            }
+        },
+
+        "TheRootGetMethod": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "AuthorizationType": "NONE",
+                "HttpMethod": "GET",
+                "Integration": {
+                    "Type": "AWS_PROXY",
+                    "IntegrationHttpMethod": "POST",
+                    "Uri": { "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TheLambdaFunction.Arn}/invocations" }
+                },
+                "ResourceId": { "Fn::GetAtt": [ "TheGatewayRestAPI", "RootResourceId" ] },
+                "RestApiId": { "Ref": "TheGatewayRestAPI" }
+            }
+        },
+
+        "TheProxyResource": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+                "RestApiId": { "Ref": "TheGatewayRestAPI" },
+                "ParentId": { "Fn::GetAtt": [ "TheGatewayRestAPI", "RootResourceId" ] },
+                "PathPart": "{proxy+}"
+            }
+        },
+
+        "TheProxyAnyMethod": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "RestApiId": { "Ref": "TheGatewayRestAPI" },
+                "ResourceId": { "Ref": "TheProxyResource" },
+                "HttpMethod": "ANY",
+                "AuthorizationType": "NONE",
+                "Integration": {
+                    "Type": "AWS_PROXY",
+                    "IntegrationHttpMethod": "POST",
+                    "Uri": { "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TheLambdaFunction.Arn}/invocations" }
+                }
+            }
+        },
+
+        "TheDeploymentStage": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "DependsOn": [ "TheRootGetMethod", "TheProxyAnyMethod" ],
+            "Properties": {
+                "Description": "Description of deployment",
+                "RestApiId": { "Ref": "TheGatewayRestAPI" },
+                "StageName": { "Ref": "StageParameter" }
+            }
+        },
+
+        "TheLambdaInvokePermissionForProxyResource": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {"Fn::GetAtt": ["TheLambdaFunction", "Arn"]},
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": { "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${TheGatewayRestAPI}*" }
+            }
+        }
+
+
+    },
+
+    "Outputs": {
+        "GatewayApiUrl": {
+            "Description": "The Url to the Gateway API",
+            "Value": { "Fn::Sub": "https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageParameter}" }
         }
     }
+
 }
