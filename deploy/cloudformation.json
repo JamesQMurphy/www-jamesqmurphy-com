@@ -160,9 +160,9 @@
             "Type": "AWS::ApiGateway::Deployment",
             "DependsOn": [ "TheRootGetMethod", "TheProxyAnyMethod" ],
             "Properties": {
-                "Description": "Description of deployment",
+                "Description": { "Fn::Sub": "${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}." },
                 "RestApiId": { "Ref": "TheGatewayRestAPI" },
-                "StageName": { "Ref": "StageParameter" }
+                "StageName": "website"
             }
         },
 
@@ -182,7 +182,7 @@
     "Outputs": {
         "GatewayApiUrl": {
             "Description": "The Url to the Gateway API",
-            "Value": { "Fn::Sub": "https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageParameter}" }
+            "Value": { "Fn::Sub": "https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${TheDeploymentStage.StageName}" }
         }
     }
 
