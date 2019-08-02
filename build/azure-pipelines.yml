@@ -27,11 +27,18 @@ steps:
   displayName: Run dotnet test
   workingDirectory: $(Build.SourcesDirectory)/src
 
+- task: CopyFiles@2
+  displayName: Copy cloudformation.json to artifact staging folder
+  inputs:
+    SourceFolder: 'deploy'
+    Contents: 'cloudformation.json'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(JQM.packageName)' 
-    artifactName: 'package' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'deploy' 
 
 - task: PublishTestResults@2
   inputs:
