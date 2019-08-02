@@ -23,6 +23,11 @@
             "Type": "String",
             "Description": "Name of app to use in descriptions, etc.",
             "Default": "JamesQMurphyWeb"
+        },
+        "ApiGatewayStageNameParameter":{
+            "Type": "String",
+            "Description": "Name to use for the API Gateway Stage",
+            "Default": "website"
         }
     },
 
@@ -162,7 +167,7 @@
             "Properties": {
                 "Description": { "Fn::Sub": "${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}." },
                 "RestApiId": { "Ref": "TheGatewayRestAPI" },
-                "StageName": "website"
+                "StageName": { "Ref": "ApiGatewayStageNameParameter"}
             }
         },
 
@@ -182,7 +187,7 @@
     "Outputs": {
         "GatewayApiUrl": {
             "Description": "The Url to the Gateway API",
-            "Value": { "Fn::Sub": "https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${TheDeploymentStage.StageName}" }
+            "Value": { "Fn::Sub": "https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiGatewayStageNameParameter}" }
         }
     }
 
