@@ -107,7 +107,7 @@ Resources:
       Name: !Sub ${AppNameParameter}-${VersionNumberParameter}-${StageParameter}
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}. Created via CloudFormation stack ${AWS::StackName}.
       BinaryMediaTypes:
-        - */*
+        - '*/*'
       EndpointConfiguration:
         Types:
           - REGIONAL
