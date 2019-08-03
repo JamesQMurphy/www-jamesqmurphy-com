@@ -23,6 +23,11 @@ Parameters:
     Description: 'Name of app to use in descriptions, etc.'
     Default: JamesQMurphyWeb
 
+  ApiGatewayStageNameParameter:
+    Type: String
+    Description: Name to use for the API Gateway Stage
+    Default: website
+
 
 Resources:
 
@@ -132,9 +137,9 @@ Resources:
       - TheRootGetMethod
       - TheProxyAnyMethod
     Properties:
-      Description: Description of deployment
+      Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI
-      StageName: !Ref StageParameter
+      StageName: !Ref ApiGatewayStageNameParameter
 
 
   TheLambdaInvokePermissionForProxyResource:
@@ -149,4 +154,4 @@ Resources:
 Outputs:
   GatewayApiUrl:
     Description: The Url to the Gateway API
-    Value: !Sub https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageParameter}
+    Value: !Sub https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiGatewayStageNameParameter}
