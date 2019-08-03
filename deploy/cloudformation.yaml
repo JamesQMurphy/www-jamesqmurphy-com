@@ -18,6 +18,16 @@ Parameters:
     Description: Stage (environment)
     Default: dev
 
+  DomainNameParameter:
+    Type: String
+    Description: Custom Domain Name (e.g., www.jamesqmurphy.com).  Leave blank if not mapping to a custom URL.
+    Default: ''
+
+  CertificateArnParameter:
+    Type: String
+    Description: Certificate ARN.  Leave blank if not mapping to a custom URL.
+    Default: ''
+
   AppNameParameter:
     Type: String
     Description: 'Name of app to use in descriptions, etc.'
@@ -27,6 +37,10 @@ Parameters:
     Type: String
     Description: Name to use for the API Gateway Stage
     Default: website
+
+
+Conditions:
+   AreMappingToCustomDomain: !Not [!Equals [!Ref DomainNameParameter, '']]
 
 
 Resources:
@@ -90,7 +104,7 @@ Resources:
   TheGatewayRestAPI:
     Type: 'AWS::ApiGateway::RestApi'
     Properties:
-      Name: !Sub ${AppNameParameter}-${StageParameter}
+      Name: !Sub ${AppNameParameter}-${VersionNumberParameter}-${StageParameter}
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}. Created via CloudFormation stack ${AWS::StackName}.
       EndpointConfiguration:
         Types:
@@ -151,7 +165,39 @@ Resources:
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${TheGatewayRestAPI}*
 
 
+  TheCustomDomainName:
+    Type: 'AWS::ApiGateway::DomainName'
+    Condition: AreMappingToCustomDomain
+    Properties:
+      DomainName: !Ref DomainNameParameter
+      RegionalCertificateArn: !Ref CertificateArnParameter
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+
+  TheBasePathMapping:
+    Type: 'AWS::ApiGateway::BasePathMapping'
+    Condition: AreMappingToCustomDomain
+    DependsOn:
+      - TheDeploymentStage
+    Properties:
+      DomainName: !Ref TheCustomDomainName
+      RestApiId: !Ref TheGatewayRestAPI
+      Stage: !Ref ApiGatewayStageNameParameter
+
+
 Outputs:
   GatewayApiUrl:
     Description: The Url to the Gateway API
     Value: !Sub https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiGatewayStageNameParameter}
+
+  SiteUrl:
+    Description: The Url to the site
+    Value: !Sub https://${DomainNameParameter}
+    Condition: AreMappingToCustomDomain
+
+  TargetDomainName:
+    Description: Target domain name for DNS mapping
+    Value: !GetAtt TheCustomDomainName.RegionalDomainName
+    Condition: AreMappingToCustomDomain
