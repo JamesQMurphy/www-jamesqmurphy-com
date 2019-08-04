@@ -4,6 +4,7 @@
 name: $(versionMajor).$(versionMinor).$(versionPatch)-$(Build.SourceBranchName)$(Rev:.r)
 
 trigger:
+- master
 - releases/*
 
 pool:
@@ -14,7 +15,8 @@ variables:
   versionMinor: 0
   versionPatch: 10
   buildConfiguration: 'Release'
-  JQM.packageName: JamesQMurphy.Web.zip
+  JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
+  JQM.cloudformationFileName: cloudformation.yaml
   JQM.toolInstallDir: build/bin
 
 steps:
@@ -29,11 +31,18 @@ steps:
   displayName: Run dotnet test
   workingDirectory: $(Build.SourcesDirectory)/src
 
+- task: CopyFiles@2
+  displayName: Copy $(JQM.cloudformationFileName) to artifact staging folder
+  inputs:
+    SourceFolder: 'deploy'
+    Contents: '$(JQM.cloudformationFileName)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(JQM.packageName)' 
-    artifactName: 'package' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'deploy' 
 
 - task: PublishTestResults@2
   inputs:
