@@ -13,6 +13,10 @@ Parameters:
     Type: String
     Description: Path to code inside of bucket.  Include the zip filename, but do not include a leading backslash.
 
+  S3BucketPathForStaticFilesParameter:
+    Type: String
+    Description: Path to static files inside of bucket.  Do not include a leading backslash.
+
   StageParameter:
     Type: String
     Description: Stage (environment)
@@ -67,6 +71,40 @@ Resources:
                   - 'logs:CreateLogGroup'
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
+                Resource: '*'
+
+
+  TheRoleForTheApiGateway:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: S3ReadOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:Get*'
+                  - 's3:List*'
                 Resource: '*'
 
 
@@ -147,11 +185,51 @@ Resources:
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TheLambdaFunction.Arn}/invocations
 
 
+  TheDistResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ParentId: !GetAtt TheGatewayRestAPI.RootResourceId
+      PathPart: dist
+
+
+  TheProxyResourceUnderTheDistResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ParentId: !Ref TheDistResource
+      PathPart: '{proxy+}'
+
+
+  TheGetMethodForTheProxyResourceUnderTheDistResource:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ResourceId: !Ref TheProxyResourceUnderTheDistResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: true
+      MethodResponses:
+        - StatusCode: 200
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: GET
+        Credentials: !GetAtt TheRoleForTheApiGateway.Arn
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/dist/{fullpath}
+        IntegrationResponses:
+        - StatusCode: 200
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.fullpath: 'method.request.path.proxy'
+
+
   TheDeploymentStage:
     Type: 'AWS::ApiGateway::Deployment'
     DependsOn:
       - TheRootGetMethod
       - TheProxyAnyMethod
+      - TheDistResource
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI
