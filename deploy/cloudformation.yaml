@@ -212,16 +212,24 @@ Resources:
         method.request.path.proxy: true
       MethodResponses:
         - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': true
+            'method.response.header.Content-Length': true
+            'method.response.header.Content-Type': true
       Integration:
         Type: AWS
         IntegrationHttpMethod: GET
         Credentials: !GetAtt TheRoleForTheApiGateway.Arn
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/dist/{fullpath}
-        IntegrationResponses:
-        - StatusCode: 200
         PassthroughBehavior: WHEN_NO_MATCH
         RequestParameters:
           integration.request.path.fullpath: 'method.request.path.proxy'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': 'integration.response.header.Date'
+            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
+            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
 
 
   TheDeploymentStage:
@@ -230,6 +238,8 @@ Resources:
       - TheRootGetMethod
       - TheProxyAnyMethod
       - TheDistResource
+      - TheProxyResourceUnderTheDistResource
+      - TheGetMethodForTheProxyResourceUnderTheDistResource
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI
