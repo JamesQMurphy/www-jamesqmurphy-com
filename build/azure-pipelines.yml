@@ -4,6 +4,7 @@
 name: $(versionMajor).$(versionMinor).$(versionPatch)-$(Build.SourceBranchName)$(Rev:.r)
 
 trigger:
+- master
 - releases/*
 
 pool:
@@ -14,7 +15,7 @@ variables:
   versionMinor: 0
   versionPatch: 10
   buildConfiguration: 'Release'
-  JQM.packageName: JamesQMurphy.Web.zip
+  JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.cloudformationFileName: cloudformation.yaml
   JQM.toolInstallDir: build/bin
 
