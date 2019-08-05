@@ -46,7 +46,7 @@ if (($previousBuildNumbers -ne $null) -and (@($previousBuildNumbers).Count -gt 0
     }
 
     $N = 1
-    @($previousBuildNumbers) | Where-Object {$_ -like "$baseBuildNumber.*" } | ForEach-Object {
+    @($previousBuildNumbers) | Where-Object {$_ -match "$baseBuildNumber\.\d+`$" } | ForEach-Object {
         $split = $_ -split '\.'
         $previousN = [Int32]::Parse($split[($split.Length - 1)])
         if ($previousN -ge $N) {
