@@ -97,7 +97,7 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-        - PolicyName: S3ReadOnlyAccess
+        - PolicyName: !Sub S3ReadOnly-${S3BucketForCodeParameter}
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -105,7 +105,7 @@ Resources:
                 Action:
                   - 's3:Get*'
                   - 's3:List*'
-                Resource: '*'
+                Resource: !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}'
 
 
   TheLambdaFunction:
