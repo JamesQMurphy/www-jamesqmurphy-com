@@ -1,8 +1,6 @@
 # azure-pipelines.yml
 # Defines the build process for www-jamesqmurphy-com
 
-name: $(versionMajor).$(versionMinor).$(versionPatch)-$(Build.SourceBranchName)$(Rev:.r)
-
 trigger:
 - master
 - releases/*
