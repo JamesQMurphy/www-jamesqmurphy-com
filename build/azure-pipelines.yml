@@ -1,8 +1,6 @@
 # azure-pipelines.yml
 # Defines the build process for www-jamesqmurphy-com
 
-name: $(versionMajor).$(versionMinor).$(versionPatch)-$(Build.SourceBranchName)$(Rev:.r)
-
 trigger:
 - master
 - releases/*
@@ -13,13 +11,26 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 0
-  versionPatch: 11
+  versionPatch: 12
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.cloudformationFileName: cloudformation.yaml
   JQM.toolInstallDir: build/bin
+  JQM.compareBranch: master
+  JQM.versionFile: build/azure-pipelines.yml
 
 steps:
+- task: PowerShell@2
+  displayName: Validate build against $(JQM.compareBranch) branch
+  inputs:
+    filePath: build/validate-build-against-branch.ps1
+    arguments: -CompareBranch $(JQM.compareBranch) -VersionFile $(JQM.versionFile)
+
+- task: PowerShell@2
+  displayName: Set build number
+  inputs:
+    filePath: build/set-build-number.ps1
+
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
   displayName: Install Amazon.Lambda.Tools
 
