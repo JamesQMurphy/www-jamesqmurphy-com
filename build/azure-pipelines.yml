@@ -11,7 +11,7 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 0
-  versionPatch: 13
+  versionPatch: 14
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.cloudformationFileName: cloudformation.yaml
