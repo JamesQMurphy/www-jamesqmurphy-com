@@ -2,6 +2,7 @@
 # Defines the build process for www-jamesqmurphy-com
 
 trigger:
+- master
 - releases/*
 
 pool:
@@ -10,12 +11,26 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 0
-  versionPatch: 10
+  versionPatch: 15
   buildConfiguration: 'Release'
-  JQM.packageName: JamesQMurphy.Web.zip
+  JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
+  JQM.cloudformationFileName: cloudformation.yaml
   JQM.toolInstallDir: build/bin
+  JQM.compareBranch: master
+  JQM.versionFile: build/azure-pipelines.yml
 
 steps:
+- task: PowerShell@2
+  displayName: Validate build against $(JQM.compareBranch) branch
+  inputs:
+    filePath: build/validate-build-against-branch.ps1
+    arguments: -CompareBranch $(JQM.compareBranch) -VersionFile $(JQM.versionFile)
+
+- task: PowerShell@2
+  displayName: Set build number
+  inputs:
+    filePath: build/set-build-number.ps1
+
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
   displayName: Install Amazon.Lambda.Tools
 
@@ -27,11 +42,18 @@ steps:
   displayName: Run dotnet test
   workingDirectory: $(Build.SourcesDirectory)/src
 
+- task: CopyFiles@2
+  displayName: Copy $(JQM.cloudformationFileName) to artifact staging folder
+  inputs:
+    SourceFolder: 'deploy'
+    Contents: '$(JQM.cloudformationFileName)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(JQM.packageName)' 
-    artifactName: 'package' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'deploy' 
 
 - task: PublishTestResults@2
   inputs:
