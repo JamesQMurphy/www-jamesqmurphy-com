@@ -34,7 +34,7 @@ namespace JamesQMurphy.Web
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSingleton<IMarkdownHtmlRenderer, DefaultMarkdownHtmlRenderer>();
+            services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
 
             var articleStore = new InMemoryArticleStore();
             articleStore.Articles.AddRange(new Article[]
