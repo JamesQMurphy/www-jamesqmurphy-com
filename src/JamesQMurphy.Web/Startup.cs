@@ -36,34 +36,15 @@ namespace JamesQMurphy.Web
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
 
-            var articleStore = new InMemoryArticleStore();
-            articleStore.Articles.AddRange(new Article[]
+            switch (Configuration["ArticleStore:Service"])
             {
-                new Article()
-                {
-                    Title = "Article One",
-                    Slug = "article-1",
-                    PublishDate = new DateTime(2019, 1, 10, 12, 34, 56),
-                    Content = "This is article one, published on January 10, 2019 at 12:34pm UTC"
-                },
+                case "FileSystem":
+                    break;
 
-                new Article()
-                {
-                    Title = "Article Two",
-                    Slug = "article-2",
-                    PublishDate = new DateTime(2019, 7, 6, 18, 34, 56),
-                    Content = "This is article two, published on July 6, 2019 at 6:34pm UTC"
-                },
-
-                new Article()
-                {
-                    Title = "Article Three",
-                    Slug = "article-3",
-                    PublishDate = new DateTime(2019, 8, 31, 10, 2, 0),
-                    Content = "This is article three, published on August 31, 2019 at 10:02am UTC"
-                }
-            });
-            services.AddSingleton<IArticleStore>(articleStore);
+                default:  // InMemoryArticleStore
+                    services.AddSingleton<IArticleStore, InMemoryArticleStore>();
+                    break;
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
