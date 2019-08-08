@@ -38,7 +38,8 @@ namespace JamesQMurphy.Web
 
             switch (Configuration["ArticleStore:Service"])
             {
-                case "FileSystem":
+                case "LocalFolder":
+                    services.AddSingleton<IArticleStore>(new LocalFolderArticleStore(Configuration["ArticleStore:Path"]));
                     break;
 
                 default:  // InMemoryArticleStore
