@@ -72,7 +72,7 @@ namespace Tests
             var imgSrc = "/a/b/image.png";
             var markdown = $"![{altText}]({imgSrc})";
 
-            AssertEquivalentHtml($"<p><img src=\"{imgSrc}\" alt=\"{altText}\"/>", renderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><img src=\"{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", renderer.RenderHtml(markdown));
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace Tests
             var markdown = $"![{altText}]({imgSrc})";
             var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(baseUrl);
 
-            AssertEquivalentHtml($"<p><img src=\"{baseUrl}/{imgSrc}\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><img src=\"{baseUrl}/{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace Tests
             var markdown = $"![{altText}]({imgSrc})";
             var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(baseUrl);
 
-            AssertEquivalentHtml($"<p><img src=\"{baseUrl}{imgSrc}\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><img src=\"{baseUrl}{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
         }
 
         [Test]
