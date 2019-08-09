@@ -1,0 +1,297 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  VersionNumberParameter:
+    Type: String
+    Description: Version number of build
+
+  S3BucketForCodeParameter:
+    Type: String
+    Description: S3 Bucket where code is located
+
+  S3BucketPathForCodeParameter:
+    Type: String
+    Description: Path to code inside of bucket.  Include the zip filename, but do not include a leading backslash.
+
+  S3BucketPathForStaticFilesParameter:
+    Type: String
+    Description: Path to static files inside of bucket.  Do not include a leading backslash.
+
+  StageParameter:
+    Type: String
+    Description: Stage (environment)
+    Default: dev
+
+  DomainNameParameter:
+    Type: String
+    Description: Custom Domain Name (e.g., www.jamesqmurphy.com).  Leave blank if not mapping to a custom URL.
+    Default: ''
+
+  CertificateArnParameter:
+    Type: String
+    Description: Certificate ARN.  Leave blank if not mapping to a custom URL.
+    Default: ''
+
+  AppNameParameter:
+    Type: String
+    Description: 'Name of app to use in descriptions, etc.'
+    Default: JamesQMurphyWeb
+
+  ApiGatewayStageNameParameter:
+    Type: String
+    Description: Name to use for the API Gateway Stage
+    Default: website
+
+
+Conditions:
+   AreMappingToCustomDomain: !Not [!Equals [!Ref DomainNameParameter, '']]
+
+
+Resources:
+
+  TheRoleForTheLambdaFunction:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+
+
+  TheRoleForTheApiGateway:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: !Sub S3ReadOnly-${S3BucketForCodeParameter}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:Get*'
+                  - 's3:List*'
+                Resource: !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/*'
+
+
+  TheLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref S3BucketForCodeParameter
+        S3Key: !Ref S3BucketPathForCodeParameter
+      Description: !Sub Hosts ${AppNameParameter}-${VersionNumberParameter} ${StageParameter} ASP.NET Core application.  Created via CloudFormation stack ${AWS::StackName}.
+      # Lambda does not allow periods in function names, so to include the version number,
+      # we need to replace the periods with something else (hyphens in this case)
+      FunctionName: !Join
+        - '-'
+        - - !Ref AppNameParameter
+            # These !Select functions parse out the pieces of the version number
+          - !Select [0, !Split [".", !Ref VersionNumberParameter]]
+          - !Select [1, !Split [".", !Sub '${VersionNumberParameter}.' ]]
+          - !Select [2, !Split [".", !Sub '${VersionNumberParameter}..' ]]
+          - !Select [3, !Split [".", !Sub '${VersionNumberParameter}...' ]]
+          - !Select [4, !Split [".", !Sub '${VersionNumberParameter}....' ]]
+          - !Ref StageParameter
+      Handler: JamesQMurphy.Web::JamesQMurphy.Web.LambdaEntryPoint::FunctionHandlerAsync
+      MemorySize: 512
+      Role: !GetAtt TheRoleForTheLambdaFunction.Arn
+      Runtime: provided  # custom runtime
+      Timeout: 15
+      Environment:
+        Variables:
+          ImageBasePath: /blogimages
+          ArticleStore__Service: InMemory
+      Tags:
+        - Key: app
+          Value: !Ref AppNameParameter
+        - Key: version
+          Value: !Ref VersionNumberParameter
+
+
+  TheGatewayRestAPI:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: !Sub ${AppNameParameter}-${VersionNumberParameter}-${StageParameter}
+      Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}. Created via CloudFormation stack ${AWS::StackName}.
+      BinaryMediaTypes:
+        - '*/*'
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+
+  TheRootGetMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TheLambdaFunction.Arn}/invocations
+      ResourceId: !GetAtt TheGatewayRestAPI.RootResourceId
+      RestApiId: !Ref TheGatewayRestAPI
+
+
+  TheProxyResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ParentId: !GetAtt TheGatewayRestAPI.RootResourceId
+      PathPart: '{proxy+}'
+
+
+  TheProxyAnyMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ResourceId: !Ref TheProxyResource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TheLambdaFunction.Arn}/invocations
+
+
+  TheDistResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ParentId: !GetAtt TheGatewayRestAPI.RootResourceId
+      PathPart: dist
+
+
+  TheProxyResourceUnderTheDistResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ParentId: !Ref TheDistResource
+      PathPart: '{proxy+}'
+
+
+  TheGetMethodForTheProxyResourceUnderTheDistResource:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ResourceId: !Ref TheProxyResourceUnderTheDistResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: true
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': true
+            'method.response.header.Content-Length': true
+            'method.response.header.Content-Type': true
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: GET
+        Credentials: !GetAtt TheRoleForTheApiGateway.Arn
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/dist/{fullpath}
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.fullpath: 'method.request.path.proxy'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': 'integration.response.header.Date'
+            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
+            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+
+
+  TheDeploymentStage:
+    Type: 'AWS::ApiGateway::Deployment'
+    DependsOn:
+      - TheRootGetMethod
+      - TheProxyAnyMethod
+      - TheDistResource
+      - TheProxyResourceUnderTheDistResource
+      - TheGetMethodForTheProxyResourceUnderTheDistResource
+    Properties:
+      Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
+      RestApiId: !Ref TheGatewayRestAPI
+      StageName: !Ref ApiGatewayStageNameParameter
+
+
+  TheLambdaInvokePermissionForProxyResource:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt TheLambdaFunction.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${TheGatewayRestAPI}*
+
+
+  TheCustomDomainName:
+    Type: 'AWS::ApiGateway::DomainName'
+    Condition: AreMappingToCustomDomain
+    Properties:
+      DomainName: !Ref DomainNameParameter
+      RegionalCertificateArn: !Ref CertificateArnParameter
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+
+  TheBasePathMapping:
+    Type: 'AWS::ApiGateway::BasePathMapping'
+    Condition: AreMappingToCustomDomain
+    DependsOn:
+      - TheDeploymentStage
+    Properties:
+      DomainName: !Ref TheCustomDomainName
+      RestApiId: !Ref TheGatewayRestAPI
+      Stage: !Ref ApiGatewayStageNameParameter
+
+
+Outputs:
+  GatewayApiUrl:
+    Description: The Url to the Gateway API
+    Value: !Sub https://${TheGatewayRestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiGatewayStageNameParameter}
+
+  SiteUrl:
+    Description: The Url to the site
+    Value: !Sub https://${DomainNameParameter}
+    Condition: AreMappingToCustomDomain
+
+  TargetDomainName:
+    Description: Target domain name for DNS mapping
+    Value: !GetAtt TheCustomDomainName.RegionalDomainName
+    Condition: AreMappingToCustomDomain
