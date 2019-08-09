@@ -14,6 +14,7 @@ namespace JamesQMurphy.Blog
         {
             var pipelineBuilder = new Markdig.MarkdownPipelineBuilder();
             Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilder);
+            Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilder);
             pipeline = pipelineBuilder.Build();
             if (ImageBasePath == null)
             {
