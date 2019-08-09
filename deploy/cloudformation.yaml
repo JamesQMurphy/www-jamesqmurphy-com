@@ -132,6 +132,10 @@ Resources:
       Role: !GetAtt TheRoleForTheLambdaFunction.Arn
       Runtime: provided  # custom runtime
       Timeout: 15
+      Environment:
+        Variables:
+          ImageBasePath: /blogimages
+          ArticleStore__Service: InMemory
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
