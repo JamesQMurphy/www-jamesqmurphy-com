@@ -2,6 +2,7 @@
 title: Article Two
 slug: article-two
 publish-date: 2019-07-08T12:30:59.0100033Z
+description: See how Article Two captures the essence of the "Lorum Ipsum" test.
 ...
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. 
 
