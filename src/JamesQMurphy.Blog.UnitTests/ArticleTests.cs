@@ -38,6 +38,7 @@ namespace Tests
             Assert.AreEqual(slug, article.Slug);
             Assert.AreEqual(content, article.Content);
             Assert.AreEqual(publishDate, article.PublishDate);
+            Assert.AreEqual(string.Empty, article.Description);
         }
 
         [Test]
@@ -62,6 +63,34 @@ publish-date: {publishDate:O}
             Assert.AreEqual(slug, article.Slug);
             Assert.AreEqual(content.Trim(), article.Content.Trim());
             Assert.AreEqual(publishDate, article.PublishDate);
+            Assert.AreEqual(string.Empty, article.Description);
+        }
+
+        [Test]
+        public void ReadFromStreamWithDescription()
+        {
+            var title = "Some Title";
+            var slug = "Some-Slug";
+            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
+            var description = "Some kind of description";
+            var publishDate = System.DateTime.UtcNow;
+
+            var streamString = $@"---
+title: {title}
+description: {description}
+slug: {slug}
+publish-date: {publishDate:O}
+...
+{content}";
+
+            var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(streamString));
+            var article = Article.ReadFrom(memoryStream);
+
+            Assert.AreEqual(title, article.Title);
+            Assert.AreEqual(slug, article.Slug);
+            Assert.AreEqual(content.Trim(), article.Content.Trim());
+            Assert.AreEqual(publishDate, article.PublishDate);
+            Assert.AreEqual(description, article.Description);
         }
 
         [Test]
@@ -88,6 +117,39 @@ publish-date: {publishDate:O}
 title: {title}
 slug: {slug}
 publish-date: {publishDate:O}
+...
+{content}";
+
+            Assert.AreEqual(compareString.Trim(), streamString.Trim());
+        }
+
+        [Test]
+        public void WriteToStreamWithDescription()
+        {
+            var title = "Some Title";
+            var slug = "Some-Slug";
+            var content = $"Here is some content{System.Environment.NewLine}which spans multiple lines";
+            var description = "Some kind of description";
+            var publishDate = System.DateTime.UtcNow;
+            var article = new Article()
+            {
+                Content = content,
+                Slug = slug,
+                Title = title,
+                PublishDate = publishDate,
+                Description = description
+            };
+
+            var memoryStream = new MemoryStream();
+            article.WriteTo(memoryStream, true);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            var streamString = new StreamReader(memoryStream).ReadToEnd();
+
+            var compareString = $@"---
+title: {title}
+slug: {slug}
+publish-date: {publishDate:O}
+description: {description}
 ...
 {content}";
 
@@ -128,6 +190,7 @@ publish-date: {publishDate:O}
             Assert.AreEqual(slug, article.Slug);
             Assert.AreEqual(content.Trim(), article.Content.Trim());
             Assert.AreEqual(publishDate, article.PublishDate);
+            Assert.AreEqual(string.Empty, article.Description);
         }
 
 
