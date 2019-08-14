@@ -1,0 +1,22 @@
+﻿@model JamesQMurphy.Blog.ArticleMetadata
+
+@{
+    if (Model is null)
+    {
+        <!-- null model -->
+    }
+    else
+    {
+        var link = $"/blog/{Model.YearString}/{Model.MonthString}/{Model.Slug}";
+
+        <div>
+            <h4><a href="@link">@Model.Title</a></h4>
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <h5>@Model.Description</h5>
+            }
+            <h6 class="text-muted font-weight-light"><small>by JamesQMurphy | @Model.PublishDate.ToString("MMMM d, yyyy")</small></h6>
+            <br />
+        </div>
+    }
+}

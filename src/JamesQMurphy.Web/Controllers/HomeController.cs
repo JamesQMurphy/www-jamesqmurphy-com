@@ -4,15 +4,29 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
 
 namespace JamesQMurphy.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IArticleStore articleStore;
+
+        public HomeController(IArticleStore iarticleStore)
+        {
+            articleStore = iarticleStore;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            // Need to optimize this
+            var lastTwoArticles = articleStore.GetArticles().TakeLast(2).ToList();
+            var article1 = articleStore.GetArticle(lastTwoArticles[1].YearString, lastTwoArticles[1].MonthString, lastTwoArticles[1].Slug);
+            var article2 = articleStore.GetArticle(lastTwoArticles[0].YearString, lastTwoArticles[0].MonthString, lastTwoArticles[0].Slug);
+            var homePageItems = new HomePageItems(article1, article2);
+
+            return View(homePageItems);
         }
 
         public IActionResult About()

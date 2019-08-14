@@ -4,20 +4,13 @@
 
 @foreach (var item in Model)
 {
-    var link = $"/blog/{item.YearString}/{item.MonthString}/{item.Slug}";
     if (!renderedArticles)
     {
         <h1>Blog Articles</h1><br />
         renderedArticles = true;
     }
 
-    <h4><a href="@link">@item.Title</a></h4>
-    if (!string.IsNullOrWhiteSpace(item.Description))
-    {
-        <h5>@item.Description</h5>
-    }
-    <h6 class="text-muted font-weight-light"><small>by JamesQMurphy | @item.PublishDate.ToString("MMMM d, yyyy")</small></h6>
-    <br/>
+    @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = item, displayCompact = true })
 }
 
 @if (!renderedArticles)

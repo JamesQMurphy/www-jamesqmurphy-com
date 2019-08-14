@@ -1,8 +1,16 @@
-﻿@{
+﻿@model JamesQMurphy.Web.Models.HomePageItems
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1>Latest Blog Posts</h1>
+<p></p>
+<div>
+    @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
 </div>
+
+<div>
+    @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
+</div>
+
+<a asp-area="" asp-controller="Blog" asp-action="Index">See all blog posts&gt;&gt;</a>
