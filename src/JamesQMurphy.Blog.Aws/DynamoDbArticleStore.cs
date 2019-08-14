@@ -10,7 +10,7 @@ namespace JamesQMurphy.Blog.Aws
     public class DynamoDbArticleStore : IArticleStore
     {
         private readonly Table table;
-        private readonly List<string> metadataAttributesToGet = new List<string> { "slug", "title", "publishDate" };
+        private readonly List<string> metadataAttributesToGet = new List<string> { "slug", "title", "publishDate", "description" };
 
         public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient)
         {
@@ -26,6 +26,7 @@ namespace JamesQMurphy.Blog.Aws
                 Slug = result["slug"],
                 Title = result["title"],
                 PublishDate = DateTime.Parse(result["publishDate"]).ToUniversalTime(),
+                Description = result.ContainsKey("description") ? (string)result["description"] : "",
                 Content = result["content"]
             };
 
@@ -63,7 +64,8 @@ namespace JamesQMurphy.Blog.Aws
                 {
                     Slug = d["slug"],
                     Title = d["title"],
-                    PublishDate = DateTime.Parse(d["publishDate"]).ToUniversalTime()
+                    PublishDate = DateTime.Parse(d["publishDate"]).ToUniversalTime(),
+                    Description = d.ContainsKey("description") ? (string)d["description"] : ""
                 }
                 ));
             } while (!search.IsDone);
