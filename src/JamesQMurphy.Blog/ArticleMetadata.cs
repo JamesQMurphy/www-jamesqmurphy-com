@@ -11,11 +11,17 @@ namespace JamesQMurphy.Blog
         private const string titleFieldName = "title";
         private const string slugFieldName = "slug";
         private const string publishDateFieldName = "publish-date";
+        private const string descriptionFieldName = "description";
         private const string yamlHeader = "---";
         private const string yamlFooter = "...";
 
-        public string Title { get; set; }
-        public string Slug { get; set; }
+        private string _title = string.Empty;
+        private string _slug = string.Empty;
+        private string _description = string.Empty;
+
+        public string Title { get => _title; set => _title = value ?? string.Empty; }
+        public string Slug { get => _slug; set => _slug = value ?? string.Empty; }
+        public string Description { get => _description; set => _description = value ?? string.Empty; }
         public DateTime PublishDate { get; set; }
 
         public string MonthString => PublishDate.Month.ToString("D2");
@@ -63,6 +69,10 @@ namespace JamesQMurphy.Blog
 
                                 case publishDateFieldName:
                                     articleMetadata.PublishDate = DateTime.Parse(value).ToUniversalTime();
+                                    break;
+
+                                case descriptionFieldName:
+                                    articleMetadata.Description = value;
                                     break;
 
                                 default:
@@ -114,6 +124,10 @@ namespace JamesQMurphy.Blog
             await writer.WriteLineAsync($"{titleFieldName}: {Title}");
             await writer.WriteLineAsync($"{slugFieldName}: {Slug}");
             await writer.WriteLineAsync($"{publishDateFieldName}: {PublishDate:O}");
+            if (Description.Length > 0)
+            {
+                await writer.WriteLineAsync($"{descriptionFieldName}: {Description}");
+            }
             await writer.WriteLineAsync(yamlFooter);
         }
 
@@ -156,7 +170,7 @@ namespace JamesQMurphy.Blog
 
         public override int GetHashCode()
         {
-            return Title.GetHashCode() ^ Slug.GetHashCode() ^ PublishDate.GetHashCode();
+            return Title.GetHashCode() ^ Slug.GetHashCode() ^ PublishDate.GetHashCode() ^ Description.GetHashCode();
         }
 
         public override string ToString()
@@ -179,6 +193,10 @@ namespace JamesQMurphy.Blog
             if (retval == 0)
             {
                 retval = this.Slug.CompareTo(other.Slug);
+            }
+            if (retval == 0)
+            {
+                retval = this.Description.CompareTo(other.Description);
             }
             return retval;
         }

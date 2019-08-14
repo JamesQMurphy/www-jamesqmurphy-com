@@ -24,17 +24,35 @@ namespace Tests
             var title = "Some Title";
             var slug = "Some-Slug";
             var publishDate = System.DateTime.UtcNow;
+            var description = "Some Description";
 
             var articleMetadata = new ArticleMetadata()
             {
                 Slug = slug,
                 Title = title,
-                PublishDate = publishDate
+                PublishDate = publishDate,
+                Description = description
             };
 
             Assert.AreEqual(title, articleMetadata.Title);
             Assert.AreEqual(slug, articleMetadata.Slug);
             Assert.AreEqual(publishDate, articleMetadata.PublishDate);
+            Assert.AreEqual(description, articleMetadata.Description);
+        }
+
+        [Test]
+        public void SettingPropertyToNullForcesEmpty()
+        {
+            var articleMetadata = new ArticleMetadata()
+            {
+                Slug = null,
+                Title = null,
+                Description = null
+            };
+
+            Assert.AreEqual(string.Empty, articleMetadata.Title);
+            Assert.AreEqual(string.Empty, articleMetadata.Slug);
+            Assert.AreEqual(string.Empty, articleMetadata.Description);
         }
 
         [Test]
@@ -57,6 +75,32 @@ publish-date: {publishDate:O}
             Assert.AreEqual(title, articleMetadata.Title);
             Assert.AreEqual(slug, articleMetadata.Slug);
             Assert.AreEqual(publishDate, articleMetadata.PublishDate);
+            Assert.AreEqual(string.Empty, articleMetadata.Description);
+        }
+
+        [Test]
+        public void ReadFromStreamWithDescription()
+        {
+            var title = "Some Title";
+            var slug = "Some-Slug";
+            var publishDate = System.DateTime.UtcNow;
+            var description = "Some kind of description";
+
+            var streamString = $@"---
+title: {title}
+slug: {slug}
+publish-date: {publishDate:O}
+description: {description}
+...
+";
+
+            var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(streamString));
+            var articleMetadata = ArticleMetadata.ReadFrom(memoryStream);
+
+            Assert.AreEqual(title, articleMetadata.Title);
+            Assert.AreEqual(slug, articleMetadata.Slug);
+            Assert.AreEqual(publishDate, articleMetadata.PublishDate);
+            Assert.AreEqual(description, articleMetadata.Description);
         }
 
         [Test]
@@ -86,6 +130,38 @@ publish-date: {publishDate:O}
 
             Assert.AreEqual(compareString, streamString);
         }
+
+        [Test]
+        public void WriteToStreamWithDescription()
+        {
+            var title = "Some Title";
+            var slug = "Some-Slug";
+            var publishDate = System.DateTime.UtcNow;
+            var description = "Some kind of description";
+            var articleMetadata = new ArticleMetadata()
+            {
+                Slug = slug,
+                Title = title,
+                PublishDate = publishDate,
+                Description = description
+            };
+
+            var memoryStream = new MemoryStream();
+            articleMetadata.WriteTo(memoryStream, true);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            var streamString = new StreamReader(memoryStream).ReadToEnd();
+
+            var compareString = $@"---
+title: {title}
+slug: {slug}
+publish-date: {publishDate:O}
+description: {description}
+...
+";
+
+            Assert.AreEqual(compareString, streamString);
+        }
+
 
         [Test]
         public void LeaveStreamOpen()
@@ -188,6 +264,51 @@ publish-date: {publishDate:O}
         }
 
         [Test]
+        public void TestEquality2()
+        {
+            var articleMetaData1 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1),
+                Description = "some description"
+            };
+
+            var articleMetaData2 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1),
+                Description = "some description"
+            };
+
+            Assert.AreEqual(articleMetaData1, articleMetaData2);
+            Assert.IsTrue(articleMetaData1.Equals(articleMetaData2));
+            Assert.IsTrue(articleMetaData1 == articleMetaData2);
+            Assert.IsFalse(articleMetaData1 != articleMetaData2);
+            Assert.IsTrue(articleMetaData1 <= articleMetaData2);
+            Assert.IsTrue(articleMetaData1 >= articleMetaData2);
+
+            Assert.AreEqual(articleMetaData1.GetHashCode(), articleMetaData2.GetHashCode());
+        }
+
+        [Test]
+        public void TestEqualityBothEmpty()
+        {
+            var articleMetaData1 = new ArticleMetadata();
+            var articleMetaData2 = new ArticleMetadata();
+
+            Assert.AreEqual(articleMetaData1, articleMetaData2);
+            Assert.IsTrue(articleMetaData1.Equals(articleMetaData2));
+            Assert.IsTrue(articleMetaData1 == articleMetaData2);
+            Assert.IsFalse(articleMetaData1 != articleMetaData2);
+            Assert.IsTrue(articleMetaData1 <= articleMetaData2);
+            Assert.IsTrue(articleMetaData1 >= articleMetaData2);
+
+            Assert.AreEqual(articleMetaData1.GetHashCode(), articleMetaData2.GetHashCode());
+        }
+
+        [Test]
         public void TestInequality()
         {
             var articleMetaData1 = new ArticleMetadata()
@@ -202,6 +323,31 @@ publish-date: {publishDate:O}
                 Title = "Some Title",
                 Slug = "some-slug2",
                 PublishDate = new System.DateTime(2019, 6, 1)
+            };
+
+            Assert.AreNotEqual(articleMetaData1, articleMetaData2);
+            Assert.IsFalse(articleMetaData1.Equals(articleMetaData2));
+            Assert.IsFalse(articleMetaData1 == articleMetaData2);
+            Assert.IsTrue(articleMetaData1 != articleMetaData2);
+        }
+
+        [Test]
+        public void TestInequality2()
+        {
+            var articleMetaData1 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1),
+                Description = "some description"
+            };
+
+            var articleMetaData2 = new ArticleMetadata()
+            {
+                Title = "Some Title",
+                Slug = "some-slug",
+                PublishDate = new System.DateTime(2019, 6, 1),
+                Description = "some description2"
             };
 
             Assert.AreNotEqual(articleMetaData1, articleMetaData2);
