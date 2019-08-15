@@ -4,31 +4,23 @@
 }
 
 <div class="container-fluid">
-    <div class="card border-top-0 border-left-0 border-right-0 rounded-0">
-        <div class="card-body">
-            <h1>Latest Blog Posts</h1>
-        </div>
+    <div class="row border-bottom p-1">
+        <h1>Latest Blog Posts</h1>
     </div>
 </div>
 <div class="container-fluid">
-    <div class="card border-top-0 border-left-0 border-right-0 rounded-0">
-        <div class="card-body">
-            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
-        </div>
+    <div class="row border-bottom p-1">
+        @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
     </div>
 </div>
 <div class="container-fluid">
-    <div class="card border-top-0 border-left-0 border-right-0 rounded-0">
-        <div class="card-body">
-            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
-        </div>
+    <div class="row border-bottom p-1">
+        @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
     </div>
 </div>
 <div class="container-fluid">
-    <div class="card border-0">
-        <div class="card-body">
-            <a asp-area="" asp-controller="Blog" asp-action="Index">See all blog posts&gt;&gt;</a>
-        </div>
+    <div class="row p-1">
+        <a asp-area="" asp-controller="Blog" asp-action="Index">See all blog posts&gt;&gt;</a>
     </div>
 </div>
 
