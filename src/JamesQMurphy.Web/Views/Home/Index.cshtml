@@ -5,12 +5,21 @@
 
 <h1>Latest Blog Posts</h1>
 <p></p>
-<div>
-    @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
+        </div>
+    </div>
 </div>
+<br />
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
+        </div>
+    </div>
 
-<div>
-    @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
 </div>
-
+<br />
 <a asp-area="" asp-controller="Blog" asp-action="Index">See all blog posts&gt;&gt;</a>
