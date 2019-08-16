@@ -255,6 +255,54 @@ Resources:
             'method.response.header.Content-Type': 'integration.response.header.Content-Type'
 
 
+  TheBlogImagesResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ParentId: !GetAtt TheGatewayRestAPI.RootResourceId
+      PathPart: blogimages
+
+
+  TheProxyResourceUnderTheBlogImagesResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ParentId: !Ref TheBlogImagesResource
+      PathPart: '{proxy+}'
+
+
+  TheGetMethodForTheProxyResourceUnderTheBlogImagesResource:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      RestApiId: !Ref TheGatewayRestAPI
+      ResourceId: !Ref TheProxyResourceUnderTheBlogImagesResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: true
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': true
+            'method.response.header.Content-Length': true
+            'method.response.header.Content-Type': true
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: GET
+        Credentials: !GetAtt TheRoleForTheApiGateway.Arn
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/blogimages/{fullpath}
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.fullpath: 'method.request.path.proxy'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': 'integration.response.header.Date'
+            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
+            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+
+
+
   TheDeploymentStage:
     Type: 'AWS::ApiGateway::Deployment'
     DependsOn:
@@ -263,6 +311,9 @@ Resources:
       - TheDistResource
       - TheProxyResourceUnderTheDistResource
       - TheGetMethodForTheProxyResourceUnderTheDistResource
+      - TheBlogImagesResource
+      - TheProxyResourceUnderTheBlogImagesResource
+      - TheGetMethodForTheProxyResourceUnderTheBlogImagesResource
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI
