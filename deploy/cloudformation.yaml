@@ -17,6 +17,11 @@ Parameters:
     Type: String
     Description: Path to static files inside of bucket.  Do not include a leading backslash.
 
+  S3BucketPathForBlogImagesParameter:
+    Type: String
+    Description: Path to blog images folder inside of bucket.  Do not include a leading backslash.
+    Default: demo_blogimages
+
   StageParameter:
     Type: String
     Description: Stage (environment)
@@ -124,6 +129,15 @@ Resources:
                   - 's3:Get*'
                   - 's3:List*'
                 Resource: !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/*'
+        - PolicyName: !Sub S3ReadOnly-${S3BucketPathForBlogImagesParameter}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:Get*'
+                  - 's3:List*'
+                Resource: !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}/*'
 
 
   TheLambdaFunction:
@@ -290,7 +304,7 @@ Resources:
         Type: AWS
         IntegrationHttpMethod: GET
         Credentials: !GetAtt TheRoleForTheApiGateway.Arn
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/demo_blogimages/{fullpath}
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}/{fullpath}
         PassthroughBehavior: WHEN_NO_MATCH
         RequestParameters:
           integration.request.path.fullpath: 'method.request.path.proxy'
@@ -300,7 +314,6 @@ Resources:
             'method.response.header.Timestamp': 'integration.response.header.Date'
             'method.response.header.Content-Length': 'integration.response.header.Content-Length'
             'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-
 
 
   TheDeploymentStage:
