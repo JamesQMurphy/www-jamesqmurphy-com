@@ -22,6 +22,11 @@ Parameters:
     Description: Stage (environment)
     Default: dev
 
+  DynamoDbTableParameter:
+    Type: String
+    Description: Name of the DynamoDB table
+    Default: demo-articles
+
   DomainNameParameter:
     Type: String
     Description: Custom Domain Name (e.g., www.jamesqmurphy.com).  Leave blank if not mapping to a custom URL.
@@ -72,6 +77,19 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
+        - PolicyName: !Sub DynamoDbReadOnlyAccess-${DynamoDbTableParameter}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:BatchGetItem'
+                  - 'dynamodb:Describe*'
+                  - 'dynamodb:List*'
+                  - 'dynamodb:GetItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:Scan'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableParameter}'
 
 
   TheRoleForTheApiGateway:
@@ -135,7 +153,8 @@ Resources:
       Environment:
         Variables:
           ImageBasePath: /blogimages
-          ArticleStore__Service: InMemory
+          ArticleStore__Service: Lambda
+          ArticleStore__Path: !Ref DynamoDbTableParameter
       Tags:
         - Key: app
           Value: !Ref AppNameParameter

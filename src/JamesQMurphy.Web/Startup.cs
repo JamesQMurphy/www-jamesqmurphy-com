@@ -47,7 +47,7 @@ namespace JamesQMurphy.Web
                 case "Lambda":
                     services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
                     services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
-                    services.AddSingleton<IArticleStore, JamesQMurphy.Blog.Aws.DynamoDbArticleStore>();
+                    services.AddSingleton<IArticleStore, JamesQMurphy.Web.Services.DynamoDbArticleStoreFromConfiguration>();
                     break;
 
                 default:  // InMemoryArticleStore
