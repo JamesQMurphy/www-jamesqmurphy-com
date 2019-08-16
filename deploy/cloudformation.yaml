@@ -290,7 +290,7 @@ Resources:
         Type: AWS
         IntegrationHttpMethod: GET
         Credentials: !GetAtt TheRoleForTheApiGateway.Arn
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/blogimages/{fullpath}
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/demo_blogimages/{fullpath}
         PassthroughBehavior: WHEN_NO_MATCH
         RequestParameters:
           integration.request.path.fullpath: 'method.request.path.proxy'
