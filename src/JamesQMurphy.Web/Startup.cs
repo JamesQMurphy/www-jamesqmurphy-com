@@ -44,6 +44,12 @@ namespace JamesQMurphy.Web
                     services.AddSingleton<IArticleStore>(new LocalFolderArticleStore(Configuration["ArticleStore:Path"]));
                     break;
 
+                case "Lambda":
+                    services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+                    services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
+                    services.AddSingleton<IArticleStore, JamesQMurphy.Web.Services.DynamoDbArticleStoreFromConfiguration>();
+                    break;
+
                 default:  // InMemoryArticleStore
                     services.AddSingleton<IArticleStore, InMemoryArticleStore>();
                     break;
