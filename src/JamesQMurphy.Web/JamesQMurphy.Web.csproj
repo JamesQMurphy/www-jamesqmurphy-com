@@ -45,6 +45,7 @@
 
   <Target Name="NpmInstall" BeforeTargets="Build">
     <Exec Command="npm install" />
+    <Exec Command="npm run buildcss" />
     <Exec Command="npm run copydist" />
   </Target>
 
