@@ -1,4 +1,10 @@
 ﻿
+// This is how we make the overall font size bigger
+$font-size-base: 1.25rem;
+
+// And this is how we space it out a little more (default is 1.5)
+$line-height-base: 2;
+
 // Import functions and variables from bootstrap scss sources
 @import "../node_modules/bootstrap/scss/_functions";
 @import "../node_modules/bootstrap/scss/_variables";
