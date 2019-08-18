@@ -1,15 +1,15 @@
 ﻿
-// Font size
-// These two declarations must appear before any of the import statements
-$font-size-base: 1.25rem;   // Make overall font size 25% bigger (default is 1rem)
-$line-height-base: 2;       // Space out the lines of text a little (default is 1.5)
+// Note: if you redefine $font-size-base or $line-height-base, you must
+// declare them before the @import statements below
 
-// Import functions and variables from bootstrap scss sources
+// Import functions and variables from Bootstrap scss sources
 @import "../node_modules/bootstrap/scss/_functions";
 @import "../node_modules/bootstrap/scss/_variables";
 
+// Define extra spacing between paragraphs in main area
+$main-paragraph-margin-bottom: 2 * $paragraph-margin-bottom;
 
-// Define new colors for code and code fences
+// Define new colors for inline code (<code>) and code fences (<pre>)
 $code-color: $black;
 $code-bg-color: $gray-200;
 $code-padding-y: .1rem !default;
@@ -20,22 +20,35 @@ $pre-bg-color: $gray-200;
 $pre-padding-y: .2rem !default;
 $pre-padding-x: .4rem !default;
 
-
+// Import main Bootstrap file
 @import "../node_modules/bootstrap/scss/bootstrap";
 
+// Override Bootstrap elements
 
-// Code
+// <main>
+main {
+    font-size: $font-size-lg;
+    line-height: 2;
+    
+    p {
+        margin-bottom: $main-paragraph-margin-bottom;
+    }
+}
+
+// <code>
 code {
     padding: $code-padding-y $code-padding-x;
     background-color: $code-bg-color;
 }
 
-// Code fences
+// <pre> (Code fences)
 pre {
     padding: $pre-padding-y $pre-padding-x;
+    margin-bottom: $main-paragraph-margin-bottom;
     background-color: $pre-bg-color;
-    line-height: 1.5;   // Set this back to the default
+    line-height: $line-height-base;   // Set this back to the default
 
+    // MarkDig emits <code> tags inside of <pre> tags
     code {
         padding: 0;
         background-color: inherit;
