@@ -1,9 +1,10 @@
 ﻿
-// This is how we make the overall font size bigger
-$font-size-base: 1.25rem;
+// Font size
+// These two declarations must appear before any of the import statements
 
-// And this is how we space it out a little more (default is 1.5)
-$line-height-base: 2;
+// This is how we make the overall font size bigger
+$font-size-base: 1.25rem;   // Make overall font size 25% bigger (default is 1rem)
+$line-height-base: 2;       // Space out the lines of text a little (default is 1.5)
 
 // Import functions and variables from bootstrap scss sources
 @import "../node_modules/bootstrap/scss/_functions";
@@ -35,9 +36,11 @@ code {
 pre {
     padding: $pre-padding-y $pre-padding-x;
     background-color: $pre-bg-color;
+    line-height: 1.5;   // Set this back to the default
 
     code {
         padding: 0;
         background-color: inherit;
+        line-height: inherit;
     }
 }
