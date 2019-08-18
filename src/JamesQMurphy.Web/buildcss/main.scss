@@ -1,4 +1,37 @@
 ﻿
-$info: #ff0000;
+// Import functions and variables from bootstrap scss sources
+@import "../node_modules/bootstrap/scss/_functions";
+@import "../node_modules/bootstrap/scss/_variables";
+
+
+// Define new colors for code and code fences
+$code-color: $black;
+$code-bg-color: $gray-200;
+$code-padding-y: .2rem !default;
+$code-padding-x: .4rem !default;
+
+$pre-color: $black;
+$pre-bg-color: $gray-200;
+$pre-padding-y: .2rem !default;
+$pre-padding-x: .4rem !default;
+
 
 @import "../node_modules/bootstrap/scss/bootstrap";
+
+
+// Code
+code {
+    padding: $code-padding-y $code-padding-x;
+    background-color: $code-bg-color;
+}
+
+// Code fences
+pre {
+    padding: $pre-padding-y $pre-padding-x;
+    background-color: $pre-bg-color;
+
+    code {
+        padding: 0;
+        background-color: inherit;
+    }
+}
