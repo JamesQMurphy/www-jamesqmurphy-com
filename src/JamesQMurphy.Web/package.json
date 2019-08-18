@@ -2,7 +2,23 @@
   "version": "1.0.0",
   "name": "jamesqmurphy.web",
   "private": true,
+  "browserslist": [
+    "last 1 major version",
+    ">= 1%",
+    "Chrome >= 45",
+    "Firefox >= 38",
+    "Edge >= 12",
+    "Explorer >= 10",
+    "iOS >= 9",
+    "Safari >= 9",
+    "Android >= 4.4",
+    "Opera >= 30"
+  ],
   "scripts": {
+    "buildcss": "npm run buildcss-compile && npm run buildcss-prefix && npm run buildcss-minify",
+    "buildcss-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 buildcss/main.scss wwwroot/dist/css/style.css",
+    "buildcss-prefix": "postcss --config buildcss/postcss.config.js --replace \"wwwroot/dist/css/*.css\" \"!*.min.css\"",
+    "buildcss-minify": "cleancss --level 1 --source-map --source-map-inline-sources --output wwwroot/dist/css/style.min.css wwwroot/dist/css/style.css",
     "copydist": "npm run copydist-bootstrap && npm run copydist-jquery && npm run copydist-jquery-validation && npm run copydist-jquery-validation-unobtrusive",
     "copydist-bootstrap": "copyfiles node_modules/bootstrap/dist/** wwwroot/dist/lib/bootstrap --up 2 --verbose",
     "copydist-jquery": "copyfiles node_modules/jquery/dist/** wwwroot/dist/lib/jquery --up 2 --verbose",
@@ -10,11 +26,15 @@
     "copydist-jquery-validation-unobtrusive": "copyfiles node_modules/jquery-validation-unobtrusive/dist/** wwwroot/dist/lib/jquery-validation-unobtrusive --up 2 --verbose"
   },
   "devDependencies": {
+    "autoprefixer": "^9.6.1",
     "bootstrap": "^4.3.1",
+    "clean-css-cli": "^4.3.0",
     "copyfiles": "^2.1.0",
     "jquery": "^3.4.1",
     "jquery-validation": "^1.19.0",
     "jquery-validation-unobtrusive": "^3.2.11",
-    "popper.js": "^1.15.0"
+    "node-sass": "^4.12.0",
+    "popper.js": "^1.15.0",
+    "postcss-cli": "^6.1.3"
   }
 }
