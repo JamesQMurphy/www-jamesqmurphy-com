@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Web", "JamesQMurphy.Web\JamesQMurphy.Web.csproj", "{C2988A44-AB27-45BF-BCA3-8D2110C7F4F4}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Blog.UnitTests", "JamesQMurphy.Blog.UnitTests\JamesQMurphy.Blog.UnitTests.csproj", "{9DA66BC8-E72F-42DA-8167-FB89D019B8E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Blog.Aws", "JamesQMurphy.Blog.Aws\JamesQMurphy.Blog.Aws.csproj", "{A871E94A-9F08-4C8A-B471-E994CA28EB1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Web.UnitTests", "JamesQMurphy.Web.UnitTests\JamesQMurphy.Web.UnitTests.csproj", "{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A871E94A-9F08-4C8A-B471-E994CA28EB1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A871E94A-9F08-4C8A-B471-E994CA28EB1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A871E94A-9F08-4C8A-B471-E994CA28EB1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
