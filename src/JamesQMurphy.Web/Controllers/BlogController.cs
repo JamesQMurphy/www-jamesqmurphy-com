@@ -26,7 +26,14 @@ namespace JamesQMurphy.Web.Controllers
             var article = articleStore.GetArticle(year, month, slug);
             if (article != null)
             {
-                ViewData["Title"] = article.Title;
+                if (String.IsNullOrWhiteSpace(article.Description))
+                {
+                    ViewData["Title"] = article.Title;
+                }
+                else
+                {
+                    ViewData["Title"] = $"{article.Title}: {article.Description}";
+                }
                 return View(article);
             }
             else
