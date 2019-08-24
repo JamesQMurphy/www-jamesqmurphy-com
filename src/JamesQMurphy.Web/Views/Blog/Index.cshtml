@@ -11,6 +11,7 @@
     }
 
     @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = item, displayCompact = true })
+    <div class="pb-4"></div>
 }
 
 @if (!renderedArticles)

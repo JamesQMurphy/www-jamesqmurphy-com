@@ -23,17 +23,18 @@ $pre-padding-x: .4rem !default;
 // Import main Bootstrap file
 @import "../node_modules/bootstrap/scss/bootstrap";
 
-// Override Bootstrap elements
 
 // <main>
-main {
+.jqm-easy-to-read {
     font-size: $font-size-lg;
     line-height: 2;
     
-    p {
+    > p {
         margin-bottom: $main-paragraph-margin-bottom;
     }
 }
+
+// Override Bootstrap elements
 
 // <code>
 code {
