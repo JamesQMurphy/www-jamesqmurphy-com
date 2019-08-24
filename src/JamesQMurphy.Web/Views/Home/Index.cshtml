@@ -1,4 +1,5 @@
 ﻿@model JamesQMurphy.Web.Models.HomePageItems
+@inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -10,12 +11,24 @@
 </div>
 <div class="container-fluid">
     <div class="row border-bottom p-1">
-        @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
+        <div>
+            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
+        </div>
+        <div>
+            @Html.Raw(Renderer.RenderHtml(Model.Article1Teaser))
+        </div>
+        <div class="text-right"><a href="/blog/@Model.Article1.YearString/@Model.Article1.MonthString/@Model.Article1.Slug">Read more&gt;&gt;</a></div>
     </div>
 </div>
 <div class="container-fluid">
     <div class="row border-bottom p-1">
-        @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
+        <div>
+            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
+        </div>
+        <div>
+            @Html.Raw(Renderer.RenderHtml(Model.Article2Teaser))
+        </div>
+        <div class="text-right"><a href="/blog/@Model.Article2.YearString/@Model.Article2.MonthString/@Model.Article2.Slug">Read more&gt;&gt;</a></div>
     </div>
 </div>
 <div class="container-fluid">

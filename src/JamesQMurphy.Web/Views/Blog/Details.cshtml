@@ -1,7 +1,7 @@
 ﻿@model JamesQMurphy.Blog.Article
 @inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
 
-<h1>@Model.Title</h1>
+<h1 class="display-4">@Model.Title</h1>
 @if (!string.IsNullOrWhiteSpace(Model.Description))
 {
     <h5>@Model.Description</h5>
