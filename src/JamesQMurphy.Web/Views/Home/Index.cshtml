@@ -11,7 +11,7 @@
                     <h1>Latest Blog Posts</h1>
                 </div>
             </div>
-            <div class="container-fluid">
+            <article class="container-fluid">
                 <div class="row border-top p-1">
                     <div>
                         @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
@@ -21,8 +21,8 @@
                     </div>
                     <div class="container-fluid text-right"><a href="/blog/@Model.Article1.YearString/@Model.Article1.MonthString/@Model.Article1.Slug">Read more&gt;&gt;</a></div>
                 </div>
-            </div>
-            <div class="container-fluid">
+            </article>
+            <article class="container-fluid">
                 <div class="row border-top p-1">
                     <div>
                         @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
@@ -32,7 +32,7 @@
                     </div>
                     <div class="container-fluid text-right"><a href="/blog/@Model.Article2.YearString/@Model.Article2.MonthString/@Model.Article2.Slug">Read more&gt;&gt;</a></div>
                 </div>
-            </div>
+            </article>
             <div class="container-fluid">
                 <div class="row border-top p-1">
                     <a asp-area="" asp-controller="Blog" asp-action="Index">See all blog posts&gt;&gt;</a>
