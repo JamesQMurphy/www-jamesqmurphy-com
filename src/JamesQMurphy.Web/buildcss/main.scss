@@ -2,6 +2,24 @@
 // Note: if you redefine $font-size-base or $line-height-base, you must
 // declare them before the @import statements below
 
+// Declare shades of gray
+$white: #FCFCFC;
+$gray-100: #F9F9F9;
+$gray-200: #EDEBE8;
+$gray-300: #E5E3DE;
+$gray-400: #D8D5CD;
+$gray-500: #BCB8AF;
+$gray-600: #7C786D;
+$gray-700: #56534A;
+$gray-800: #3F3C34;
+$gray-900: #282621;
+$black: #0F0E0E;
+
+// Override a few colors
+$red: #AD544C;
+$yellow: #E5A800;
+$green: #4EAA4B;
+
 // Import functions and variables from Bootstrap scss sources
 @import "../node_modules/bootstrap/scss/_functions";
 @import "../node_modules/bootstrap/scss/_variables";
