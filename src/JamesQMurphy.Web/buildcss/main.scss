@@ -2,23 +2,28 @@
 // Note: if you redefine $font-size-base or $line-height-base, you must
 // declare them before the @import statements below
 
-// Declare shades of gray
-$white: #FCFCFC;
-$gray-100: #F9F9F9;
-$gray-200: #EDEBE8;
-$gray-300: #E5E3DE;
-$gray-400: #D8D5CD;
-$gray-500: #BCB8AF;
-$gray-600: #7C786D;
-$gray-700: #56534A;
-$gray-800: #3F3C34;
-$gray-900: #282621;
-$black: #0F0E0E;
+// Declare shades of gray based on hue
+$gray-hue:  37;
+
+$white: hsl($gray-hue, 0, 99);
+$gray-100: hsl($gray-hue, 0, 97);
+$gray-200: hsl($gray-hue, 2, 93);
+$gray-300: hsl($gray-hue, 3, 90);
+$gray-400: hsl($gray-hue, 5, 85);
+$gray-500: hsl($gray-hue, 7, 73);
+$gray-600: hsl($gray-hue, 12, 48);
+$gray-700: hsl($gray-hue, 13, 33);
+$gray-800: hsl($gray-hue, 17, 25);
+$gray-900: hsl($gray-hue, 17, 15);
+$black: hsl($gray-hue, 7, 5);
 
 // Override a few colors
 $red: #AD544C;
 $yellow: #E5A800;
 $green: #4EAA4B;
+$blue: #177289; 
+
+$body-bg: $gray-200;
 
 // Import functions and variables from Bootstrap scss sources
 @import "../node_modules/bootstrap/scss/_functions";
@@ -29,12 +34,12 @@ $main-paragraph-margin-bottom: 2 * $paragraph-margin-bottom;
 
 // Define new colors for inline code (<code>) and code fences (<pre>)
 $code-color: $black;
-$code-bg-color: $gray-200;
+$code-bg-color: $gray-400;
 $code-padding-y: .1rem !default;
 $code-padding-x: .3rem !default;
 
 $pre-color: $black;
-$pre-bg-color: $gray-200;
+$pre-bg-color: $gray-400;
 $pre-padding-y: .2rem !default;
 $pre-padding-x: .4rem !default;
 
