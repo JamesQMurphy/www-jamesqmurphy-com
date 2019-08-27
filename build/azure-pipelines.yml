@@ -66,7 +66,7 @@ steps:
 - script: |
     git tag -a $(JQM.gitTagName) ""
     git push origin $(JQM.gitTagName)
-  displayName: Creating git tag named "$(JQM.gitTagName)"
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/$(JQM.compareBranch)'))
+  displayName: Creating git tag named $(JQM.gitTagName)
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
  
  
