@@ -62,11 +62,5 @@ steps:
     testResultsFiles: '*.trx'
     searchFolder: '$(Common.TestResultsDirectory)'
     failTaskOnFailedTests: true
-
-- script: |
-    git tag -a $(JQM.gitTagName) -m ""
-    git push origin $(JQM.gitTagName)
-  displayName: Creating git tag named $(JQM.gitTagName)
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
  
  
