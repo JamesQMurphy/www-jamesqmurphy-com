@@ -73,8 +73,8 @@ steps:
     repositoryName: '$(Build.Repository.Name)'
     action: 'create'
     target: '$(Build.SourceVersion)'
-    tagSource: 'auto'
-    tagPattern: 'v$(Build.BuildNumber)'
+    tagSource: 'manual'
+    tag: 'v$(Build.BuildNumber)'
     assets: '$(Build.ArtifactStagingDirectory)/*.zip'
     isPreRelease: true
     addChangeLog: false
