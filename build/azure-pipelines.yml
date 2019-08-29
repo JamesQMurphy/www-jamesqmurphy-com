@@ -70,6 +70,7 @@ steps:
 - script: |
     git config user.email "someemail@example.com"
     git config user.name "Build System"
+    git config user.signingkey $(JQM.GPGKey)
     git tag -a $(JQM.gitTagName) -m ""
     git push origin $(JQM.gitTagName)
   displayName: Creating git tag named $(JQM.gitTagName)
