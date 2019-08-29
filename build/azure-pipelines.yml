@@ -68,6 +68,7 @@ steps:
     failTaskOnFailedTests: true
 
 - task: GitHubRelease@0
+  displayName: Create release in GitHub
   inputs:
     gitHubConnection: 'Create releases in GitHub'
     repositoryName: '$(Build.Repository.Name)'
@@ -78,5 +79,5 @@ steps:
     assets: '$(Build.ArtifactStagingDirectory)/*.zip'
     isPreRelease: true
     addChangeLog: false
-  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     
