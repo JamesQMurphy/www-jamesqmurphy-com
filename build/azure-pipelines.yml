@@ -21,13 +21,6 @@ variables:
   JQM.gitTagName: v$(Build.BuildNumber)
 
 steps:
-- script: gpg --version
-  displayName: Run gpg --version
-
-- script: gpg --list-secret-keys --keyid-format LONG
-  displayName: gpg list secret keys
-
-
 - task: PowerShell@2
   displayName: Validate build against $(JQM.compareBranch) branch
   inputs:
