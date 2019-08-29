@@ -11,7 +11,7 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 2
-  versionPatch: 6
+  versionPatch: 7
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.cloudformationFileName: cloudformation.yaml
@@ -21,6 +21,10 @@ variables:
   JQM.gitTagName: v$(Build.BuildNumber)
 
 steps:
+- checkout: self
+  clean: true
+  persistCredentials: true
+
 - task: PowerShell@2
   displayName: Validate build against $(JQM.compareBranch) branch
   inputs:
@@ -62,5 +66,18 @@ steps:
     testResultsFiles: '*.trx'
     searchFolder: '$(Common.TestResultsDirectory)'
     failTaskOnFailedTests: true
- 
- 
+
+- task: GitHubRelease@0
+  displayName: Create release in GitHub
+  inputs:
+    gitHubConnection: 'Create releases in GitHub'
+    repositoryName: '$(Build.Repository.Name)'
+    action: 'create'
+    target: '$(Build.SourceVersion)'
+    tagSource: 'manual'
+    tag: 'v$(Build.BuildNumber)'
+    assets: '$(Build.ArtifactStagingDirectory)/*.zip'
+    isPreRelease: true
+    addChangeLog: false
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    
