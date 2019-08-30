@@ -76,7 +76,8 @@ steps:
     target: '$(Build.SourceVersion)'
     tagSource: 'manual'
     tag: 'v$(Build.BuildNumber)'
-    assets: '$(Build.ArtifactStagingDirectory)/*.zip'
+    title: '$(Build.SourceVersionMessage)'
+    assets: '$(Build.ArtifactStagingDirectory)/$(JQM.packageName)'
     isPreRelease: true
     addChangeLog: false
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
