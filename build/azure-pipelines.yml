@@ -11,7 +11,7 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 2
-  versionPatch: 8
+  versionPatch: 9
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.cloudformationFileName: cloudformation.yaml
@@ -75,8 +75,8 @@ steps:
     action: 'create'
     target: '$(Build.SourceVersion)'
     tagSource: 'manual'
-    tag: 'v$(Build.BuildNumber)'
-    title: '$(Build.SourceVersionMessage)'
+    tag: '$(JQM.gitTagName)'
+    title: '$(JQM.gitTagName): $(Build.SourceVersionMessage)'
     assets: '$(Build.ArtifactStagingDirectory)/$(JQM.packageName)'
     isPreRelease: true
     addChangeLog: false
