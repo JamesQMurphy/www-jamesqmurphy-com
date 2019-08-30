@@ -1,6 +1,11 @@
 ﻿@model JamesQMurphy.Blog.Article
 @inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
 
+@section Scripts {
+    <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({ startOnLoad: true });</script>
+}
+
 <article>
     <h1 class="display-4">@Model.Title</h1>
     @if (!string.IsNullOrWhiteSpace(Model.Description))
