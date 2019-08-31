@@ -11,7 +11,15 @@ Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In
 ```mermaid
 
 graph LR
-    A-- build -->B
+    SC(Source Code)-- build -->A("Artifacts.")
+
+	A-- create. -->R("Release")
+
+	R-- deploy -->E1[Environment 1]
+	R-- deploy -->E2[Environment 2]
+	R-- deploy -->E3[Environment 3]
+
+	style A fill:#FFF
 
 ```
 
