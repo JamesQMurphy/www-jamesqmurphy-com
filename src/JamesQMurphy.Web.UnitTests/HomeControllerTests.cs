@@ -56,7 +56,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var configDictionary = new Dictionary<string, string>
             {
-                { "WebSiteTitle", SITE_NAME }
+                { "WebSiteTitle", SITE_NAME }   // Intentionally not using the constant here
             };
             configuration = ConfigurationHelper.Create(configDictionary);
 
@@ -86,7 +86,7 @@ namespace JamesQMurphy.Web.UnitTests
         {
             var result = controller.Privacy() as ViewResult;
             Assert.IsInstanceOf<ViewResult>(result);
-            string markdownContent = result.ViewData["Markdown"].ToString();
+            string markdownContent = result.ViewData[Constants.VIEWDATA_MARKDOWN].ToString();
             Assert.IsTrue(markdownContent.Contains(SITE_NAME));
         }
 

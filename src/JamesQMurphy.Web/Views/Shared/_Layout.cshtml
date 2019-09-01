@@ -1,4 +1,4 @@
-﻿@{ var webSiteTitle = Configuration.GetValue(typeof(string), "WebSiteTitle");}
+﻿@{ var webSiteTitle = Configuration.GetValue(typeof(string), Constants.CONFIGURATION_WEBSITETITLE);}
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
         @{
-            if (string.IsNullOrWhiteSpace((string)ViewData["Title"]))
+            if (string.IsNullOrWhiteSpace((string)ViewData[Constants.VIEWDATA_PAGETITLE]))
             {
                 <text>@webSiteTitle</text>
             }
             else
             {
-                <text>@ViewData["Title"] - @webSiteTitle</text>
+                <text>@ViewData[Constants.VIEWDATA_PAGETITLE] - @webSiteTitle</text>
             }
         }
     </title>

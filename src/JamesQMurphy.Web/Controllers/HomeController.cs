@@ -13,7 +13,7 @@ namespace JamesQMurphy.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IArticleStore articleStore;
-        private readonly string webSiteTitle = "Title";
+        private readonly string webSiteTitle;
 
         public HomeController(IArticleStore iarticleStore, IConfiguration configuration)
         {
@@ -34,15 +34,15 @@ namespace JamesQMurphy.Web.Controllers
 
         public IActionResult About()
         {
-            ViewData["Title"] = "About This Site";
-            ViewData["Markdown"] = System.IO.File.ReadAllText("Views/Home/About.md");
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "About This Site";
+            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/About.md");
             return View("Article");
         }
 
         public IActionResult Privacy()
         {
-            ViewData["Title"] = "Privacy Policy";
-            ViewData["Markdown"] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteTitle);
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
+            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteTitle);
             return View("Article");
         }
 

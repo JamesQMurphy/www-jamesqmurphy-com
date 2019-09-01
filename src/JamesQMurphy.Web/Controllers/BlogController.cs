@@ -28,13 +28,13 @@ namespace JamesQMurphy.Web.Controllers
             {
                 if (String.IsNullOrWhiteSpace(article.Description))
                 {
-                    ViewData["Title"] = article.Title;
+                    ViewData[Constants.VIEWDATA_PAGETITLE] = article.Title;
                 }
                 else
                 {
-                    ViewData["Title"] = $"{article.Title}: {article.Description}";
+                    ViewData[Constants.VIEWDATA_PAGETITLE] = $"{article.Title}: {article.Description}";
                 }
-                ViewData["Markdown"] = article.Content;
+                ViewData[Constants.VIEWDATA_MARKDOWN] = article.Content;
                 return View("Article", article.Metadata);
             }
             else

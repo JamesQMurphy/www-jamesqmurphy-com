@@ -36,7 +36,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var result = controller.Details(year.ToString(), month.ToString(), slug) as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);
-            Assert.AreEqual(title, result.ViewData["Title"]);
+            Assert.AreEqual(title, result.ViewData[Constants.VIEWDATA_PAGETITLE]);
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var result = controller.Details(year.ToString(), month.ToString(), slug) as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);
-            Assert.AreEqual($"{title}: {description}", result.ViewData["Title"]);
+            Assert.AreEqual($"{title}: {description}", result.ViewData[Constants.VIEWDATA_PAGETITLE]);
         }
 
     }
