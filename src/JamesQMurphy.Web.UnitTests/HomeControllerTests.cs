@@ -1,14 +1,17 @@
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace JamesQMurphy.Web.UnitTests
 {
     public class HomeControllerTests
     {
         private InMemoryArticleStore articleStore;
+        private IConfiguration configuration;
         private Controllers.HomeController controller;
 
         [SetUp]
@@ -49,7 +52,14 @@ namespace JamesQMurphy.Web.UnitTests
                     Content = "This is an older article from the previous year (2018)"
                 }
             });
-            controller = new Controllers.HomeController(articleStore, null);
+
+            var configDictionary = new Dictionary<string, string>
+            {
+                { "WebSiteTitle", "Test Title" }
+            };
+            configuration = ConfigurationHelper.Create(configDictionary);
+
+            controller = new Controllers.HomeController(articleStore, configuration);
         }
 
         [Test]

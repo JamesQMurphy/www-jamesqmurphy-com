@@ -18,10 +18,7 @@ namespace JamesQMurphy.Web.Controllers
         public HomeController(IArticleStore iarticleStore, IConfiguration configuration)
         {
             articleStore = iarticleStore;
-            if (configuration != null)
-            {
-                webSiteTitle = configuration.GetValue(typeof(string), "WebSiteTitle").ToString();
-            }
+            webSiteTitle = configuration.GetValue(typeof(string), "WebSiteTitle").ToString();
         }
 
         public IActionResult Index()
