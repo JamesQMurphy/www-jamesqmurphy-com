@@ -13,6 +13,7 @@ namespace JamesQMurphy.Web.UnitTests
         private InMemoryArticleStore articleStore;
         private IConfiguration configuration;
         private Controllers.HomeController controller;
+        private const string SITE_NAME = "TEST SITE 820ae666";
 
         [SetUp]
         public void Setup()
@@ -55,7 +56,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var configDictionary = new Dictionary<string, string>
             {
-                { "WebSiteTitle", "Test Title" }
+                { "WebSiteTitle", SITE_NAME }
             };
             configuration = ConfigurationHelper.Create(configDictionary);
 
@@ -72,5 +73,22 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreSame(articleStore.Articles[1], model.Article1);
             Assert.AreSame(articleStore.Articles[2], model.Article2);
         }
+
+        [Test]
+        public void TestAbout()
+        {
+            var result = controller.About() as ViewResult;
+            Assert.IsInstanceOf<ViewResult>(result);
+        }
+
+        [Test]
+        public void TestPrivacy()
+        {
+            var result = controller.Privacy() as ViewResult;
+            Assert.IsInstanceOf<ViewResult>(result);
+            string markdownContent = result.ViewData["Markdown"].ToString();
+            Assert.IsTrue(markdownContent.Contains(SITE_NAME));
+        }
+
     }
 }
