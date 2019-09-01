@@ -34,7 +34,8 @@ namespace JamesQMurphy.Web.Controllers
                 {
                     ViewData["Title"] = $"{article.Title}: {article.Description}";
                 }
-                return View(article);
+                ViewData["Markdown"] = article.Content;
+                return View("Article", article.Metadata);
             }
             else
             {

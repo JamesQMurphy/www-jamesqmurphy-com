@@ -49,7 +49,7 @@ namespace JamesQMurphy.Web.UnitTests
                     Content = "This is an older article from the previous year (2018)"
                 }
             });
-            controller = new Controllers.HomeController(articleStore);
+            controller = new Controllers.HomeController(articleStore, null);
         }
 
         [Test]

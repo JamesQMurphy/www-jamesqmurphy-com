@@ -1,0 +1,37 @@
+﻿@model JamesQMurphy.Blog.ArticleMetadata
+@inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
+
+@{ 
+    var title = String.Empty;
+    if (ViewData.ContainsKey("Title"))
+    {
+        title = ViewData["Title"].ToString();
+    }
+    if (Model != null)
+    {
+        if (!String.IsNullOrWhiteSpace(Model.Title))
+        {
+            title = Model.Title;
+        }
+    }
+}
+
+<article>
+    @if (!String.IsNullOrWhiteSpace(title))
+    {
+        <h1 class="display-4">@title</h1>
+    }
+    @if (Model != null)
+    {
+        @if (!String.IsNullOrWhiteSpace(Model.Description))
+        {
+            <h5>@Model.Description</h5>
+        }
+        <h6 class="text-muted font-weight-light"><small>by JamesQMurphy | @Model.PublishDate.ToString("MMMM d, yyyy")</small></h6>
+    }
+    <br />
+    @if (ViewData.ContainsKey("Markdown"))
+    {
+        @Html.Raw(Renderer.RenderHtml(ViewData["Markdown"].ToString()))
+    }
+</article>
