@@ -176,6 +176,28 @@ Resources:
           Value: !Ref VersionNumberParameter
 
 
+  TheScheduledRuleToWarmTheLambda: 
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: "Warm the lambda"
+      ScheduleExpression: "rate(5 minutes)"
+      State: "ENABLED"
+      Targets: 
+        - 
+        Arn: !GetAtt TheLambdaFunction.Arn
+        Id: TheLambdaToWarm
+        Input: '{"httpMethod":"GET","path":"/favicon.ico"}'
+
+
+  ThePermissionForEventsToInvokeLambda: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+    FunctionName: !Ref TheLambdaFunction
+    Action: "lambda:InvokeFunction"
+    Principal: "events.amazonaws.com"
+    SourceArn: !GetAtt ScheduledRule.Arn
+
+
   TheGatewayRestAPI:
     Type: 'AWS::ApiGateway::RestApi'
     Properties:
