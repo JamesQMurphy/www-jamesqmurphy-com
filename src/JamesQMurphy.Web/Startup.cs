@@ -33,7 +33,7 @@ namespace JamesQMurphy.Web
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.AddHealthChecks();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
@@ -70,6 +70,7 @@ namespace JamesQMurphy.Web
                 app.UseHsts();
             }
 
+            app.UseHealthChecks(Configuration["WarmUrl"]);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
