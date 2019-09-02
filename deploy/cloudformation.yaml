@@ -183,10 +183,9 @@ Resources:
       ScheduleExpression: "rate(5 minutes)"
       State: "ENABLED"
       Targets: 
-        - 
-        Arn: !GetAtt TheLambdaFunction.Arn
-        Id: TheLambdaToWarm
-        Input: '{"httpMethod":"GET","path":"/favicon.ico"}'
+        - Arn: !GetAtt TheLambdaFunction.Arn
+          Id: TheLambdaToWarm
+          Input: '{"httpMethod":"GET","path":"/favicon.ico"}'
 
 
   ThePermissionForEventsToInvokeLambda: 
