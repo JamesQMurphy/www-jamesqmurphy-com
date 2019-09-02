@@ -1,15 +1,19 @@
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace JamesQMurphy.Web.UnitTests
 {
     public class HomeControllerTests
     {
         private InMemoryArticleStore articleStore;
+        private IConfiguration configuration;
         private Controllers.HomeController controller;
+        private const string SITE_NAME = "TEST SITE 820ae666";
 
         [SetUp]
         public void Setup()
@@ -49,7 +53,14 @@ namespace JamesQMurphy.Web.UnitTests
                     Content = "This is an older article from the previous year (2018)"
                 }
             });
-            controller = new Controllers.HomeController(articleStore);
+
+            var configDictionary = new Dictionary<string, string>
+            {
+                { "WebSiteTitle", SITE_NAME }   // Intentionally not using the constant here
+            };
+            configuration = ConfigurationHelper.Create(configDictionary);
+
+            controller = new Controllers.HomeController(articleStore, configuration);
         }
 
         [Test]
@@ -62,5 +73,22 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreSame(articleStore.Articles[1], model.Article1);
             Assert.AreSame(articleStore.Articles[2], model.Article2);
         }
+
+        [Test]
+        public void TestAbout()
+        {
+            var result = controller.About() as ViewResult;
+            Assert.IsInstanceOf<ViewResult>(result);
+        }
+
+        [Test]
+        public void TestPrivacy()
+        {
+            var result = controller.Privacy() as ViewResult;
+            Assert.IsInstanceOf<ViewResult>(result);
+            string markdownContent = result.ViewData[Constants.VIEWDATA_MARKDOWN].ToString();
+            Assert.IsTrue(markdownContent.Contains(SITE_NAME));
+        }
+
     }
 }

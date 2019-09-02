@@ -1,0 +1,3 @@
+@webSiteTitle ("The Website") does not collect any personal information, nor does it employ any use of "tracking" cookies.  The Website serves as my personal blog, and a demonstration of how to deploy a web site using DevOps best practices.  At this time, the Website is in a "read-only" mode, so there is no way to send *any* data to the site, let alone personal data.  If this changes in the future, then this policy will be updated, and a mechanism will be employed to let users know of the updated policy.
+
+The Website is hosted on Amazon Web Services (AWS) using their [API Gateway](https://aws.amazon.com/api-gateway/) service.
