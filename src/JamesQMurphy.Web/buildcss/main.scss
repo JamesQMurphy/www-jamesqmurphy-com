@@ -24,12 +24,12 @@ $pre-padding-x: .4rem !default;
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 
-// <main>
+// <article>
 article {
     font-size: $font-size-lg;
     line-height: 2;
     
-    > p {
+    > p, .mermaid {
         margin-bottom: $main-paragraph-margin-bottom;
     }
 }
