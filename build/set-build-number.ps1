@@ -7,7 +7,7 @@ Sets the build number based on the following rules, where N = 1, 2, 3
 3.  If the build is for a pull request, set it to PR-xxxx[.N]
 4.  Otherwise, set it to Major.Minor.Patch-<branchname>[.N]
 
-See https://www.jamesqmurphy.com/blog/brewing-the-blog-6 for an explanation
+See https://www.jamesqmurphy.com/blog/2019/08/build-numbering to learn more
  
 #>
 
