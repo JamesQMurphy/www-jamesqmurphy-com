@@ -191,7 +191,7 @@ Resources:
       Targets: 
         - Arn: !GetAtt TheLambdaFunction.Arn
           Id: TheLambdaToWarm
-          Input: !Sub '{"httpMethod":"GET","path":"${WarmUrlParameter}"}'
+          Input: !Sub '{"httpMethod":"GET","path":"/home"}'
 
 
   TheLambdaInvokePermissionForEvents: 
