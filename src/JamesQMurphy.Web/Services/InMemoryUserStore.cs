@@ -56,7 +56,8 @@ namespace JamesQMurphy.Web.Services
 
         public Task<ApplicationUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var user = _dictUsers.Values.Where(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
+            return Task.FromResult(user);
         }
 
         public Task<string> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -71,22 +72,26 @@ namespace JamesQMurphy.Web.Services
 
         public Task<string> GetUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.UserName);
         }
 
         public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            user.NormalizedUserName = normalizedName;
+            return Task.FromResult(0);
         }
 
         public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            user.UserName = userName;
+            return Task.FromResult(0);
         }
 
         public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+            _dictUsers[user.Id] = user;
+            return Task.FromResult(IdentityResult.Success);
         }
 
         #region IDisposable Support
