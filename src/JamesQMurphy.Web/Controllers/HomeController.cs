@@ -46,6 +46,13 @@ namespace JamesQMurphy.Web.Controllers
             return View("Article");
         }
 
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public IActionResult Secret()
+        {
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Secret Page";
+            return View("Secret");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
