@@ -10,7 +10,7 @@ namespace JamesQMurphy.Web.Services
 {
     public class InMemoryRoleStore : IRoleStore<ApplicationRole>
     {
-        private Dictionary<string, ApplicationRole> _dictRoles = new Dictionary<string, ApplicationRole>();
+        private readonly Dictionary<string, ApplicationRole> _dictRoles = new Dictionary<string, ApplicationRole>();
 
         public Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken)
         {
