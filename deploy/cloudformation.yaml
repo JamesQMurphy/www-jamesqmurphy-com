@@ -99,6 +99,10 @@ Resources:
           PolicyDocument:
             Version: 2012-10-17
             Statement:
+              - Sid: AuthorizeService
+              - Principal:
+                  Service:
+                    - lambda.amazonaws.com
               - Effect: Allow
                 Action:
                   - 'ses:SendEmail'
