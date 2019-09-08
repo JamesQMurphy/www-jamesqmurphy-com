@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using JamesQMurphy.Blog;
@@ -14,11 +15,13 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly IArticleStore articleStore;
         private readonly string webSiteTitle;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public HomeController(IArticleStore iarticleStore, IConfiguration configuration)
+        public HomeController(IArticleStore iarticleStore, IConfiguration configuration, UserManager<ApplicationUser> userMgr)
         {
             articleStore = iarticleStore;
             webSiteTitle = configuration.GetValue(typeof(string), "WebSiteTitle").ToString();
+            userManager = userMgr;
         }
 
         public IActionResult Index()
@@ -50,6 +53,7 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult Secret()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Secret Page";
+            ViewData["User"] = userManager.GetUserAsync(this.User).GetAwaiter().GetResult();
             return View("Secret");
         }
 

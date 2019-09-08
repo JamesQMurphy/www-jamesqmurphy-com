@@ -26,9 +26,6 @@ namespace JamesQMurphy.Web.Services
                 Id = "id",
                 NormalizedEmail = "A@B",
                 NormalizedUserName = "A@B",
-                PhoneNumber = "123-456-7890",
-                PhoneNumberConfirmed = true,
-                TwoFactorEnabled = false,
                 UserName = "A@B"
             };
 
