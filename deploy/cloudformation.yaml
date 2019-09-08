@@ -100,10 +100,10 @@ Resources:
             Version: 2012-10-17
             Statement:
               - Sid: AuthorizeService
-              - Principal:
+                Principal:
                   Service:
                     - lambda.amazonaws.com
-              - Effect: Allow
+                Effect: Allow
                 Action:
                   - 'ses:SendEmail'
                   - 'ses:SendRawEmail'
