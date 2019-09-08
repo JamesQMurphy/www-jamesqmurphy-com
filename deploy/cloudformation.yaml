@@ -95,6 +95,20 @@ Resources:
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
                 Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableParameter}'
+        - PolicyName: 'Send email as no-reply at jamesqmurphy.com'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Principal:
+                  Service: lambda.amazonaws.com
+                Action:
+                  - 'ses:SendEmail'
+                  - 'ses:SendRawEmail'
+                Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/jamesqmurphy.com'
+                Condition:
+                  StringEquals:
+                    'ses:FromAddress': "no-reply@jamesqmurphy.com"
 
 
   TheRoleForTheApiGateway:

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JamesQMurphy.Blog;
+using JamesQMurphy.Email;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -36,6 +37,7 @@ namespace JamesQMurphy.Web
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
 
             switch (Configuration["ArticleStore:Service"])
@@ -45,13 +47,23 @@ namespace JamesQMurphy.Web
                     break;
 
                 case "Lambda":
-                    services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
                     services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
                     services.AddSingleton<IArticleStore, JamesQMurphy.Web.Services.DynamoDbArticleStoreFromConfiguration>();
                     break;
 
                 default:  // InMemoryArticleStore
                     services.AddSingleton<IArticleStore, InMemoryArticleStore>();
+                    break;
+            }
+
+            switch (Configuration["Email:Service"])
+            {
+                case "SES":
+                    services.AddSingleton<IEmailService>(new JamesQMurphy.Email.Aws.SESEmailService(Configuration["Email:From"]));
+                    break;
+
+                default: //NullEmailService
+                    services.AddSingleton<IEmailService, NullEmailService>();
                     break;
             }
         }

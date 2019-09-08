@@ -46,6 +46,8 @@
   <ItemGroup>
     <ProjectReference Include="..\JamesQMurphy.Blog.Aws\JamesQMurphy.Blog.Aws.csproj" />
     <ProjectReference Include="..\JamesQMurphy.Blog\JamesQMurphy.Blog.csproj" />
+    <ProjectReference Include="..\JamesQMurphy.Email.Aws\JamesQMurphy.Email.Aws.csproj" />
+    <ProjectReference Include="..\JamesQMurphy.Email\JamesQMurphy.Email.csproj" />
   </ItemGroup>
 
 
