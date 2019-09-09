@@ -5,8 +5,14 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Email
 {
+    public class EmailResult
+    {
+        public bool Success { get; set; }
+        public string Details { get; set; }
+    }
+
     public interface IEmailService
     {
-        Task SendEmailAsync(string emailAddress, string subject, string message);
+        Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message);
     }
 }

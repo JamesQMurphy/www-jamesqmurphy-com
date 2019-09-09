@@ -16,7 +16,7 @@ namespace JamesQMurphy.Email.Aws
             _sourceAddress = sourceAddress;
         }
 
-        public async Task SendEmailAsync(string emailAddress, string subject, string message)
+        public async Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
         {
             using (var client = new AmazonSimpleEmailServiceClient())
             {
@@ -34,6 +34,11 @@ namespace JamesQMurphy.Email.Aws
                     }
                 };
                 var response = await client.SendEmailAsync(sendRequest);
+                return new EmailResult
+                {
+                    Success = (response.HttpStatusCode == System.Net.HttpStatusCode.OK),
+                    Details = $"SendEmailAsync returned {response.HttpStatusCode}; message ID {response.MessageId}"
+                };
             }
         }
     }

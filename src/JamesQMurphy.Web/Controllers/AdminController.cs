@@ -33,16 +33,25 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult TestEmail(TestEmailModel model)
+        public async Task<IActionResult> TestEmail(TestEmailModel model)
         {
             if (ModelState.IsValid)
             {
-                _ = _emailService.SendEmailAsync(
+                var result = await _emailService.SendEmailAsync(
                     model.Email,
                     $"Test message from {_siteName}",
                     $"This is a test message from {_siteName}.{Environment.NewLine}{Environment.NewLine}{model.Message}"
                     );
-                ViewData["SuccessMsg"] = $"Email sent to {model.Email}";
+
+                if (result.Success)
+                {
+                    ViewData["SuccessMsg"] = $"Email sent to {model.Email}\n{result.Details}";
+                }
+                else
+                {
+                    ViewData["FailMsg"] = $"Email failure\n{result.Details}";
+                }
+
             }
             return View();
         }

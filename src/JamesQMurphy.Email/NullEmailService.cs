@@ -5,9 +5,9 @@ namespace JamesQMurphy.Email
 {
     public class NullEmailService : IEmailService
     {
-        public Task SendEmailAsync(string emailAddress, string subject, string message)
+        public Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(new EmailResult { Success = true, Details = "Null Email Service called" });
         }
     }
 }
