@@ -103,7 +103,7 @@ Resources:
                 Action:
                   - 'ses:SendEmail'
                   - 'ses:SendRawEmail'
-                Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/jamesqmurphy.com'
+                Resource: '*'
                 Condition:
                   StringEquals:
                     'ses:FromAddress': "no-reply@jamesqmurphy.com"
@@ -181,6 +181,7 @@ Resources:
           ImageBasePath: /blogimages
           ArticleStore__Service: Lambda
           ArticleStore__Path: !Ref DynamoDbTableParameter
+          Email__Service: SES
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
