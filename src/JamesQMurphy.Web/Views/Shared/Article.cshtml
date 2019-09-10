@@ -31,9 +31,9 @@
     {
         @if (!String.IsNullOrWhiteSpace(Model.Description))
         {
-            <h5>@Model.Description</h5>
+            <h3>@Model.Description</h3>
         }
-        <h6 class="text-muted font-weight-light"><small>by JamesQMurphy | @Model.PublishDate.ToString("MMMM d, yyyy")</small></h6>
+        <h6 class="text-muted">by JamesQMurphy | @Model.PublishDate.ToString("MMMM d, yyyy")</h6>
     }
     <br />
     @if (ViewData.ContainsKey(Constants.VIEWDATA_MARKDOWN))
