@@ -1,5 +1,6 @@
 ﻿@using JamesQMurphy.Web
 @using JamesQMurphy.Web.Models
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using Microsoft.Extensions.Configuration
-@inject IConfiguration Configuration
+
+@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<WebSiteOptions> WebSiteOptionsAccessor

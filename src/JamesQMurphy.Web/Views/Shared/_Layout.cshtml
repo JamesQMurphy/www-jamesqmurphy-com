@@ -1,4 +1,4 @@
-﻿@{ var webSiteTitle = Configuration.GetValue(typeof(string), Constants.CONFIGURATION_WEBSITETITLE);}
+﻿@{ var webSiteTitle = WebSiteOptionsAccessor.CurrentValue.WebSiteTitle; }
 <!DOCTYPE html>
 <html>
 <head>
