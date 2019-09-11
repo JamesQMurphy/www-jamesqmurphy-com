@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
@@ -16,10 +15,10 @@ namespace JamesQMurphy.Web.Controllers
         private readonly IArticleStore articleStore;
         private readonly WebSiteOptions webSiteOptions;
 
-        public HomeController(IArticleStore iarticleStore, IOptionsMonitor<WebSiteOptions> webSiteOptionsMonitor)
+        public HomeController(IArticleStore iarticleStore, IOptions<WebSiteOptions> webSiteOptionsOptions)
         {
             articleStore = iarticleStore;
-            webSiteOptions = webSiteOptionsMonitor.CurrentValue;
+            webSiteOptions = webSiteOptionsOptions.Value;
         }
 
         public IActionResult Index()

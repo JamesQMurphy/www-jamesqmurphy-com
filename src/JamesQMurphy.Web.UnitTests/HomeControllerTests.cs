@@ -11,7 +11,6 @@ namespace JamesQMurphy.Web.UnitTests
     public class HomeControllerTests
     {
         private InMemoryArticleStore articleStore;
-        private IConfiguration configuration;
         private Controllers.HomeController controller;
         private const string SITE_NAME = "TEST SITE 820ae666";
 
@@ -54,13 +53,12 @@ namespace JamesQMurphy.Web.UnitTests
                 }
             });
 
-            var configDictionary = new Dictionary<string, string>
+            WebSiteOptions options = new WebSiteOptions()
             {
-                { "WebSiteTitle", SITE_NAME }   // Intentionally not using the constant here
+                WebSiteTitle = SITE_NAME
             };
-            configuration = ConfigurationHelper.Create(configDictionary);
 
-            controller = new Controllers.HomeController(articleStore, configuration);
+            controller = new Controllers.HomeController(articleStore, ConfigurationHelper.OptionsFrom(options));
         }
 
         [Test]
