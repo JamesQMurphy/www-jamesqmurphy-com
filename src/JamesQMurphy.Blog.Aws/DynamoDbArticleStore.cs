@@ -9,12 +9,17 @@ namespace JamesQMurphy.Blog.Aws
 {
     public class DynamoDbArticleStore : IArticleStore
     {
+        public class Settings
+        {
+            public string DynamoDbTableName { get; set; }
+        }
+
         private readonly Table table;
         private readonly List<string> metadataAttributesToGet = new List<string> { "slug", "title", "publishDate", "description" };
 
-        public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient, string tableName)
+        public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient, Settings settings)
         {
-            table = Table.LoadTable(dynamoDbClient, tableName);
+            table = Table.LoadTable(dynamoDbClient, settings.DynamoDbTableName);
         }
 
         public Article GetArticle(string yearString, string monthString, string slug)

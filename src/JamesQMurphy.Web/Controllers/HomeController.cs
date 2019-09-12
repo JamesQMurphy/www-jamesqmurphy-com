@@ -15,10 +15,10 @@ namespace JamesQMurphy.Web.Controllers
         private readonly IArticleStore articleStore;
         private readonly WebSiteOptions webSiteOptions;
 
-        public HomeController(IArticleStore iarticleStore, IOptions<WebSiteOptions> webSiteOptionsOptions)
+        public HomeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions)
         {
             articleStore = iarticleStore;
-            webSiteOptions = webSiteOptionsOptions.Value;
+            this.webSiteOptions = webSiteOptions;
         }
 
         public IActionResult Index()

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -36,12 +35,12 @@ namespace JamesQMurphy.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.Configure<WebSiteOptions>(Configuration);
+            services.ConfigurePoco<WebSiteOptions>(Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-            services.AddArticleStoreServices(Configuration.GetArticleStoreOptions("ArticleStore"));
+            services.AddArticleStoreServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

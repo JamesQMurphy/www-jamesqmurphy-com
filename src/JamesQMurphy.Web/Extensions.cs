@@ -1,27 +1,48 @@
-﻿using JamesQMurphy.Blog;
+﻿using System;
+using JamesQMurphy.Blog;
 using JamesQMurphy.Blog.Aws;
-using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceExtensionMethods
     {
-        public static IServiceCollection AddArticleStoreServices(this IServiceCollection collection, ArticleStoreOptions options)
+        // Thank you Filip W. from StrathWeb for this idea!
+        // https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
+        public static TConfig ConfigurePoco<TConfig>(this IServiceCollection services, IConfiguration configuration, string configSection = "") where TConfig : class, new()
         {
-            switch (options.Service)
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+            var config = new TConfig();
+            if (String.IsNullOrWhiteSpace(configSection))
             {
-                case ArticleStoreService.LocalFolder:
-                    collection.AddSingleton<IArticleStore>(new LocalFolderArticleStore(options.Path));
+                configuration.Bind(config);
+            }
+            else
+            {
+                configuration.GetSection(configSection).Bind(config);
+            }
+            services.AddSingleton(config);
+            return config;
+        }
+
+        public static IServiceCollection AddArticleStoreServices(this IServiceCollection collection, IConfiguration configuration)
+        {
+            switch (configuration["ArticleStore:Service"])
+            {
+                case "LocalFolder":
+                    collection.AddSingleton<IArticleStore>(new LocalFolderArticleStore(configuration["ArticleStore:Path"]));
                     break;
 
-                case ArticleStoreService.InMemory:
-                    collection.AddSingleton<IArticleStore, InMemoryArticleStore>();
-                    break;
-
-                case ArticleStoreService.DynamoDb:
+                case "DynamoDb":
                     collection.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
-                    collection.AddSingleton<IArticleStore, DynamoDbArticleStoreFromConfiguration>();
+                    collection.ConfigurePoco<DynamoDbArticleStore.Settings>(configuration, "ArticleStore");
+                    collection.AddSingleton<IArticleStore, DynamoDbArticleStore>();
+                    break;
+
+                default: //InMemory
+                    collection.AddSingleton<IArticleStore, InMemoryArticleStore>();
                     break;
             }
             return collection;

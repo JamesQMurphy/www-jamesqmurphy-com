@@ -58,7 +58,7 @@ namespace JamesQMurphy.Web.UnitTests
                 WebSiteTitle = SITE_NAME
             };
 
-            controller = new Controllers.HomeController(articleStore, ConfigurationHelper.OptionsFrom(options));
+            controller = new Controllers.HomeController(articleStore, options);
         }
 
         [Test]

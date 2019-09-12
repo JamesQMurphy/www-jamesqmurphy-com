@@ -168,7 +168,7 @@ Resources:
         Variables:
           ImageBasePath: /blogimages
           ArticleStore__Service: Lambda
-          ArticleStore__Path: !Ref DynamoDbTableParameter
+          ArticleStore__DynamoDbTableName: !Ref DynamoDbTableParameter
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
