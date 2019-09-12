@@ -45,7 +45,7 @@ namespace JamesQMurphy.Web
                 .AddDefaultTokenProviders();
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = "/account/login";
+                options.LoginPath = "/profile/login";
             });
 
 

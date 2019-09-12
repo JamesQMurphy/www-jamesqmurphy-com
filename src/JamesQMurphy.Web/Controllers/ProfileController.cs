@@ -11,23 +11,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Models.AccountViewModels;
+using JamesQMurphy.Web.Models.ProfileViewModels;
 using JamesQMurphy.Web.Services;
 
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class AccountController : Controller
+    public class ProfileController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
 
-        public AccountController
+        public ProfileController
         (
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<AccountController> logger
+            ILogger<ProfileController> logger
         )
         {
             _userManager = userManager;
