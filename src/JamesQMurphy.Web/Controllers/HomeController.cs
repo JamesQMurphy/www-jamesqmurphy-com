@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
 
@@ -13,12 +12,12 @@ namespace JamesQMurphy.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IArticleStore articleStore;
-        private readonly string webSiteTitle;
+        private readonly WebSiteOptions webSiteOptions;
 
-        public HomeController(IArticleStore iarticleStore, IConfiguration configuration)
+        public HomeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions)
         {
             articleStore = iarticleStore;
-            webSiteTitle = configuration.GetValue(typeof(string), "WebSiteTitle").ToString();
+            this.webSiteOptions = webSiteOptions;
         }
 
         public IActionResult Index()
@@ -42,7 +41,7 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult Privacy()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
-            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteTitle);
+            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteOptions.WebSiteTitle);
             return View("Article");
         }
 
