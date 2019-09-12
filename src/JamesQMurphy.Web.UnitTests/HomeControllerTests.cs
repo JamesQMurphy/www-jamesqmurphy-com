@@ -1,5 +1,6 @@
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
+using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
@@ -11,7 +12,6 @@ namespace JamesQMurphy.Web.UnitTests
     public class HomeControllerTests
     {
         private InMemoryArticleStore articleStore;
-        private IConfiguration configuration;
         private Controllers.HomeController controller;
         private const string SITE_NAME = "TEST SITE 820ae666";
 
@@ -54,13 +54,24 @@ namespace JamesQMurphy.Web.UnitTests
                 }
             });
 
-            var configDictionary = new Dictionary<string, string>
-            {
-                { "WebSiteTitle", SITE_NAME }   // Intentionally not using the constant here
-            };
-            configuration = ConfigurationHelper.Create(configDictionary);
+            var userStore = new InMemoryUserStore();
+            var userManager = new Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>(
+                userStore,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
 
-            controller = new Controllers.HomeController(articleStore, configuration);
+            WebSiteOptions options = new WebSiteOptions()
+            {
+                WebSiteTitle = SITE_NAME
+            };
+
+            controller = new Controllers.HomeController(articleStore, options, userManager);
         }
 
         [Test]

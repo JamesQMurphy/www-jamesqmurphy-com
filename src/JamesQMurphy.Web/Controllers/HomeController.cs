@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
 
@@ -14,13 +13,13 @@ namespace JamesQMurphy.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IArticleStore articleStore;
-        private readonly string webSiteTitle;
+        private readonly WebSiteOptions webSiteOptions;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public HomeController(IArticleStore iarticleStore, IConfiguration configuration, UserManager<ApplicationUser> userMgr)
+        public HomeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions, UserManager<ApplicationUser> userMgr)
         {
             articleStore = iarticleStore;
-            webSiteTitle = configuration.GetValue(typeof(string), "WebSiteTitle").ToString();
+            this.webSiteOptions = webSiteOptions;
             userManager = userMgr;
         }
 
@@ -45,7 +44,7 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult Privacy()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
-            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteTitle);
+            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteOptions.WebSiteTitle);
             return View("Article");
         }
 

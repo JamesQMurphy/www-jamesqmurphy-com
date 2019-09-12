@@ -37,6 +37,7 @@ namespace JamesQMurphy.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddTransient<IUserStore<ApplicationUser>, InMemoryUserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, InMemoryRoleStore>();
 
@@ -50,23 +51,8 @@ namespace JamesQMurphy.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
-
-            switch (Configuration["ArticleStore:Service"])
-            {
-                case "LocalFolder":
-                    services.AddSingleton<IArticleStore>(new LocalFolderArticleStore(Configuration["ArticleStore:Path"]));
-                    break;
-
-                case "Lambda":
-                    services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-                    services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
-                    services.AddSingleton<IArticleStore, JamesQMurphy.Web.Services.DynamoDbArticleStoreFromConfiguration>();
-                    break;
-
-                default:  // InMemoryArticleStore
-                    services.AddSingleton<IArticleStore, InMemoryArticleStore>();
-                    break;
-            }
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+            services.AddArticleStoreServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
