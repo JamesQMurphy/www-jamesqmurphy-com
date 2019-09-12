@@ -9,7 +9,7 @@ namespace JamesQMurphy.Blog.Aws
 {
     public class DynamoDbArticleStore : IArticleStore
     {
-        public class Settings
+        public class Options
         {
             public string DynamoDbTableName { get; set; }
         }
@@ -17,7 +17,7 @@ namespace JamesQMurphy.Blog.Aws
         private readonly Table table;
         private readonly List<string> metadataAttributesToGet = new List<string> { "slug", "title", "publishDate", "description" };
 
-        public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient, Settings settings)
+        public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient, Options settings)
         {
             table = Table.LoadTable(dynamoDbClient, settings.DynamoDbTableName);
         }
