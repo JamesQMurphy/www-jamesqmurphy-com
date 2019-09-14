@@ -113,6 +113,16 @@ Resources:
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
                 Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}'
+        - PolicyName: !Sub SSM-WriteParameters
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ssm:PutParameter'
+                  - 'ssm:AddTagsToResource'
+                  - 'ssm:GetParametersByPath'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
 
 
   TheRoleForTheApiGateway:
