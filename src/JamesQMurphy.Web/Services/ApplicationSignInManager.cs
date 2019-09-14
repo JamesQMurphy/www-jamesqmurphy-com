@@ -24,6 +24,7 @@ namespace JamesQMurphy.Web.Services
         {
         }
 
+        // overridden to use email address instead of username
         public override async Task<SignInResult> PasswordSignInAsync(string emailAddress, string password, bool isPersistent, bool lockoutOnFailure)
         {
             var user = await UserManager.FindByEmailAsync(emailAddress);
