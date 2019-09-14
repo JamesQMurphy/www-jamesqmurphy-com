@@ -187,6 +187,7 @@ Resources:
           ImageBasePath: /blogimages
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
+          UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
       Tags:
         - Key: app
