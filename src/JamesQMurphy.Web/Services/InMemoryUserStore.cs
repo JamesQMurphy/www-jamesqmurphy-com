@@ -11,7 +11,8 @@ namespace JamesQMurphy.Web.Services
     public class InMemoryUserStore :
         IDisposable,
         IUserStore<ApplicationUser>,
-        IUserPasswordStore<ApplicationUser>
+        IUserPasswordStore<ApplicationUser>,
+        IUserEmailStore<ApplicationUser>
     {
         private readonly Dictionary<string, ApplicationUser> _dictUsers = new Dictionary<string, ApplicationUser>();
 
@@ -23,10 +24,9 @@ namespace JamesQMurphy.Web.Services
             {
                 Email = "a@b",
                 EmailConfirmed = true,
-                Id = "id",
                 NormalizedEmail = "A@B",
-                NormalizedUserName = "A@B",
-                UserName = "A@B"
+                NormalizedUserName = "USERNAME",
+                UserName = "Username"
             };
 
             _ = CreateAsync(user).GetAwaiter().GetResult();
@@ -35,10 +35,16 @@ namespace JamesQMurphy.Web.Services
         }
 
         #region Helpers
-        public Task<string> GetUserIdAsync(ApplicationUser user) => Task.FromResult(user.Id);
+        public Task<string> GetUserIdAsync(ApplicationUser user) => Task.FromResult(user.NormalizedEmail);
         public Task<string> GetUserNameAsync(ApplicationUser user) => Task.FromResult(user.UserName);
         public Task<string> GetNormalizedUserNameAsync(ApplicationUser user) => Task.FromResult(user.NormalizedUserName);
         public Task<string> GetPasswordHashAsync(ApplicationUser user) => Task.FromResult(user.PasswordHash);
+        public Task<string> GetEmailAsync(ApplicationUser user) => Task.FromResult(user.Email);
+        public Task<string> GetNormalizedEmailAsync(ApplicationUser user) => Task.FromResult(user.NormalizedEmail);
+        public Task<bool> GetEmailConfirmedAsync(ApplicationUser user) => Task.FromResult(user.EmailConfirmed);
+
+
+
         public Task SetUserNameAsync(ApplicationUser user, string userName)
         {
             user.UserName = userName;
@@ -54,10 +60,26 @@ namespace JamesQMurphy.Web.Services
             user.PasswordHash = passwordHash;
             return Task.FromResult(0);
         }
+        public Task SetEmailAsync(ApplicationUser user, string email)
+        {
+            user.Email = email;
+            return Task.FromResult(0);
+        }
+        public Task SetNormalizedEmailAsync(ApplicationUser user, string normalizedEmail)
+        {
+            user.NormalizedEmail = normalizedEmail;
+            return Task.FromResult(0);
+        }
+        public Task SetEmailConfirmedAsync(ApplicationUser user, bool confirmed)
+        {
+            user.EmailConfirmed = confirmed;
+            return Task.FromResult(0);
+        }
+
 
         public Task<IdentityResult> CreateAsync(ApplicationUser user)
         {
-            if (_dictUsers.TryAdd(user.Id, user))
+            if (_dictUsers.TryAdd(user.NormalizedEmail, user))
             {
                 return Task.FromResult(IdentityResult.Success);
             }
@@ -68,12 +90,12 @@ namespace JamesQMurphy.Web.Services
         }
         public Task<IdentityResult> UpdateAsync(ApplicationUser user)
         {
-            _dictUsers[user.Id] = user;
+            _dictUsers[user.NormalizedEmail] = user;
             return Task.FromResult(IdentityResult.Success);
         }
         public Task<IdentityResult> DeleteAsync(ApplicationUser user)
         {
-            if (_dictUsers.Remove(user.Id))
+            if (_dictUsers.Remove(user.NormalizedEmail))
             {
                 return Task.FromResult(IdentityResult.Success);
             }
@@ -82,7 +104,17 @@ namespace JamesQMurphy.Web.Services
                 return Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = "User not found" }));
             }
         }
-
+        public Task<ApplicationUser> FindByPrimaryKey(string primaryKey)
+        {
+            if (_dictUsers.ContainsKey(primaryKey))
+            {
+                return Task.FromResult(_dictUsers[primaryKey]);
+            }
+            else
+            {
+                return Task.FromResult((ApplicationUser)null);
+            }
+        }
         #endregion
 
         #region IDisposable Implementation
@@ -113,14 +145,7 @@ namespace JamesQMurphy.Web.Services
         Task<ApplicationUser> IUserStore<ApplicationUser>.FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (_dictUsers.ContainsKey(userId))
-            {
-                return Task.FromResult(_dictUsers[userId]);
-            }
-            else
-            {
-                return Task.FromResult((ApplicationUser)null);
-            }
+            return FindByPrimaryKey(userId);
         }
 
         Task<ApplicationUser> IUserStore<ApplicationUser>.FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
@@ -185,6 +210,52 @@ namespace JamesQMurphy.Web.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(!String.IsNullOrEmpty(user.PasswordHash));
+        }
+
+        #endregion
+
+
+        #region IUserEmailStore<ApplicationUser> implementation
+        Task IUserEmailStore<ApplicationUser>.SetEmailAsync(ApplicationUser user, string email, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return SetEmailAsync(user, email);
+        }
+
+        Task<string> IUserEmailStore<ApplicationUser>.GetEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return GetEmailAsync(user);
+        }
+
+        Task<bool> IUserEmailStore<ApplicationUser>.GetEmailConfirmedAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return GetEmailConfirmedAsync(user);
+        }
+
+        Task IUserEmailStore<ApplicationUser>.SetEmailConfirmedAsync(ApplicationUser user, bool confirmed, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return SetEmailConfirmedAsync(user, confirmed);
+        }
+
+        Task<ApplicationUser> IUserEmailStore<ApplicationUser>.FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return FindByPrimaryKey(normalizedEmail);
+        }
+
+        Task<string> IUserEmailStore<ApplicationUser>.GetNormalizedEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return GetNormalizedEmailAsync(user);
+        }
+
+        Task IUserEmailStore<ApplicationUser>.SetNormalizedEmailAsync(ApplicationUser user, string normalizedEmail, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return SetNormalizedEmailAsync(user, normalizedEmail);
         }
         #endregion
     }

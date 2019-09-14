@@ -19,18 +19,15 @@ namespace JamesQMurphy.Web.Controllers
 {
     public class ProfileController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
 
         public ProfileController
         (
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+            ApplicationSignInManager<ApplicationUser> signInManager,
             ILogger<ProfileController> logger
         )
         {
-            _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
         }

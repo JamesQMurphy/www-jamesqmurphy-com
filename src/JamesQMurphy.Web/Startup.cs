@@ -38,11 +38,13 @@ namespace JamesQMurphy.Web
             });
 
             services.ConfigurePoco<WebSiteOptions>(Configuration);
-            services.AddTransient<IUserStore<ApplicationUser>, InMemoryUserStore>();
-            services.AddTransient<IRoleStore<ApplicationRole>, InMemoryRoleStore>();
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddUserStore<InMemoryUserStore>()
+                .AddRoleStore<InMemoryRoleStore>()
+                .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/profile/login";
