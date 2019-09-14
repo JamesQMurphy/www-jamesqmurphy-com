@@ -37,11 +37,26 @@ namespace JamesQMurphy.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.ConfigurePoco<WebSiteOptions>(Configuration);
+            var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+            services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
+
+            switch (Configuration["UserStore:Service"])
+            {
+                case "DynamoDb":
+                    services.ConfigurePoco<DynamoDbUserStorage.Options>(Configuration, "UserStore");
+                    services.AddSingleton<IApplicationUserStorage, DynamoDbUserStorage>();
+                    break;
+
+                default:  //InMemory
+                    services.AddSingleton<IApplicationUserStorage, InMemoryApplicationUserStorage>();
+                    break;
+            }
+
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
-                .AddUserStore<InMemoryUserStore>()
+                .AddUserStore<ApplicationUserStore>()
                 .AddRoleStore<InMemoryRoleStore>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
@@ -53,7 +68,6 @@ namespace JamesQMurphy.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
-            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddArticleStoreServices(Configuration);
         }
 

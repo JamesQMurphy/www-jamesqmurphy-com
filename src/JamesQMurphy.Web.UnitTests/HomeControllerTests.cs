@@ -54,7 +54,7 @@ namespace JamesQMurphy.Web.UnitTests
                 }
             });
 
-            var userStore = new InMemoryUserStore();
+            var userStore = new ApplicationUserStore(new InMemoryApplicationUserStorage());
             var userManager = new Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>(
                 userStore,
                 null,
