@@ -40,6 +40,8 @@ namespace JamesQMurphy.Web
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
+            services.AddDataProtection()
+                .PersistKeysToAWSSystemsManager($"/{webSiteOptions.AppName}/DataProtection");
 
             switch (Configuration["UserStore:Service"])
             {

@@ -8,5 +8,6 @@ namespace JamesQMurphy.Web.Models
     public class WebSiteOptions
     {
         public string WebSiteTitle { get; set; } = "Website";
+        public string AppName { get; set; } = "JamesQMurphyWeb-local";
     }
 }

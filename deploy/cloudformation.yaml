@@ -184,6 +184,7 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
+          AppName: !Sub '${AppNameParameter}-${StageParameter}'
           ImageBasePath: /blogimages
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
