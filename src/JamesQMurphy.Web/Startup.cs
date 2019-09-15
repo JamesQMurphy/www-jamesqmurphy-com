@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JamesQMurphy.Blog;
+using JamesQMurphy.Email;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -71,6 +72,17 @@ namespace JamesQMurphy.Web
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
             services.AddArticleStoreServices(Configuration);
+
+            switch (Configuration["Email:Service"])
+            {
+                case "SES":
+                    services.AddSingleton<IEmailService>(new JamesQMurphy.Email.Aws.SESEmailService(Configuration["Email:From"]));
+                    break;
+
+                default: //NullEmailService
+                    services.AddSingleton<IEmailService, NullEmailService>();
+                    break;
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

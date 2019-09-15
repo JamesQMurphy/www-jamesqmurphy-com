@@ -1,0 +1,44 @@
+﻿@model JamesQMurphy.Web.Models.AdminViewModels.TestEmailModel
+
+@if (ViewData.ContainsKey("SuccessMsg"))
+{
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Email Sent!</h4>
+        <p>@ViewData["SuccessMsg"]</p>
+    </div>
+}
+@if (ViewData.ContainsKey("FailMsg"))
+{
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Error sending email</h4>
+        <p>@ViewData["FailMsg"]</p>
+    </div>
+}
+<h1>Test Email</h1>
+Sends a test e-mail to a user.
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="View">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Message" class="control-label"></label>
+                <textarea asp-for="Message" class="form-control"></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Test" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Admin home</a>
+</div>
+

@@ -123,6 +123,18 @@ Resources:
                   - 'ssm:AddTagsToResource'
                   - 'ssm:GetParametersByPath'
                 Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
+        - PolicyName: 'SendEmailAs-no-reply@jamesqmurphy.com'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+                Effect: Allow
+                Action:
+                  - 'ses:SendEmail'
+                  - 'ses:SendRawEmail'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'ses:FromAddress': "no-reply@jamesqmurphy.com"
 
 
   TheRoleForTheApiGateway:
@@ -200,6 +212,7 @@ Resources:
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
+          Email__Service: SES
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
