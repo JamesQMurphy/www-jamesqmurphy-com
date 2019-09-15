@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using JamesQMurphy.Email;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.ProfileViewModels;
 using JamesQMurphy.Web.Services;
@@ -21,15 +22,20 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
+        private readonly IEmailService _emailService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public ProfileController
         (
             ApplicationSignInManager<ApplicationUser> signInManager,
-            ILogger<ProfileController> logger
+            ILogger<ProfileController> logger,
+            IEmailService emailService
         )
         {
             _signInManager = signInManager;
             _logger = logger;
+            _emailService = emailService;
+            _userManager = _signInManager.UserManager;
         }
 
         [HttpGet]
@@ -87,6 +93,70 @@ namespace JamesQMurphy.Web.Controllers
             _logger.LogInformation("User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = model.UserName,
+                    Email = model.Email
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("User created a new account with password.");
+
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var link = Url.Action(nameof(ProfileController.ConfirmEmail), "profile", new { user.UserName, code }, Request.Scheme);
+                    await _emailService.SendEmailAsync(
+                        user.Email,
+                        "Confirm your e-mail",
+                        $"Please confirm by clicking <a href='{System.Text.Encodings.Web.HtmlEncoder.Default.Encode(link)}'>link</a>");
+
+                    _logger.LogInformation("User created a new account with password.");
+
+                    // Note that we do *not* sign in the user
+
+                    return RedirectToLocal(returnUrl);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userName, string code)
+        {
+            if (userName == null || code == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with username '{userName}'.");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
+
 
 
         private IActionResult RedirectToLocal(string returnUrl)
