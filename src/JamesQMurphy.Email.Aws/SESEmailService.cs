@@ -10,10 +10,15 @@ namespace JamesQMurphy.Email.Aws
 {
     public class SESEmailService : IEmailService
     {
-        private readonly string _sourceAddress;
-        public SESEmailService(string sourceAddress)
+        public class Options
         {
-            _sourceAddress = sourceAddress;
+            public string FromAddress { get; set; }
+        }
+
+        private readonly Options _options;
+        public SESEmailService(Options options)
+        {
+            _options = options;
         }
 
         public async Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
@@ -22,7 +27,7 @@ namespace JamesQMurphy.Email.Aws
             {
                 var sendRequest = new SendEmailRequest()
                 {
-                    Source = _sourceAddress,
+                    Source = _options.FromAddress,
                     Destination = new Destination()
                     {
                         ToAddresses = new List<string> { emailAddress }

@@ -76,7 +76,8 @@ namespace JamesQMurphy.Web
             switch (Configuration["Email:Service"])
             {
                 case "SES":
-                    services.AddSingleton<IEmailService>(new JamesQMurphy.Email.Aws.SESEmailService(Configuration["Email:From"]));
+                    services.ConfigurePoco<JamesQMurphy.Email.Aws.SESEmailService.Options>(Configuration, "Email");
+                    services.AddSingleton<IEmailService,JamesQMurphy.Email.Aws.SESEmailService>();
                     break;
 
                 default: //NullEmailService

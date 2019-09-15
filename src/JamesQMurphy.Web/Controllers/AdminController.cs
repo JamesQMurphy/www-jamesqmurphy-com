@@ -4,20 +4,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using JamesQMurphy.Email;
+using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.AdminViewModels;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JamesQMurphy.Web.Controllers
 {
+    [Authorize]
     public class AdminController : Controller
     {
         private readonly IEmailService _emailService;
         private readonly string _siteName;
 
-        public AdminController(IEmailService emailService, IConfiguration configuration)
+        public AdminController(IEmailService emailService, WebSiteOptions webSiteOptions)
         {
             _emailService = emailService;
-            _siteName = configuration["WebSiteTitle"]; //TODO: sloppy
+            _siteName = webSiteOptions.WebSiteTitle;
         }
 
         public IActionResult Index()
