@@ -7,7 +7,6 @@ using JamesQMurphy.Web.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using NUnit.Framework;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace JamesQMurphy.Web.UnitTests
