@@ -16,28 +16,11 @@ namespace JamesQMurphy.Web.UnitTests
     {
         private ProfileController _controller;
         private ServiceProvider _serviceProvider; 
-        private Microsoft.AspNetCore.Http.HttpContextAccessor _httpContextAccessor = new Microsoft.AspNetCore.Http.HttpContextAccessor();
 
         [SetUp]
         public void Setup()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddDefaultTokenProviders()
-                .AddUserStore<ApplicationUserStore>()
-                .AddRoleStore<InMemoryRoleStore>()
-                .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
-            serviceCollection.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-            serviceCollection.AddSingleton<ILogger<UserManager<ApplicationUser>>>(NullLogger<UserManager<ApplicationUser>>.Instance);
-            serviceCollection.AddSingleton<ILogger<RoleManager<ApplicationRole>>>(NullLogger<RoleManager<ApplicationRole>>.Instance);
-            serviceCollection.AddSingleton<ILogger<SignInManager<ApplicationUser>>>(NullLogger<SignInManager<ApplicationUser>>.Instance);
-            serviceCollection.AddSingleton<ILogger<ProfileController>>(NullLogger<ProfileController>.Instance);
-            serviceCollection.AddSingleton<IApplicationUserStorage, InMemoryApplicationUserStorage>();
-            serviceCollection.AddSingleton<IEmailService, NullEmailService>();
-            _serviceProvider = serviceCollection.BuildServiceProvider();
-
-            _httpContextAccessor.HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext();
-            _httpContextAccessor.HttpContext.RequestServices = _serviceProvider;
+            _serviceProvider = ConfigurationHelper.CreateServiceProvider();
 
             _controller = new ProfileController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
