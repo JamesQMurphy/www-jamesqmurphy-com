@@ -2,7 +2,7 @@ using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -11,15 +11,15 @@ namespace JamesQMurphy.Web.UnitTests
 {
     public class HomeControllerTests
     {
-        private InMemoryArticleStore articleStore;
-        private Controllers.HomeController controller;
+        private InMemoryArticleStore _articleStore;
+        private Controllers.HomeController _controller;
         private const string SITE_NAME = "TEST SITE 820ae666";
 
         [SetUp]
         public void Setup()
         {
-            articleStore = new InMemoryArticleStore();
-            articleStore.Articles.AddRange(new Article[]
+            _articleStore = new InMemoryArticleStore();
+            _articleStore.Articles.AddRange(new Article[]
             {
                 new Article()
                 {
@@ -54,48 +54,40 @@ namespace JamesQMurphy.Web.UnitTests
                 }
             });
 
-            var userStore = new ApplicationUserStore(new InMemoryApplicationUserStorage());
-            var userManager = new Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>(
-                userStore,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
             WebSiteOptions options = new WebSiteOptions()
             {
                 WebSiteTitle = SITE_NAME
             };
 
-            controller = new Controllers.HomeController(articleStore, options, userManager);
+            var userManager = ConfigurationHelper
+                .CreateServiceProvider()
+                .GetService<Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>>();
+
+            _controller = new Controllers.HomeController(_articleStore, options, userManager);
         }
 
         [Test]
         public void TestIndex()
         {
-            var result = controller.Index() as ViewResult;
+            var result = _controller.Index() as ViewResult;
             Assert.IsInstanceOf<HomePageItems>(result.Model);
 
             var model = result.Model as HomePageItems;
-            Assert.AreSame(articleStore.Articles[1], model.Article1);
-            Assert.AreSame(articleStore.Articles[2], model.Article2);
+            Assert.AreSame(_articleStore.Articles[1], model.Article1);
+            Assert.AreSame(_articleStore.Articles[2], model.Article2);
         }
 
         [Test]
         public void TestAbout()
         {
-            var result = controller.About() as ViewResult;
+            var result = _controller.About() as ViewResult;
             Assert.IsInstanceOf<ViewResult>(result);
         }
 
         [Test]
         public void TestPrivacy()
         {
-            var result = controller.Privacy() as ViewResult;
+            var result = _controller.Privacy() as ViewResult;
             Assert.IsInstanceOf<ViewResult>(result);
             string markdownContent = result.ViewData[Constants.VIEWDATA_MARKDOWN].ToString();
             Assert.IsTrue(markdownContent.Contains(SITE_NAME));
