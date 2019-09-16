@@ -31,6 +31,7 @@ namespace JamesQMurphy.Web.UnitTests
             serviceCollection.AddSingleton<ILogger<UserManager<ApplicationUser>>>(NullLogger<UserManager<ApplicationUser>>.Instance);
             serviceCollection.AddSingleton<ILogger<RoleManager<ApplicationRole>>>(NullLogger<RoleManager<ApplicationRole>>.Instance);
             serviceCollection.AddSingleton<ILogger<SignInManager<ApplicationUser>>>(NullLogger<SignInManager<ApplicationUser>>.Instance);
+            serviceCollection.AddSingleton<ILogger<ProfileController>>(NullLogger<ProfileController>.Instance);
             serviceCollection.AddSingleton<IApplicationUserStorage, InMemoryApplicationUserStorage>();
             serviceCollection.AddSingleton<IEmailService, NullEmailService>();
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -40,7 +41,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             _controller = new ProfileController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
-                NullLogger<ProfileController>.Instance,
+                _serviceProvider.GetService<ILogger<ProfileController>>(),
                 _serviceProvider.GetService<IEmailService>());
         }
 
