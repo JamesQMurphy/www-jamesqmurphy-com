@@ -22,19 +22,19 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
-        private readonly IEmailService _emailService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailGenerator _emailGenerator;
 
         public ProfileController
         (
             ApplicationSignInManager<ApplicationUser> signInManager,
             ILogger<ProfileController> logger,
-            IEmailService emailService
+            IEmailGenerator emailGenerator
         )
         {
             _signInManager = signInManager;
             _logger = logger;
-            _emailService = emailService;
+            _emailGenerator = emailGenerator;
             _userManager = _signInManager.UserManager;
         }
 
@@ -122,11 +122,7 @@ namespace JamesQMurphy.Web.Controllers
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var link = Url.Action(nameof(ProfileController.ConfirmEmail), "profile", new { user.UserName, code }, Request.Scheme);
-                    await _emailService.SendEmailAsync(
-                        user.Email,
-                        "Confirm your e-mail",
-                        $"Please confirm by clicking <a href='{System.Text.Encodings.Web.HtmlEncoder.Default.Encode(link)}'>link</a>");
-
+                    await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailVerification, link);
                     _logger.LogInformation("User created a new account with password.");
 
                     // Note that we do *not* sign in the user

@@ -13,22 +13,23 @@ namespace JamesQMurphy.Web.UnitTests
 {
     public class ProfileControllerTests
     {
+        private ServiceProvider _serviceProvider = ConfigurationHelper.CreateServiceProvider();
+        private MockEmailGenerator _emailGenerator = new MockEmailGenerator();
         private ProfileController _controller;
-        private ServiceProvider _serviceProvider; 
 
         [SetUp]
         public void Setup()
         {
-            _serviceProvider = ConfigurationHelper.CreateServiceProvider();
+            _emailGenerator.Emails.Clear();
 
             _controller = new ProfileController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
                 _serviceProvider.GetService<ILogger<ProfileController>>(),
-                _serviceProvider.GetService<IEmailService>());
+                _emailGenerator);
         }
 
         [Test]
-        public void TestLogin()
+        public void TestLogin_Success()
         {
             var email = "test@test";
             var username = "user1";
@@ -48,6 +49,27 @@ namespace JamesQMurphy.Web.UnitTests
             var redirectToActionResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
             Assert.AreEqual("Home", redirectToActionResult.ControllerName);
             Assert.AreEqual(nameof(HomeController.Index), redirectToActionResult.ActionName);
+        }
+
+        [Test]
+        public void TestLogin_Fail_WrongPassword()
+        {
+            var email = "test@test";
+            var username = "user1";
+            var password = "abc123";
+
+            var user = AddExistingUser(_serviceProvider, email, password, username);
+            var loginViewModel = new LoginViewModel()
+            {
+                Email = email,
+                Password = password + "x",
+                RememberMe = false
+            };
+
+            var result = _controller.Login(loginViewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
         }
 
         private static ApplicationUser AddExistingUser(IServiceProvider serviceProvider, string emailAddress, string password, string userName)

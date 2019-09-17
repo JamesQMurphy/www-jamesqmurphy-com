@@ -43,6 +43,7 @@ namespace JamesQMurphy.Web.UnitTests
             serviceCollection.AddSingleton<ILogger<ProfileController>>(NullLogger<ProfileController>.Instance);
             serviceCollection.AddSingleton<IApplicationUserStorage, InMemoryApplicationUserStorage>();
             serviceCollection.AddSingleton<IEmailService, NullEmailService>();
+            serviceCollection.AddSingleton<IEmailGenerator, MockEmailGenerator>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             var httpContextAccessor = new Microsoft.AspNetCore.Http.HttpContextAccessor
