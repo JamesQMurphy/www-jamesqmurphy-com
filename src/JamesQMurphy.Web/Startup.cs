@@ -77,13 +77,14 @@ namespace JamesQMurphy.Web
             {
                 case "SES":
                     services.ConfigurePoco<JamesQMurphy.Email.Aws.SESEmailService.Options>(Configuration, "Email");
-                    services.AddSingleton<IEmailService,JamesQMurphy.Email.Aws.SESEmailService>();
+                    services.AddSingleton<IEmailService, JamesQMurphy.Email.Aws.SESEmailService>();
                     break;
 
                 default: //NullEmailService
                     services.AddSingleton<IEmailService, NullEmailService>();
                     break;
             }
+            services.AddTransient<IEmailGenerator, MockEmailGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
