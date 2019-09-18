@@ -54,6 +54,27 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
+        public void TestLogin_Fail_WrongEmail()
+        {
+            var email = "test@test";
+            var username = "user1";
+            var password = "abc123";
+
+            var user = AddExistingUser(_serviceProvider, email, password, username);
+            var loginViewModel = new LoginViewModel()
+            {
+                Email = email + "x",
+                Password = password,
+                RememberMe = false
+            };
+
+            var result = _controller.Login(loginViewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            Assert.AreEqual(1, _controller.ModelState.ErrorCount);
+        }
+
+        [Test]
         public void TestLogin_Fail_WrongPassword()
         {
             var email = "test@test";
