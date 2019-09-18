@@ -31,16 +31,23 @@ namespace JamesQMurphy.Web.UnitTests
         public static ServiceProvider CreateServiceProvider()
         {
             var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddSingleton<ILogger<AccountController>>(NullLogger<AccountController>.Instance);
+            serviceCollection.AddSingleton<ILogger<AdminController>>(NullLogger<AdminController>.Instance);
+            serviceCollection.AddSingleton<ILogger<BlogController>>(NullLogger<BlogController>.Instance);
+            serviceCollection.AddSingleton<ILogger<HomeController>>(NullLogger<HomeController>.Instance);
+
+            serviceCollection.AddSingleton<ILogger<UserManager<ApplicationUser>>>(NullLogger<UserManager<ApplicationUser>>.Instance);
+            serviceCollection.AddSingleton<ILogger<RoleManager<ApplicationRole>>>(NullLogger<RoleManager<ApplicationRole>>.Instance);
+            serviceCollection.AddSingleton<ILogger<SignInManager<ApplicationUser>>>(NullLogger<SignInManager<ApplicationUser>>.Instance);
+
             serviceCollection.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
                 .AddUserStore<ApplicationUserStore>()
                 .AddRoleStore<InMemoryRoleStore>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
+
             serviceCollection.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-            serviceCollection.AddSingleton<ILogger<UserManager<ApplicationUser>>>(NullLogger<UserManager<ApplicationUser>>.Instance);
-            serviceCollection.AddSingleton<ILogger<RoleManager<ApplicationRole>>>(NullLogger<RoleManager<ApplicationRole>>.Instance);
-            serviceCollection.AddSingleton<ILogger<SignInManager<ApplicationUser>>>(NullLogger<SignInManager<ApplicationUser>>.Instance);
-            serviceCollection.AddSingleton<ILogger<AccountController>>(NullLogger<AccountController>.Instance);
             serviceCollection.AddSingleton<IApplicationUserStorage, InMemoryApplicationUserStorage>();
             serviceCollection.AddSingleton<IEmailService, NullEmailService>();
             serviceCollection.AddSingleton<IEmailGenerator, MockEmailGenerator>();
