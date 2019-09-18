@@ -129,7 +129,7 @@ namespace JamesQMurphy.Web.Controllers
 
                     // Note that we do *not* sign in the user
 
-                    return View("RegisterConfirmation");
+                    return View("RegisterConfirmation", model);
                 }
             }
 
