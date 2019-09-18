@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JamesQMurphy.Email;
 using JamesQMurphy.Web.Controllers;
 using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Models.ProfileViewModels;
+using JamesQMurphy.Web.Models.AccountViewModels;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +40,7 @@ namespace JamesQMurphy.Web.UnitTests
             serviceCollection.AddSingleton<ILogger<UserManager<ApplicationUser>>>(NullLogger<UserManager<ApplicationUser>>.Instance);
             serviceCollection.AddSingleton<ILogger<RoleManager<ApplicationRole>>>(NullLogger<RoleManager<ApplicationRole>>.Instance);
             serviceCollection.AddSingleton<ILogger<SignInManager<ApplicationUser>>>(NullLogger<SignInManager<ApplicationUser>>.Instance);
-            serviceCollection.AddSingleton<ILogger<ProfileController>>(NullLogger<ProfileController>.Instance);
+            serviceCollection.AddSingleton<ILogger<AccountController>>(NullLogger<AccountController>.Instance);
             serviceCollection.AddSingleton<IApplicationUserStorage, InMemoryApplicationUserStorage>();
             serviceCollection.AddSingleton<IEmailService, NullEmailService>();
             serviceCollection.AddSingleton<IEmailGenerator, MockEmailGenerator>();

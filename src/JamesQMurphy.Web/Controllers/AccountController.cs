@@ -12,23 +12,23 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using JamesQMurphy.Email;
 using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Models.ProfileViewModels;
+using JamesQMurphy.Web.Models.AccountViewModels;
 using JamesQMurphy.Web.Services;
 
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class ProfileController : Controller
+    public class AccountController : Controller
     {
         private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailGenerator _emailGenerator;
 
-        public ProfileController
+        public AccountController
         (
             ApplicationSignInManager<ApplicationUser> signInManager,
-            ILogger<ProfileController> logger,
+            ILogger<AccountController> logger,
             IEmailGenerator emailGenerator
         )
         {
@@ -121,7 +121,7 @@ namespace JamesQMurphy.Web.Controllers
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var link = Url.Action(nameof(ProfileController.ConfirmEmail), "profile", new { user.UserName, code }, Request.Scheme);
+                    var link = Url.Action(nameof(AccountController.ConfirmEmail), "account", new { user.UserName, code }, Request.Scheme);
                     await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailVerification, link);
                     _logger.LogInformation("User created a new account with password.");
 

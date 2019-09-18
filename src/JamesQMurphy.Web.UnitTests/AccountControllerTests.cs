@@ -2,7 +2,7 @@ using System;
 using JamesQMurphy.Email;
 using JamesQMurphy.Web.Controllers;
 using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Models.ProfileViewModels;
+using JamesQMurphy.Web.Models.AccountViewModels;
 using JamesQMurphy.Web.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
@@ -11,20 +11,20 @@ using Microsoft.Extensions.Logging;
 
 namespace JamesQMurphy.Web.UnitTests
 {
-    public class ProfileControllerTests
+    public class AccountControllerTests
     {
         private ServiceProvider _serviceProvider = ConfigurationHelper.CreateServiceProvider();
         private MockEmailGenerator _emailGenerator = new MockEmailGenerator();
-        private ProfileController _controller;
+        private AccountController _controller;
 
         [SetUp]
         public void Setup()
         {
             _emailGenerator.Emails.Clear();
 
-            _controller = new ProfileController(
+            _controller = new AccountController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
-                _serviceProvider.GetService<ILogger<ProfileController>>(),
+                _serviceProvider.GetService<ILogger<AccountController>>(),
                 _emailGenerator);
         }
 

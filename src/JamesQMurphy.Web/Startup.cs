@@ -65,7 +65,7 @@ namespace JamesQMurphy.Web
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = "/profile/login";
+                options.LoginPath = "/account/login";
             });
 
 
