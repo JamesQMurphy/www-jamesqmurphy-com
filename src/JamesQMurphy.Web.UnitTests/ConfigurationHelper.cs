@@ -5,7 +5,11 @@ using JamesQMurphy.Web.Controllers;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.AccountViewModels;
 using JamesQMurphy.Web.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -51,12 +55,15 @@ namespace JamesQMurphy.Web.UnitTests
             serviceCollection.AddSingleton<IApplicationUserStorage, InMemoryApplicationUserStorage>();
             serviceCollection.AddSingleton<IEmailService, NullEmailService>();
             serviceCollection.AddSingleton<IEmailGenerator, MockEmailGenerator>();
+
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            serviceCollection.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            var httpContextAccessor = new Microsoft.AspNetCore.Http.HttpContextAccessor
-            {
-                HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext()
-            };
             httpContextAccessor.HttpContext.RequestServices = serviceProvider;
 
             return serviceProvider;

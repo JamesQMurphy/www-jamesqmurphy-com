@@ -105,9 +105,8 @@ namespace JamesQMurphy.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
@@ -121,13 +120,16 @@ namespace JamesQMurphy.Web.Controllers
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var link = Url.Action(nameof(AccountController.ConfirmEmail), "account", new { user.UserName, code }, Request.Scheme);
+
+                    // Note that Url is null when we create the controller as part of a unit test
+                    var link = Url?.Action(nameof(AccountController.ConfirmEmail), "account", new { user.UserName, code }, Request.Scheme);
+
                     await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailVerification, link);
                     _logger.LogInformation("User created a new account with password.");
 
                     // Note that we do *not* sign in the user
 
-                    return RedirectToLocal(returnUrl);
+                    return View("RegisterConfirmation");
                 }
             }
 

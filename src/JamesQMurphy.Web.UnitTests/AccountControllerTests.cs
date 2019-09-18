@@ -95,6 +95,42 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(1, _controller.ModelState.ErrorCount);
         }
 
+        [Test]
+        public void TestRegister_Success()
+        {
+            var email = "test@test";
+            var username = "userNew";
+            var password = "Abcabc~123";
+
+            var registerViewModel = new RegisterViewModel()
+            {
+                Email = email,
+                Password = password,
+                ConfirmPassword = password,
+                UserName = username
+            };
+
+            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
+            Assert.AreEqual("RegisterConfirmation", viewResult.ViewName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that user was created
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserName(normalizedUserName).GetAwaiter().GetResult();
+            Assert.IsNotNull(user);
+            Assert.AreEqual(username, user.UserName);
+            Assert.AreEqual(email, user.Email);
+
+            Assert.AreEqual(1, _emailGenerator.Emails.Count);
+            Assert.AreEqual(EmailType.EmailVerification, _emailGenerator.Emails[0].emailType);
+        }
+
+
+
         private static ApplicationUser AddExistingUser(IServiceProvider serviceProvider, string emailAddress, string password, string userName)
         {
             var normalizer = serviceProvider.GetService<ILookupNormalizer>();
