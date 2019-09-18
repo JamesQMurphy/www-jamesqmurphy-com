@@ -13,14 +13,15 @@ namespace JamesQMurphy.Web.UnitTests
 {
     public class AccountControllerTests
     {
-        private ServiceProvider _serviceProvider = ConfigurationHelper.CreateServiceProvider();
-        private MockEmailGenerator _emailGenerator = new MockEmailGenerator();
+        private ServiceProvider _serviceProvider;
+        private MockEmailGenerator _emailGenerator;
         private AccountController _controller;
 
         [SetUp]
         public void Setup()
         {
-            _emailGenerator.Emails.Clear();
+            _emailGenerator = new MockEmailGenerator();
+            _serviceProvider = ConfigurationHelper.CreateServiceProvider();
 
             _controller = new AccountController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
@@ -49,6 +50,7 @@ namespace JamesQMurphy.Web.UnitTests
             var redirectToActionResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
             Assert.AreEqual("Home", redirectToActionResult.ControllerName);
             Assert.AreEqual(nameof(HomeController.Index), redirectToActionResult.ActionName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
         }
 
         [Test]
@@ -69,7 +71,7 @@ namespace JamesQMurphy.Web.UnitTests
             var result = _controller.Login(loginViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
-            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
+            Assert.AreEqual(1, _controller.ModelState.ErrorCount);
         }
 
         private static ApplicationUser AddExistingUser(IServiceProvider serviceProvider, string emailAddress, string password, string userName)
