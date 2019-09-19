@@ -115,6 +115,7 @@ namespace JamesQMurphy.Web.Controllers
                     Email = model.Email
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
+                model.Password = String.Empty;
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
