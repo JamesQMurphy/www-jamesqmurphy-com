@@ -208,6 +208,7 @@ Resources:
         Variables:
           AppName: !Sub '${AppNameParameter}-${StageParameter}'
           ImageBasePath: /blogimages
+		  DataProtection: AWS
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
           UserStore__Service: DynamoDb
