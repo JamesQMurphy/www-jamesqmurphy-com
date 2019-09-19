@@ -124,6 +124,7 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.IsNotNull(user);
             Assert.AreEqual(username, user.UserName);
             Assert.AreEqual(email, user.Email);
+            Assert.IsFalse(user.EmailConfirmed);
 
             Assert.AreEqual(1, _emailGenerator.Emails.Count);
             Assert.AreEqual(EmailType.EmailVerification, _emailGenerator.Emails[0].emailType);
