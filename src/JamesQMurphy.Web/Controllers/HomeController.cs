@@ -49,10 +49,10 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [Microsoft.AspNetCore.Authorization.Authorize]
-        public IActionResult Secret()
+        public async Task<IActionResult> Secret()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Secret Page";
-            ViewData["User"] = userManager.GetUserAsync(this.User).GetAwaiter().GetResult();
+            ViewData["User"] = await userManager.GetUserAsync(this.User);
             return View("Secret");
         }
 
