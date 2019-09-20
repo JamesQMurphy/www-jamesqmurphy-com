@@ -109,18 +109,36 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
+            var pwForm = model.Password;
+            model.Password = String.Empty;
+
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser
+                IdentityResult result = null;
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
                 {
-                    UserName = model.UserName,
-                    Email = model.Email
-                };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                model.Password = String.Empty;
+                    user = new ApplicationUser
+                    {
+                        UserName = model.UserName,
+                        Email = model.Email
+                    };
+                    result = await _userManager.CreateAsync(user, pwForm);
+                }
+                else
+                {
+                    if (user.EmailConfirmed)
+                    {
+                        throw new Exception("User is trying to hack");
+                    }
+                    else
+                    {
+                        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                        result = await _userManager.ResetPasswordAsync(user, resetToken, pwForm);
+                    }
+                }
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 

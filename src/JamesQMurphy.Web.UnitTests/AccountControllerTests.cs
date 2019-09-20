@@ -147,6 +147,45 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(email, user.Email);
             Assert.IsFalse(user.EmailConfirmed);
 
+            // Assert that verification email was sent
+            Assert.AreEqual(1, _emailGenerator.Emails.Count);
+            Assert.AreEqual(EmailType.EmailVerification, _emailGenerator.Emails[0].emailType);
+        }
+
+        [Test]
+        public void TestRegister_EmailPresentButUnverified()
+        {
+            var email = "test@test";
+            var username = "userNew";
+            var password = "Abcabc~123";
+            AddExistingUser(_serviceProvider, email, password, username, false);
+
+            var password2 = "Defdef~456";
+            var registerViewModel = new RegisterViewModel()
+            {
+                Email = email,
+                Password = password2,
+                ConfirmPassword = password2,
+                UserName = username
+            };
+
+            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
+            Assert.AreEqual("RegisterConfirmation", viewResult.ViewName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that password was updated
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserName(normalizedUserName).GetAwaiter().GetResult();
+            Assert.IsNotNull(user);
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password2);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that verification email was sent
             Assert.AreEqual(1, _emailGenerator.Emails.Count);
             Assert.AreEqual(EmailType.EmailVerification, _emailGenerator.Emails[0].emailType);
         }
