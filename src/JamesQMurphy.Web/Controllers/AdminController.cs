@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace JamesQMurphy.Web.Controllers
 {
     [Authorize]
-    public class AdminController : Controller
+    public class AdminController : JqmControllerBase
     {
         private readonly IEmailService _emailService;
         private readonly string _siteName;

@@ -7,7 +7,7 @@ using JamesQMurphy.Blog;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class BlogController : Controller
+    public class BlogController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
 

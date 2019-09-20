@@ -10,7 +10,7 @@ using JamesQMurphy.Web.Models;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
         private readonly WebSiteOptions webSiteOptions;
@@ -52,7 +52,7 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> Secret()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Secret Page";
-            ViewData["User"] = await userManager.GetUserAsync(this.User);
+            ViewData["User"] = await GetApplicationUserAsync(userManager);
             return View("Secret");
         }
 

@@ -18,7 +18,7 @@ using JamesQMurphy.Web.Services;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : JqmControllerBase
     {
         private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
