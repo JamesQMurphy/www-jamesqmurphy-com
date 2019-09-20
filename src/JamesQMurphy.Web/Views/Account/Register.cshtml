@@ -5,6 +5,15 @@
 
 <h1>@ViewData[Constants.VIEWDATA_PAGETITLE]</h1>
 
+@if ((bool)@ViewData["IsLoggedIn"])
+{
+    <p>You must sign out before you can register another account.</p>
+    <p>
+        <vc:log-out-button return-url="/account/register" />
+    </p>
+}
+else
+{
 <div class="row">
     <div class="col-md-4">
         <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
@@ -39,3 +48,7 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+
+}
+
+

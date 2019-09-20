@@ -1,0 +1,6 @@
+﻿@{ 
+    var returnUrl = ViewData["ReturnUrl"].ToString();
+}
+<form asp-controller="account" asp-action="logout" asp-route-returnurl="@returnUrl" method="post">
+    <button type="submit" class="btn btn-primary">Log Out</button>
+</form>
