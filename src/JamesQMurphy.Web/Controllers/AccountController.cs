@@ -129,7 +129,9 @@ namespace JamesQMurphy.Web.Controllers
                 {
                     if (user.EmailConfirmed)
                     {
-                        throw new Exception("User is trying to hack");
+                        // TODO: log this
+                        await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailAlreadyRegistered);
+                        return View("RegisterConfirmation", model);
                     }
                     else
                     {
@@ -144,9 +146,7 @@ namespace JamesQMurphy.Web.Controllers
 
                     // Note that Url is null when we create the controller as part of a unit test
                     var link = Url?.Action(nameof(AccountController.ConfirmEmail), "account", new { user.UserName, code }, Request.Scheme);
-
                     await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailVerification, link);
-                    _logger.LogInformation("User created a new account with password.");
 
                     // Note that we do *not* sign in the user
 
