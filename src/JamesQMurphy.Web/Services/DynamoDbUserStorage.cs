@@ -57,8 +57,29 @@ namespace JamesQMurphy.Web.Services
 
         public async Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress)
         {
-            var document = await _table.GetItemAsync(normalizedEmailAddress);
-            return ToApplicationUser(document);
+            var queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{NORMALIZED_EMAIL} = :v_normalizedEmail",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":v_normalizedEmail", new AttributeValue {S = normalizedEmailAddress} }
+                },
+                ScanIndexForward = true
+            };
+
+            var result = await _dynamoDbClient.QueryAsync(queryRequest);
+
+            if (result.Count == 0)
+            {
+                return null;
+            }
+            if (result.Count == 1)
+            {
+                return ToApplicationUser(result.Items[0]);
+            }
+            throw new Exception($"Found {result.Count} items with normalizedEmailAddress = {normalizedEmailAddress}");
         }
 
         public async Task<ApplicationUser> FindByUserNameAsync(string normalizedUserName)
