@@ -87,7 +87,7 @@ namespace JamesQMurphy.Web
                     services.AddSingleton<IEmailService, NullEmailService>();
                     break;
             }
-            services.AddTransient<IEmailGenerator, MockEmailGenerator>();
+            services.AddTransient<IEmailGenerator, BasicEmailGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
