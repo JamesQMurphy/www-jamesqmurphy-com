@@ -100,7 +100,7 @@ Resources:
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
                 Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}*'
-        - PolicyName: !Sub DynamoDbReadOnlyAccess-${DynamoDbTableUsersParameter}
+        - PolicyName: !Sub DynamoDbReadWriteAccess-${DynamoDbTableUsersParameter}
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -114,7 +114,7 @@ Resources:
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
                   - 'dynamodb:UpdateItem'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}*'
         - PolicyName: !Sub SSM-WriteParameters
           PolicyDocument:
             Version: 2012-10-17
