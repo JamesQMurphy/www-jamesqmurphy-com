@@ -116,7 +116,7 @@ namespace JamesQMurphy.Web.Services
                 Email = attributeMap[EMAIL].S,
                 NormalizedUserName = attributeMap[NORMALIZED_USERNAME].S,
                 UserName = attributeMap[USERNAME].S,
-                EmailConfirmed = attributeMap.ContainsKey(CONFIRMED) ? attributeMap[CONFIRMED]?.BOOL ?? default : default,
+                EmailConfirmed = attributeMap.ContainsKey(CONFIRMED) ? attributeMap[CONFIRMED]?.BOOL ?? default(bool) : default(bool),
                 PasswordHash = attributeMap.ContainsKey(PASSWORD_HASH) ? attributeMap[PASSWORD_HASH]?.S ?? "" : ""
             };
         }
