@@ -99,7 +99,7 @@ Resources:
                   - 'dynamodb:GetItem'
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}*'
         - PolicyName: !Sub DynamoDbReadOnlyAccess-${DynamoDbTableUsersParameter}
           PolicyDocument:
             Version: 2012-10-17
