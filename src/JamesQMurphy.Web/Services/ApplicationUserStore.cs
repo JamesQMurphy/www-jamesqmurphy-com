@@ -75,11 +75,11 @@ namespace JamesQMurphy.Web.Services
         }
         public async Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress)
         {
-            return await _storage.FindByEmailAddress(normalizedEmailAddress);
+            return await _storage.FindByEmailAddressAsync(normalizedEmailAddress);
         }
         public async Task<ApplicationUser> FindByUserName(string userName)
         {
-            return await _storage.FindByUserName(userName);
+            return await _storage.FindByUserNameAsync(userName);
         }
 
         #endregion

@@ -109,9 +109,11 @@ Resources:
                   - 'dynamodb:BatchGetItem'
                   - 'dynamodb:Describe*'
                   - 'dynamodb:List*'
-                  - 'dynamodb:GetItem'
+                  - 'dynamodb:Get*'
+                  - 'dynamodb:PutItem'
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
+                  - 'dynamodb:UpdateItem'
                 Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}'
         - PolicyName: !Sub SSM-WriteParameters
           PolicyDocument:
@@ -213,6 +215,7 @@ Resources:
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
+          UserStore__UserNameIndex: 'normalizedUserName-index'
           Email__Service: SES
       Tags:
         - Key: app

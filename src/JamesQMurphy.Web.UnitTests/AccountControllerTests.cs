@@ -141,7 +141,7 @@ namespace JamesQMurphy.Web.UnitTests
             // Assert that user was created
             var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
-            var user = userStorage.FindByUserName(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             Assert.AreEqual(username, user.UserName);
             Assert.AreEqual(email, user.Email);
@@ -179,7 +179,7 @@ namespace JamesQMurphy.Web.UnitTests
             // Assert that password was updated
             var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
-            var user = userStorage.FindByUserName(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, passwordReplace);
@@ -217,7 +217,7 @@ namespace JamesQMurphy.Web.UnitTests
             // Assert that password was NOT updated
             var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
-            var user = userStorage.FindByUserName(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);

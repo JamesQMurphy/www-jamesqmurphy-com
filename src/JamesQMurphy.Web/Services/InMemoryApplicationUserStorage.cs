@@ -53,7 +53,7 @@ namespace JamesQMurphy.Web.Services
                 return Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = "User not found" }));
             }
         }
-        public Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress)
+        public Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress)
         {
             if (_dictUsers.ContainsKey(normalizedEmailAddress))
             {
@@ -65,10 +65,15 @@ namespace JamesQMurphy.Web.Services
             }
         }
 
-        public Task<ApplicationUser> FindByUserName(string normalizedUserName)
+        public Task<ApplicationUser> FindByUserNameAsync(string normalizedUserName)
         {
             var user = _dictUsers.Values.Where(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
             return Task.FromResult(user);
+        }
+
+        public Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
+        {
+            return Task.FromResult(_dictUsers.Values.AsEnumerable());
         }
     }
 }

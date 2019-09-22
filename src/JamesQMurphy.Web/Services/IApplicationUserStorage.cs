@@ -1,5 +1,6 @@
 ﻿using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Services
@@ -10,7 +11,8 @@ namespace JamesQMurphy.Web.Services
         Task<IdentityResult> UpdateAsync(ApplicationUser user);
         Task<IdentityResult> DeleteAsync(ApplicationUser user);
 
-        Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress);
-        Task<ApplicationUser> FindByUserName(string normalizedUserName);
+        Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress);
+        Task<ApplicationUser> FindByUserNameAsync(string normalizedUserName);
+        Task<IEnumerable<ApplicationUser>> GetAllUsersAsync();
     }
 }
