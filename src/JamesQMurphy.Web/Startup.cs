@@ -64,6 +64,7 @@ namespace JamesQMurphy.Web
                 .AddDefaultTokenProviders()
                 .AddUserStore<ApplicationUserStore>()
                 .AddRoleStore<InMemoryRoleStore>()
+                .AddPasswordValidator<ApplicationPasswordValidator<ApplicationUser>>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
             services.ConfigureApplicationCookie(options =>

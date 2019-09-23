@@ -49,6 +49,7 @@ namespace JamesQMurphy.Web.UnitTests
                 .AddDefaultTokenProviders()
                 .AddUserStore<ApplicationUserStore>()
                 .AddRoleStore<InMemoryRoleStore>()
+                .AddPasswordValidator<ApplicationPasswordValidator<ApplicationUser>>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
             serviceCollection.AddSingleton<ILoggerFactory, NullLoggerFactory>();
