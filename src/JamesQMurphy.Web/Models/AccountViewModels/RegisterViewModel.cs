@@ -9,7 +9,8 @@ namespace JamesQMurphy.Web.Models.AccountViewModels
     public class RegisterViewModel
     {
         [Required]
-        [StringLength(30, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(25, ErrorMessage = "{0} must be at least {2} and at most {1} characters long.", MinimumLength = 3)]
+        [RegularExpression(@"^\w+$", ErrorMessage = "{0} can only contain letters, numbers, and underscores (_).")]
         [Display(Name = "Username")]
         public string UserName { get; set; }
 
@@ -19,7 +20,10 @@ namespace JamesQMurphy.Web.Models.AccountViewModels
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [RegularExpression(
+            Services.ApplicationPasswordValidator<ApplicationUser>.REGEX_PATTERN,
+            ErrorMessage = Services.ApplicationPasswordValidator<ApplicationUser>.REGEX_DESCRIPTION
+            )]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
