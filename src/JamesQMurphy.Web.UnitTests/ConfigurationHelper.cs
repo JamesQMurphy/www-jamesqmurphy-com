@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using JamesQMurphy.Email;
+﻿using JamesQMurphy.Email;
 using JamesQMurphy.Web.Controllers;
 using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Models.AccountViewModels;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 
 
 namespace JamesQMurphy.Web.UnitTests
