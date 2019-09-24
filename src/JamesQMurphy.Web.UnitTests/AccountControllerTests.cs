@@ -153,10 +153,49 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
-        public void TestRegister_EmailPresentButUnverified()
+        public void TestRegister_EmailPresentButUnverified_DifferentUserName()
         {
             var email = "test@test";
-            var username = "userNew";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            AddExistingUser(_serviceProvider, email, password, username, false);
+
+            var usernameReplace = "userReplace";
+            var passwordReplace = "Defdef~456";
+            var registerViewModel = new RegisterViewModel()
+            {
+                Email = email,
+                Password = passwordReplace,
+                ConfirmPassword = passwordReplace,
+                UserName = usernameReplace
+            };
+
+            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
+            Assert.AreEqual("RegisterConfirmation", viewResult.ViewName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that password was updated
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            Assert.IsNotNull(user);
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, passwordReplace);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that verification email was sent
+            Assert.AreEqual(1, _emailGenerator.Emails.Count);
+            Assert.AreEqual(EmailType.EmailVerification, _emailGenerator.Emails[0].emailType);
+        }
+
+        [Test, Ignore("Need to rethink what happens here")]
+        public void TestRegister_EmailPresentButUnverified_SameUserName()
+        {
+            var email = "test@test";
+            var username = "userExist";
             var password = "Abcabc~123";
             AddExistingUser(_serviceProvider, email, password, username, false);
 
@@ -191,20 +230,21 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
-        public void TestRegister_EmailPresentButVerified()
+        public void TestRegister_EmailPresentButVerified_DifferentUserName()
         {
             var email = "test@test";
-            var username = "userNew";
+            var username = "userExist";
             var password = "Abcabc~123";
             AddExistingUser(_serviceProvider, email, password, username, true);
 
+            var usernameReplace = "userReplace";
             var passwordReplace = "Defdef~456";
             var registerViewModel = new RegisterViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
                 ConfirmPassword = passwordReplace,
-                UserName = username
+                UserName = usernameReplace
             };
 
             var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
@@ -227,6 +267,45 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(1, _emailGenerator.Emails.Count);
             Assert.AreEqual(EmailType.EmailAlreadyRegistered, _emailGenerator.Emails[0].emailType);
         }
+
+        [Test]
+        public void TestRegister_EmailPresentButVerified_SameUserName()
+        {
+            var email = "test@test";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            AddExistingUser(_serviceProvider, email, password, username, true);
+
+            var passwordReplace = "Defdef~456";
+            var registerViewModel = new RegisterViewModel()
+            {
+                Email = email,
+                Password = passwordReplace,
+                ConfirmPassword = passwordReplace,
+                UserName = username
+            };
+
+            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
+            Assert.IsNull(viewResult.ViewName);
+            Assert.AreEqual(1, _controller.ModelState.ErrorCount);
+
+            // Assert that password was NOT updated
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            Assert.IsNotNull(user);
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that "Email already registered" message was sent
+            Assert.AreEqual(1, _emailGenerator.Emails.Count);
+            Assert.AreEqual(EmailType.EmailAlreadyRegistered, _emailGenerator.Emails[0].emailType);
+        }
+
         private static ApplicationUser AddExistingUser(IServiceProvider serviceProvider, string emailAddress, string password, string userName, bool emailConfirmed)
         {
             var normalizer = serviceProvider.GetService<ILookupNormalizer>();

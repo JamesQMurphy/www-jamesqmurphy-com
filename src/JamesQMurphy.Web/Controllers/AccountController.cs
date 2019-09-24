@@ -111,34 +111,52 @@ namespace JamesQMurphy.Web.Controllers
             ViewData["IsLoggedIn"] = IsLoggedIn;
             var pwForm = model.Password;
             model.Password = String.Empty;
+            model.ConfirmPassword = String.Empty;
 
             if (ModelState.IsValid)
             {
                 IdentityResult result = null;
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null)
+                var userFromUserName = await _userManager.FindByNameAsync(model.UserName);
+
+                // If using somebody else's confirmed e-mail address, send a warning to that e-mail address
+                // TODO: log this
+                if (user?.EmailConfirmed == true)
                 {
-                    user = new ApplicationUser
-                    {
-                        UserName = model.UserName,
-                        Email = model.Email
-                    };
-                    result = await _userManager.CreateAsync(user, pwForm);
+                    await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailAlreadyRegistered);
+                }
+
+                if (userFromUserName != null)
+                {
+                    result = IdentityResult.Failed(new IdentityError { Description = "That UserName is already taken.  Please choose another." });
                 }
                 else
                 {
-                    if (user.EmailConfirmed)
+                    if (user == null)
                     {
-                        // TODO: log this
-                        await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailAlreadyRegistered);
-                        return View("RegisterConfirmation", model);
+                        user = new ApplicationUser
+                        {
+                            UserName = model.UserName,
+                            Email = model.Email
+                        };
+                        result = await _userManager.CreateAsync(user, pwForm);
                     }
                     else
                     {
-                        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                        result = await _userManager.ResetPasswordAsync(user, resetToken, pwForm);
+                        if (user.EmailConfirmed)
+                        {
+                            // We've warned the real user; pretend like nothing happened
+                            // but we need to short-circuit the success
+                            return View("RegisterConfirmation", model);
+                        }
+                        else
+                        {
+                            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                            result = await _userManager.ResetPasswordAsync(user, resetToken, pwForm);
+                        }
                     }
                 }
+
                 if (result.Succeeded)
                 {
 
@@ -152,9 +170,16 @@ namespace JamesQMurphy.Web.Controllers
 
                     return View("RegisterConfirmation", model);
                 }
+                else
+                {
+                    foreach(var error in result.Errors)
+                    {
+                        ModelState.AddModelError(String.Empty, error.Description);
+                    }
+                }
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed; redisplay form
             return View(model);
         }
 
