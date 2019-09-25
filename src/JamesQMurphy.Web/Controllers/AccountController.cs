@@ -213,12 +213,18 @@ namespace JamesQMurphy.Web.Controllers
             {
                 return RedirectToLocal();
             }
+
             var user = await _userManager.FindByNameAsync(userName);
+
+            IdentityResult result;
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with username '{userName}'.");
+                result = IdentityResult.Failed(new IdentityError { Description = "Could not confirm" });
             }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            else
+            {
+                result = await _userManager.ConfirmEmailAsync(user, code);
+            }
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
