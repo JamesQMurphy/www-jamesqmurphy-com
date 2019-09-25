@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using JamesQMurphy.Blog;
-using JamesQMurphy.Web.Models;
+﻿using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
@@ -25,5 +21,18 @@ namespace JamesQMurphy.Web.Controllers
             }
             return _applicationUser;
         }
+
+        protected IActionResult RedirectToLocal(string returnUrl = null)
+        {
+            if ((!String.IsNullOrEmpty(returnUrl)) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction(nameof(HomeController.Index).ToLower(), "home");
+            }
+        }
+
     }
 }

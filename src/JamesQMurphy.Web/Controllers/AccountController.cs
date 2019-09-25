@@ -211,7 +211,7 @@ namespace JamesQMurphy.Web.Controllers
         {
             if (userName == null || code == null)
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToLocal();
             }
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
@@ -221,22 +221,6 @@ namespace JamesQMurphy.Web.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
-
-
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if ((!string.IsNullOrEmpty(returnUrl)) && Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
-        }
-
-
 
     }
 }
