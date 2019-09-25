@@ -48,8 +48,8 @@ namespace JamesQMurphy.Web.UnitTests
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
             var redirectToActionResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
-            Assert.AreEqual("Home", redirectToActionResult.ControllerName);
-            Assert.AreEqual(nameof(HomeController.Index), redirectToActionResult.ActionName);
+            Assert.AreEqual("home", redirectToActionResult.ControllerName);
+            Assert.AreEqual(nameof(HomeController.Index).ToLowerInvariant(), redirectToActionResult.ActionName);
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
         }
 
