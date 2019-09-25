@@ -191,7 +191,7 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(EmailType.EmailVerification, _emailGenerator.Emails[0].emailType);
         }
 
-        [Test, Ignore("Need to rethink what happens here")]
+        [Test]
         public void TestRegister_EmailPresentButUnverified_SameUserName()
         {
             var email = "test@test";

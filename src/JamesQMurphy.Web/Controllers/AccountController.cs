@@ -116,43 +116,64 @@ namespace JamesQMurphy.Web.Controllers
             if (ModelState.IsValid)
             {
                 IdentityResult result = null;
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var userFromEmail = await _userManager.FindByEmailAsync(model.Email);
                 var userFromUserName = await _userManager.FindByNameAsync(model.UserName);
 
                 // If using somebody else's confirmed e-mail address, send a warning to that e-mail address
                 // TODO: log this
-                if (user?.EmailConfirmed == true)
+                if (userFromEmail?.EmailConfirmed == true)
                 {
-                    await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailAlreadyRegistered);
+                    await _emailGenerator.GenerateEmailAsync(userFromEmail, EmailType.EmailAlreadyRegistered);
                 }
 
-                if (userFromUserName != null)
+                async Task<IdentityResult> resetPasswordAsync(ApplicationUser user)
                 {
-                    result = IdentityResult.Failed(new IdentityError { Description = "That UserName is already taken.  Please choose another." });
+                    return await _userManager.ResetPasswordAsync(
+                        user,
+                        await _userManager.GeneratePasswordResetTokenAsync(user),
+                        pwForm);
+                }
+
+                // Very specific condition of a user trying to re-register with exactly
+                // the same information.  Reset the password.
+                if (userFromUserName != null &&  userFromEmail != null &&
+                    userFromUserName.EmailConfirmed == false &&
+                    userFromEmail.EmailConfirmed == false &&
+                    userFromUserName.NormalizedEmail == userFromEmail.NormalizedEmail &&
+                    userFromUserName.NormalizedUserName == userFromEmail.NormalizedUserName
+                )
+                {
+                    result = await resetPasswordAsync(userFromEmail);
                 }
                 else
                 {
-                    if (user == null)
+                    if (userFromUserName != null)
                     {
-                        user = new ApplicationUser
-                        {
-                            UserName = model.UserName,
-                            Email = model.Email
-                        };
-                        result = await _userManager.CreateAsync(user, pwForm);
+                        result = IdentityResult.Failed(new IdentityError { Description = "That UserName is already taken.  Please choose another." });
                     }
                     else
                     {
-                        if (user.EmailConfirmed)
+                        if (userFromEmail == null)
                         {
-                            // We've warned the real user; pretend like nothing happened
-                            // but we need to short-circuit the success
-                            return View("RegisterConfirmation", model);
+                            userFromEmail = new ApplicationUser
+                            {
+                                UserName = model.UserName,
+                                Email = model.Email
+                            };
+                            result = await _userManager.CreateAsync(userFromEmail, pwForm);
                         }
                         else
                         {
-                            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                            result = await _userManager.ResetPasswordAsync(user, resetToken, pwForm);
+                            if (userFromEmail.EmailConfirmed)
+                            {
+                                // We've warned the real user; pretend like nothing happened
+                                // but we need to short-circuit the success
+                                return View("RegisterConfirmation", model);
+                            }
+                            else
+                            {
+                                result = await resetPasswordAsync(userFromEmail);
+                            }
                         }
                     }
                 }
@@ -160,11 +181,11 @@ namespace JamesQMurphy.Web.Controllers
                 if (result.Succeeded)
                 {
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(userFromEmail);
 
                     // Note that Url is null when we create the controller as part of a unit test
-                    var link = Url?.Action(nameof(AccountController.ConfirmEmail), "account", new { user.UserName, code }, Request.Scheme);
-                    await _emailGenerator.GenerateEmailAsync(user, EmailType.EmailVerification, link);
+                    var link = Url?.Action(nameof(AccountController.ConfirmEmail), "account", new { userFromEmail.UserName, code }, Request.Scheme);
+                    await _emailGenerator.GenerateEmailAsync(userFromEmail, EmailType.EmailVerification, link);
 
                     // Note that we do *not* sign in the user
 
