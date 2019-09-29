@@ -73,7 +73,12 @@ namespace JamesQMurphy.Web
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
             services.AddArticleStoreServices(Configuration);
 

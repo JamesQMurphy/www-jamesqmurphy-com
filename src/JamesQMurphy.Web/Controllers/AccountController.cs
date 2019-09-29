@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using JamesQMurphy.Web.Models;
+using JamesQMurphy.Web.Models.AccountViewModels;
+using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using JamesQMurphy.Email;
-using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Models.AccountViewModels;
-using JamesQMurphy.Web.Services;
+using System;
+using System.Threading.Tasks;
 
 
 namespace JamesQMurphy.Web.Controllers
@@ -51,7 +45,6 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -87,7 +80,6 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
@@ -105,7 +97,6 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
