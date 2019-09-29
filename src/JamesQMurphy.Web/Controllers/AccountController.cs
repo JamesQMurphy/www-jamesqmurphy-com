@@ -216,7 +216,19 @@ namespace JamesQMurphy.Web.Controllers
             {
                 result = await _userManager.ConfirmEmailAsync(user, code);
             }
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            //TODO: Log the result
+
+            if (result.Succeeded)
+            {
+                ViewData[Constants.VIEWDATA_PAGETITLE] = "Email Confirmed";
+                ViewData["Success"] = true;
+            }
+            else
+            {
+                ViewData[Constants.VIEWDATA_PAGETITLE] = "Could Not Confirm Your Email";
+                ViewData["Success"] = false;
+            }
+            return View();
         }
 
     }
