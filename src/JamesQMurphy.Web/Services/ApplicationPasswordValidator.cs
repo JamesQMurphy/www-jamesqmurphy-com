@@ -9,6 +9,7 @@ namespace JamesQMurphy.Web.Services
 {
     public class ApplicationPasswordValidator<TUser> : IPasswordValidator<TUser> where TUser : class
     {
+        public const int PASSWORD_LENGTH = 6;
         public const string REGEX_PATTERN = @"^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W]))).{6,}$";
         public const string REGEX_DESCRIPTION = "Password must be at least six characters long and contain at least one lowercase letter, one uppercase letter, and a number or symbol.";
 

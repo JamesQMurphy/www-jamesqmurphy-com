@@ -59,7 +59,15 @@ namespace JamesQMurphy.Web
                     break;
             }
 
-
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = ApplicationPasswordValidator<ApplicationUser>.PASSWORD_LENGTH;
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+            });
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
                 .AddUserStore<ApplicationUserStore>()
