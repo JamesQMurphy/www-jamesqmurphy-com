@@ -11,5 +11,6 @@ namespace JamesQMurphy.Web.Models
         public string UserName { get; set; }
         public string PasswordHash { get; set; } = "";
         public DateTime LastUpdated { get; set; } = DateTime.MinValue;
+        public bool IsAdministrator { get; set; } = false;
     }
 }

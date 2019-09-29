@@ -12,9 +12,14 @@ namespace JamesQMurphy.Web.Services
         IDisposable,
         IUserStore<ApplicationUser>,
         IUserPasswordStore<ApplicationUser>,
-        IUserEmailStore<ApplicationUser>
+        IUserEmailStore<ApplicationUser>,
+        IUserRoleStore<ApplicationUser>
     {
         private readonly IApplicationUserStorage _storage;
+
+        private static readonly IList<string> _noRoles = new List<string>();
+        private static readonly IList<string> _justRegisteredUserRole = new List<string> { ApplicationRole.RegisteredUser.Name };
+        private static readonly IList<string> _adminAndRegisteredUserRoles = new List<string> { ApplicationRole.RegisteredUser.Name, ApplicationRole.Administrator.Name };
 
         public ApplicationUserStore(IApplicationUserStorage storage)
         {
@@ -222,6 +227,43 @@ namespace JamesQMurphy.Web.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
             return SetNormalizedEmailAsync(user, normalizedEmail);
+        }
+        #endregion
+
+
+        #region IUserRoleStore<ApplicationUser> implementation
+        public Task AddToRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public Task RemoveFromRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public Task<IList<string>> GetRolesAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            var result = user.EmailConfirmed ?
+                            (user.IsAdministrator ? _adminAndRegisteredUserRoles : _justRegisteredUserRole)
+                            : _noRoles;
+            return Task.FromResult(result);
+        }
+
+        public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        {
+            var roles = GetRolesAsync(user, cancellationToken).GetAwaiter().GetResult();
+            foreach (var role in roles)
+            {
+                if (role.ToUpperInvariant() == roleName.ToUpperInvariant())
+                    return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
+        }
+
+        public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

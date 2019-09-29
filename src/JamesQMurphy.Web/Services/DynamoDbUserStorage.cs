@@ -26,6 +26,7 @@ namespace JamesQMurphy.Web.Services
         private const string CONFIRMED = "confirmed";
         private const string PASSWORD_HASH = "passwordHash";
         private const string LAST_UPDATED = "lastUpdated";
+        private const string IS_ADMINISTRATOR = "isAdministrator";
 
         private readonly IAmazonDynamoDB _dynamoDbClient;
         private readonly Table _table;
@@ -139,7 +140,8 @@ namespace JamesQMurphy.Web.Services
                 UserName = attributeMap[USERNAME].S,
                 EmailConfirmed = attributeMap.ContainsKey(CONFIRMED) ? attributeMap[CONFIRMED]?.BOOL ?? default(bool) : default(bool),
                 PasswordHash = attributeMap.ContainsKey(PASSWORD_HASH) ? attributeMap[PASSWORD_HASH]?.S ?? "" : "",
-                LastUpdated = lastUpdated 
+                LastUpdated = lastUpdated,
+                IsAdministrator = attributeMap.ContainsKey(IS_ADMINISTRATOR) ? attributeMap[IS_ADMINISTRATOR]?.BOOL ?? false : false
             };
         }
 
@@ -153,7 +155,8 @@ namespace JamesQMurphy.Web.Services
                 [USERNAME] = user.UserName,
                 [CONFIRMED] = new DynamoDBBool(user.EmailConfirmed),
                 [PASSWORD_HASH] = user.PasswordHash,
-                [LAST_UPDATED] = user.LastUpdated.ToString("O")
+                [LAST_UPDATED] = user.LastUpdated.ToString("O"),
+                [IS_ADMINISTRATOR] = new DynamoDBBool(user.IsAdministrator)
             };
         }
 
