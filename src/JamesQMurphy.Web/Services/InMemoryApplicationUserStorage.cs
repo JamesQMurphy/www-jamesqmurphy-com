@@ -16,15 +16,26 @@ namespace JamesQMurphy.Web.Services
         {
             var user = new ApplicationUser()
             {
-                Email = "a@b",
+                Email = "user@local",
                 EmailConfirmed = true,
-                NormalizedEmail = "A@B",
-                NormalizedUserName = "USERNAME",
-                UserName = "Username"
+                NormalizedEmail = "USER@LOCAL",
+                NormalizedUserName = "REGISTEREDUSER",
+                UserName = "RegisteredUser"
             };
-
             user.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
             _ = CreateAsync(user, CancellationToken.None).GetAwaiter().GetResult();
+
+            var adminUser = new ApplicationUser()
+            {
+                Email = "admin@local",
+                EmailConfirmed = true,
+                NormalizedEmail = "ADMIN@LOCAL",
+                NormalizedUserName = "ADMINISTRATOR",
+                UserName = "Administrator",
+                IsAdministrator = true
+            };
+            adminUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
+            _ = CreateAsync(adminUser, CancellationToken.None).GetAwaiter().GetResult();
 
         }
 

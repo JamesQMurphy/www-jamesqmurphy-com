@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class AdminController : JqmControllerBase
     {
         private readonly IEmailService _emailService;
