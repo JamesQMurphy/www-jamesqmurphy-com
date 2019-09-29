@@ -61,25 +61,25 @@ namespace JamesQMurphy.Web.Services
             return Task.FromResult(0);
         }
 
-        public async Task<IdentityResult> CreateAsync(ApplicationUser user)
+        public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.CreateAsync(user);
+            return await _storage.CreateAsync(user, cancellationToken);
         }
-        public async Task<IdentityResult> UpdateAsync(ApplicationUser user)
+        public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.UpdateAsync(user);
+            return await _storage.UpdateAsync(user, cancellationToken);
         }
-        public async Task<IdentityResult> DeleteAsync(ApplicationUser user)
+        public async Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.DeleteAsync(user);
+            return await _storage.DeleteAsync(user, cancellationToken);
         }
-        public async Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress)
+        public async Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByEmailAddressAsync(normalizedEmailAddress);
+            return await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken);
         }
-        public async Task<ApplicationUser> FindByUserName(string userName)
+        public async Task<ApplicationUser> FindByUserName(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByUserNameAsync(userName);
+            return await _storage.FindByUserNameAsync(userName, cancellationToken);
         }
 
         #endregion
@@ -100,25 +100,25 @@ namespace JamesQMurphy.Web.Services
         Task<IdentityResult> IUserStore<ApplicationUser>.CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return CreateAsync(user);
+            return CreateAsync(user, cancellationToken);
         }
 
         Task<IdentityResult> IUserStore<ApplicationUser>.DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return DeleteAsync(user);
+            return DeleteAsync(user, cancellationToken);
         }
 
         Task<ApplicationUser> IUserStore<ApplicationUser>.FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return FindByEmailAddress(userId);
+            return FindByEmailAddress(userId, cancellationToken);
         }
 
         Task<ApplicationUser> IUserStore<ApplicationUser>.FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return FindByUserName(normalizedUserName);
+            return FindByUserName(normalizedUserName, cancellationToken);
         }
 
         Task<string> IUserStore<ApplicationUser>.GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -154,7 +154,7 @@ namespace JamesQMurphy.Web.Services
         Task<IdentityResult> IUserStore<ApplicationUser>.UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return UpdateAsync(user);
+            return UpdateAsync(user, cancellationToken);
         }
         #endregion
 
@@ -209,7 +209,7 @@ namespace JamesQMurphy.Web.Services
         Task<ApplicationUser> IUserEmailStore<ApplicationUser>.FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return FindByEmailAddress(normalizedEmail);
+            return FindByEmailAddress(normalizedEmail, cancellationToken);
         }
 
         Task<string> IUserEmailStore<ApplicationUser>.GetNormalizedEmailAsync(ApplicationUser user, CancellationToken cancellationToken)

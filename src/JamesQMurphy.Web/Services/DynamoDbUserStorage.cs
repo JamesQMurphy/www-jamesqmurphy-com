@@ -1,11 +1,12 @@
-﻿using JamesQMurphy.Web.Models;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Services
@@ -24,6 +25,7 @@ namespace JamesQMurphy.Web.Services
         private const string USERNAME = "userName";
         private const string CONFIRMED = "confirmed";
         private const string PASSWORD_HASH = "passwordHash";
+        private const string LAST_UPDATED = "lastUpdated";
 
         private readonly IAmazonDynamoDB _dynamoDbClient;
         private readonly Table _table;
@@ -36,26 +38,27 @@ namespace JamesQMurphy.Web.Services
             _options = settings;
         }
 
-        //TODO: add cancellation tokens to these methods
-        public async Task<IdentityResult> CreateAsync(ApplicationUser user)
+        public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _ = await _table.PutItemAsync(FromApplicationUser(user));
+            user.LastUpdated = DateTime.UtcNow;
+            _ = await _table.PutItemAsync(FromApplicationUser(user), cancellationToken);
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> UpdateAsync(ApplicationUser user)
+        public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _ = await _table.UpdateItemAsync(FromApplicationUser(user));
+            user.LastUpdated = DateTime.UtcNow;
+            _ = await _table.UpdateItemAsync(FromApplicationUser(user), cancellationToken);
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> DeleteAsync(ApplicationUser user)
+        public async Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _ = await _table.DeleteItemAsync(user.NormalizedEmail);
+            _ = await _table.DeleteItemAsync(user.NormalizedEmail, cancellationToken);
             return IdentityResult.Success;
         }
 
-        public async Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress)
+        public async Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
             var queryRequest = new QueryRequest
             {
@@ -69,7 +72,7 @@ namespace JamesQMurphy.Web.Services
                 ScanIndexForward = true
             };
 
-            var result = await _dynamoDbClient.QueryAsync(queryRequest);
+            var result = await _dynamoDbClient.QueryAsync(queryRequest, cancellationToken);
 
             if (result.Count == 0)
             {
@@ -82,7 +85,7 @@ namespace JamesQMurphy.Web.Services
             throw new Exception($"Found {result.Count} items with normalizedEmailAddress = {normalizedEmailAddress}");
         }
 
-        public async Task<ApplicationUser> FindByUserNameAsync(string normalizedUserName)
+        public async Task<ApplicationUser> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
             var queryRequest = new QueryRequest
             {
@@ -97,7 +100,7 @@ namespace JamesQMurphy.Web.Services
                 ScanIndexForward = true
             };
 
-            var result = await _dynamoDbClient.QueryAsync(queryRequest);
+            var result = await _dynamoDbClient.QueryAsync(queryRequest, cancellationToken);
 
             if (result.Count == 0)
             {
@@ -110,7 +113,7 @@ namespace JamesQMurphy.Web.Services
             throw new Exception($"Found {result.Count} items with normalizedUserName = {normalizedUserName}");
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
+        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             var scanRequest = new ScanRequest
             {
@@ -119,18 +122,15 @@ namespace JamesQMurphy.Web.Services
                 Select = Select.ALL_PROJECTED_ATTRIBUTES
             };
 
-            var result = await _dynamoDbClient.ScanAsync(scanRequest);
+            var result = await _dynamoDbClient.ScanAsync(scanRequest, cancellationToken);
 
             return result.Items.Select(d => ToApplicationUser(d));
         }
 
-        private static ApplicationUser ToApplicationUser(Document document)
-        {
-            return ToApplicationUser(document.ToAttributeMap());
-        }
-
         private static ApplicationUser ToApplicationUser(Dictionary<string, AttributeValue> attributeMap)
         {
+            DateTime.TryParse(attributeMap.ContainsKey(LAST_UPDATED) ? attributeMap[LAST_UPDATED].S : "", out DateTime lastUpdated);
+
             return new ApplicationUser()
             {
                 NormalizedEmail = attributeMap[NORMALIZED_EMAIL].S,
@@ -138,7 +138,8 @@ namespace JamesQMurphy.Web.Services
                 NormalizedUserName = attributeMap[NORMALIZED_USERNAME].S,
                 UserName = attributeMap[USERNAME].S,
                 EmailConfirmed = attributeMap.ContainsKey(CONFIRMED) ? attributeMap[CONFIRMED]?.BOOL ?? default(bool) : default(bool),
-                PasswordHash = attributeMap.ContainsKey(PASSWORD_HASH) ? attributeMap[PASSWORD_HASH]?.S ?? "" : ""
+                PasswordHash = attributeMap.ContainsKey(PASSWORD_HASH) ? attributeMap[PASSWORD_HASH]?.S ?? "" : "",
+                LastUpdated = lastUpdated 
             };
         }
 
@@ -151,7 +152,8 @@ namespace JamesQMurphy.Web.Services
                 [NORMALIZED_USERNAME] = user.NormalizedUserName,
                 [USERNAME] = user.UserName,
                 [CONFIRMED] = new DynamoDBBool(user.EmailConfirmed),
-                [PASSWORD_HASH] = user.PasswordHash
+                [PASSWORD_HASH] = user.PasswordHash,
+                [LAST_UPDATED] = user.LastUpdated.ToString("O")
             };
         }
 
