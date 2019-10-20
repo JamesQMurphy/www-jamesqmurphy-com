@@ -1,12 +1,20 @@
 ﻿@model JamesQMurphy.Web.Models.HomePageItems
 @inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
+@{ var webSiteTitle = Configuration.GetValue(typeof(string), Constants.CONFIGURATION_WEBSITETITLE);}
 
 <div class="container p-0">
     <div class="row p-0">
-        <div class="container-fluid text-center">
-            <img class="img-fluid" src="~/images/banner1110.png" />
+        <div class="container-fluid text-right" style="position:relative;">
+            <div style="position:absolute; width:45%; right:20px;">
+                <div class="display-4 d-block d-md-none" style="font-size:250%">@webSiteTitle</div>
+                <div class="display-4 d-none d-md-block d-lg-none">@webSiteTitle</div>
+                <div class="display-3 d-none d-lg-block d-xl-none">@webSiteTitle</div>
+                <div class="display-2 d-none d-xl-block">@webSiteTitle</div>
+            </div>
+            <img class="img-fluid" src="~/images/TitleBanner.png" style="background-color: #e9ecef" />
         </div>
     </div>
+    <div class="row p-0">&nbsp;</div>
     <div class="row p-0">
 
         <!-- Main content area -->
