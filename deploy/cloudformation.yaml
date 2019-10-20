@@ -27,10 +27,15 @@ Parameters:
     Description: Stage (environment)
     Default: dev
 
-  DynamoDbTableParameter:
+  DynamoDbTableBlogArticlesParameter:
     Type: String
-    Description: Name of the DynamoDB table
+    Description: Name of the DynamoDB table for blog articles
     Default: demo-articles
+
+  DynamoDbTableUsersParameter:
+    Type: String
+    Description: Name of the DynamoDB table for users
+    Default: dev-users
 
   DomainNameParameter:
     Type: String
@@ -82,7 +87,7 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-        - PolicyName: !Sub DynamoDbReadOnlyAccess-${DynamoDbTableParameter}
+        - PolicyName: !Sub DynamoDbReadOnlyAccess-${DynamoDbTableBlogArticlesParameter}
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -94,7 +99,7 @@ Resources:
                   - 'dynamodb:GetItem'
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableParameter}'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}'
 
 
   TheRoleForTheApiGateway:
@@ -168,7 +173,7 @@ Resources:
         Variables:
           ImageBasePath: /blogimages
           ArticleStore__Service: DynamoDb
-          ArticleStore__DynamoDbTableName: !Ref DynamoDbTableParameter
+          ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
