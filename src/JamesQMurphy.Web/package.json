@@ -20,11 +20,11 @@
     "buildcss-prefix": "postcss --config buildcss/postcss.config.js --replace \"wwwroot/dist/css/*.css\" \"!*.min.css\"",
     "buildcss-minify": "cleancss --level 1 --source-map --source-map-inline-sources --output wwwroot/dist/css/style.min.css wwwroot/dist/css/style.css",
     "copydist": "npm run copydist-bootstrap && npm run copydist-jquery && npm run copydist-jquery-validation && npm run copydist-jquery-validation-unobtrusive && npm run copydist-mermaid",
-    "copydist-bootstrap": "copyfiles node_modules/bootstrap/dist/** wwwroot/dist/lib/bootstrap --up 2 --verbose",
-    "copydist-jquery": "copyfiles node_modules/jquery/dist/** wwwroot/dist/lib/jquery --up 2 --verbose",
+    "copydist-bootstrap": "copyfiles node_modules/bootstrap/dist/**/* wwwroot/dist/lib/bootstrap --up 2 --verbose",
+    "copydist-jquery": "copyfiles node_modules/jquery/dist/**/* wwwroot/dist/lib/jquery --up 2 --verbose",
     "copydist-jquery-validation": "copyfiles node_modules/jquery-validation/dist/** wwwroot/dist/lib/jquery-validation --up 2 --verbose",
     "copydist-jquery-validation-unobtrusive": "copyfiles node_modules/jquery-validation-unobtrusive/dist/** wwwroot/dist/lib/jquery-validation-unobtrusive --up 2 --verbose",
-    "copydist-mermaid": "copyfiles node_modules/mermaid/dist/** wwwroot/dist/lib/mermaid --up 2 --verbose"
+    "copydist-mermaid": "copyfiles node_modules/mermaid/dist/**/* wwwroot/dist/lib/mermaid --up 2 --verbose"
   },
   "devDependencies": {
     "autoprefixer": "^9.6.1",

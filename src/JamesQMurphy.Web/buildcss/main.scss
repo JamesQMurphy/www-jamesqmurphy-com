@@ -6,8 +6,12 @@
 @import "../node_modules/bootstrap/scss/_functions";
 @import "../node_modules/bootstrap/scss/_variables";
 
-// Define extra spacing between paragraphs in main area
-$main-paragraph-margin-bottom: 2 * $paragraph-margin-bottom;
+// Define text size of articles
+$font-size-article: $font-size-base * 1.5;
+$font-size-article-code: $font-size-base * 1.25;
+
+// Define extra spacing between paragraphs in articles
+$article-paragraph-margin-bottom: 2 * $paragraph-margin-bottom;
 
 // Define new colors for inline code (<code>) and code fences (<pre>)
 $code-color: $black;
@@ -26,11 +30,11 @@ $pre-padding-x: .4rem !default;
 
 // <article>
 article {
-    font-size: $font-size-lg;
+    font-size: $font-size-article;
     line-height: 2;
-    
+
     > p, .mermaid {
-        margin-bottom: $main-paragraph-margin-bottom;
+        margin-bottom: $article-paragraph-margin-bottom;
     }
 }
 
@@ -45,8 +49,9 @@ code {
 // <pre> (Code fences)
 pre {
     padding: $pre-padding-y $pre-padding-x;
-    margin-bottom: $main-paragraph-margin-bottom;
+    margin-bottom: $article-paragraph-margin-bottom;
     background-color: $pre-bg-color;
+    font-size: $font-size-article-code;
     line-height: $line-height-base;   // Set this back to the default
 
     // MarkDig emits <code> tags inside of <pre> tags
