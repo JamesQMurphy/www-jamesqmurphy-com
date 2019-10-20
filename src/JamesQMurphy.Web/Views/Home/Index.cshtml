@@ -1,6 +1,6 @@
 ﻿@model JamesQMurphy.Web.Models.HomePageItems
 @inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
-@{ var webSiteTitle = Configuration.GetValue(typeof(string), Constants.CONFIGURATION_WEBSITETITLE);}
+@{ var webSiteTitle = webSiteOptions.WebSiteTitle;}
 
 <div class="container p-0">
     <div class="row p-0">
