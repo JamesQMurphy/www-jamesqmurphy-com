@@ -35,13 +35,52 @@ namespace JamesQMurphy.Web.Services
                     subject = "Please verify your e-mail address";
                     if (data != null && data.Length > 0)
                     {
-                        message = $"Please click on the following link to confirm your e-mail:{Environment.NewLine}<a href='{data[0]}'>{data[0]}</a>";
+                        message = $@"
+<html><body>
+<p>Hello,
+<br/></p>
+<p>
+Thank you for registering your e-mail address with Cold-Brewed DevOps!
+<br/></p>
+<p></br></p>
+<p>
+In order to complete the sign-up process, please click on the following link to confirm your e-mail address:<br/>
+<br/>
+<a href='{data[0]}'>{data[0]}</a><br/>
+<br/>
+This link will be valid for 48 hours.  If you do not verify your e-mail address before the link expires, you
+will need to register again.
+<br/></p>
+<p></br></p>
+<p>
+Thank you,<br/>
+<br/>
+JamesQMurphy<br/>
+</p>
+</body></html>
+";
                     }
                     break;
 
                 case EmailType.EmailAlreadyRegistered:
                     subject = "Somebody tried to register your e-mail address";
-                    message = "Somebody tried to register your e-mail address.  If this was you, you may need to reset your password.";
+                    message = $@"
+<html><body>
+<p>Hello,
+<br/></p>
+<p>
+We thought you should know that somebody tried to register on Cold-Brewed DevOps using your e-mail address.
+If this was you, then there's nothing to worry about it.  If you think it is somebody else, they still won't
+be able to use your e-mail address, but it might be necessary to consider changing your password.
+<br/></p>
+<p></br></p>
+<p>
+Thank you,<br/>
+<br/>
+JamesQMurphy<br/>
+</p>
+</body></html>
+";
                     break;
             }
 
