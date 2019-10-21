@@ -35,9 +35,17 @@ namespace JamesQMurphy.Email.Aws
                     Message = new Message()
                     {
                         Subject = new Content(subject),
-                        Body = new Body(new Content(message))
+                        Body = new Body()
                     }
                 };
+                if (message.Trim().ToLowerInvariant().StartsWith("<html>"))
+                {
+                    sendRequest.Message.Body.Html = new Content(message);
+                }
+                else
+                {
+                    sendRequest.Message.Body.Text = new Content(message);
+                }
                 var response = await client.SendEmailAsync(sendRequest);
                 return new EmailResult
                 {
