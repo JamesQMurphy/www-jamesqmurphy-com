@@ -70,8 +70,8 @@ JamesQMurphy<br/>
 <br/></p>
 <p>
 We thought you should know that somebody tried to register on Cold-Brewed DevOps using your e-mail address.
-If this was you, then there's nothing to worry about it.  If you think it is somebody else, they still won't
-be able to use your e-mail address, but it might be necessary to consider changing your password.
+If this was you, then there's nothing to worry about.  If you think it is somebody else, don't worry... that
+person still cannot use your e-mail address.  But feel free to contact us if you have any questions.
 <br/></p>
 <p></br></p>
 <p>
@@ -82,6 +82,58 @@ JamesQMurphy<br/>
 </body></html>
 ";
                     break;
+
+                case EmailType.PasswordReset:
+                    subject = "Reset Your Password";
+                    if (data != null && data.Length > 0)
+                    {
+                        message = $@"
+<html><body>
+<p>Hello,<br/>
+<br/></p>
+<p></br></p>
+<p>
+Somebody (hopefully you!) requested to reset your password on Cold-Brewed DevOps, and we want to
+make sure it was really you.  To reset your password, click this link (or copy/paste it into your
+browser) to be taken to the website, where you will be able to enter a new password:</br>
+<br/>
+<a href='{data[0]}'>{data[0]}</a><br/>
+<br/>
+If this wasn't you, or you've changed your mind, don't worry... we haven't done anything yet.  You 
+can safely delete this message and nothing will happen.
+<br/></p>
+<p></br></p>
+<p>
+Thank you,<br/>
+<br/>
+JamesQMurphy<br/>
+</p>
+</body></html>
+";
+                    }
+                    break;
+
+                case EmailType.PasswordChanged:
+                    subject = "Password changed";
+                    message = $@"
+<html><body>
+<p>Hello,
+<br/></p>
+<p>
+We are just letting you know that your password has been successfully changed on Cold-Brewed DevOps.  If
+this was you, then there's nothing to worry about.  But if you think that somebody else has changed
+your password, please contact us immediately.
+<br/></p>
+<p></br></p>
+<p>
+Thank you,<br/>
+<br/>
+JamesQMurphy<br/>
+</p>
+</body></html>
+";
+                    break;
+
             }
 
             _ = await _emailService.SendEmailAsync(user.Email, subject, message);

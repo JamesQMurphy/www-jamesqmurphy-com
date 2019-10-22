@@ -231,5 +231,97 @@ namespace JamesQMurphy.Web.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Reset Your Password";
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user?.EmailConfirmed == true)
+                {
+                    // User exists and email is confirmed; generate a password reset link
+                    var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    // Note that Url is null when we create the controller as part of a unit test
+                    var link = Url?.Action(nameof(AccountController.ResetPassword), "account", new { user.UserName, code }, Request.Scheme);
+                    await _emailGenerator.GenerateEmailAsync(user, EmailType.PasswordReset, link);
+                }
+
+                // Even if user doesn't exist, show the confirmation page
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Check Your Email";
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string code = null, string username = null)
+        {
+            if (code == null || username == null)
+            {
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Enter New Password";
+            var model = new ResetPasswordViewModel { Code = code, Username = username };
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                IdentityResult result = IdentityResult.Failed(new IdentityError() { Code = "InvalidToken" });
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null)
+                {
+                    result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+                    if (result.Succeeded)
+                    {
+                        await _emailGenerator.GenerateEmailAsync(user, EmailType.PasswordChanged);
+                    }
+                }
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(ResetPasswordConfirmation));
+                }
+                foreach (var error in result.Errors)
+                {
+                    if (error.Code == "InvalidToken")
+                    {
+                        error.Description = "There was a problem updating your password.  Either the link we emailed you has expired, or it was not pasted properly into the browser.";
+                    }
+                    ModelState.AddModelError(String.Empty, error.Description);
+                }
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Password Changed";
+            return View();
+        }
     }
 }

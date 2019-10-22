@@ -11,7 +11,8 @@ namespace JamesQMurphy.Web.Services
         TestEmail = 0,
         EmailVerification,
         EmailAlreadyRegistered,
-        PasswordReset
+        PasswordReset,
+        PasswordChanged
     }
 
     public interface IEmailGenerator

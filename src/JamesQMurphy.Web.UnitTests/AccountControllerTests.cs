@@ -306,6 +306,190 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(EmailType.EmailAlreadyRegistered, _emailGenerator.Emails[0].emailType);
         }
 
+        [Test]
+        public void TestForgotPassword_EmailPresentAndVerified()
+        {
+            var email = "test@test";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            AddExistingUser(_serviceProvider, email, password, username, true);
+
+            var viewModel = new ForgotPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var result = _controller.ForgotPassword(viewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
+            Assert.AreEqual(nameof(AccountController.ForgotPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that password was NOT updated
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            Assert.IsNotNull(user);
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that "Reset Password" message was sent
+            Assert.AreEqual(1, _emailGenerator.Emails.Count);
+            Assert.AreEqual(EmailType.PasswordReset, _emailGenerator.Emails[0].emailType);
+        }
+
+        [Test]
+        public void TestForgotPassword_EmailPresentButNotVerified()
+        {
+            var email = "test@test";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            AddExistingUser(_serviceProvider, email, password, username, false);
+
+            var viewModel = new ForgotPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var result = _controller.ForgotPassword(viewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
+            Assert.AreEqual(nameof(AccountController.ForgotPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that password was NOT updated
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            Assert.IsNotNull(user);
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that "Reset Password" message was NOT sent
+            Assert.AreEqual(0, _emailGenerator.Emails.Count);
+        }
+
+        [Test]
+        public void TestForgotPassword_EmailNotPresent()
+        {
+            var viewModel = new ForgotPasswordViewModel()
+            {
+                Email = "doesnotexist@atall"
+            };
+
+            var result = _controller.ForgotPassword(viewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
+            Assert.AreEqual(nameof(AccountController.ForgotPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that "Reset Password" message was NOT sent
+            Assert.AreEqual(0, _emailGenerator.Emails.Count);
+        }
+
+        [Test]
+        public void TestResetPassword_VerifiedUser()
+        {
+            var email = "test@test";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            AddExistingUser(_serviceProvider, email, password, username, true);
+
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var code = signinManager.UserManager.GeneratePasswordResetTokenAsync(user).GetAwaiter().GetResult();
+
+            var passwordReplace = "Defdef~456";
+            var viewModel = new ResetPasswordViewModel()
+            {
+                Username = username,
+                Code = code,
+                Password = passwordReplace,
+                ConfirmPassword = passwordReplace
+            };
+
+            var result = _controller.ResetPassword(viewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
+            Assert.AreEqual(nameof(AccountController.ResetPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that password was updated
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, passwordReplace);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that password changed email was sent
+            Assert.AreEqual(1, _emailGenerator.Emails.Count);
+            Assert.AreEqual(EmailType.PasswordChanged, _emailGenerator.Emails[0].emailType);
+        }
+
+
+        [Test]
+        public void TestResetPassword_VerifiedUser_BadCode()
+        {
+            var email = "test@test";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            AddExistingUser(_serviceProvider, email, password, username, true);
+
+            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var code = "not-a-valid-code";
+
+            var passwordReplace = "Defdef~456";
+            var viewModel = new ResetPasswordViewModel()
+            {
+                Username = username,
+                Code = code,
+                Password = passwordReplace,
+                ConfirmPassword = passwordReplace
+            };
+
+            var result = _controller.ResetPassword(viewModel).GetAwaiter().GetResult();
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            Assert.AreEqual(1, _controller.ModelState.ErrorCount);
+
+            // Assert that password was NOT updated
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that password changed email was NOT sent
+            Assert.AreEqual(0, _emailGenerator.Emails.Count);
+        }
+
+        [Test]
+        public void TestResetPassword_BadUser_BadCode()
+        {
+            var username = "userNotExist";
+            var code = "not-a-valid-code";
+            var passwordReplace = "Defdef~456";
+            var viewModel = new ResetPasswordViewModel()
+            {
+                Username = username,
+                Code = code,
+                Password = passwordReplace,
+                ConfirmPassword = passwordReplace
+            };
+
+            var result = _controller.ResetPassword(viewModel).GetAwaiter().GetResult();
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            Assert.AreEqual(1, _controller.ModelState.ErrorCount);
+
+            // Assert that password changed email was NOT sent
+            Assert.AreEqual(0, _emailGenerator.Emails.Count);
+        }
         private static ApplicationUser AddExistingUser(IServiceProvider serviceProvider, string emailAddress, string password, string userName, bool emailConfirmed)
         {
             var normalizer = serviceProvider.GetService<ILookupNormalizer>();
