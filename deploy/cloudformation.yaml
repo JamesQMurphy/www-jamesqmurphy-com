@@ -209,7 +209,7 @@ Resources:
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TheLambdaFunction.Arn}/invocations
 
 
-  TheDistResource2:
+  TheDistResourceStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
@@ -221,7 +221,7 @@ Resources:
         S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/dist'
 
 
-  TheBlogImagesResource2:
+  TheBlogImagesResourceStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
@@ -233,7 +233,7 @@ Resources:
         S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}'
 
 
-  TheImagesResource:
+  TheImagesResourceStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
@@ -250,9 +250,9 @@ Resources:
     DependsOn:
       - TheRootGetMethod
       - TheProxyAnyMethod
-      - TheDistResource2
-      - TheBlogImagesResource2
-      - TheImagesResource
+      - TheDistResourceStack
+      - TheBlogImagesResourceStack
+      - TheImagesResourceStack
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI
