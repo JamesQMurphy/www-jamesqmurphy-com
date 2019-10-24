@@ -113,5 +113,5 @@ Resources:
 
 Outputs:
   ApiGatewayResourceId:
-    Description: The Url to the Gateway API
+    Description: The Id of the newly created Gateway Resource
     Value: !Ref TheApiGatewayResource
