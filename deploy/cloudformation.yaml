@@ -269,7 +269,7 @@ Resources:
   TheNewBlogImagesResource:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForCodeParameter}/cf-apiGatewayToS3.yaml'
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
       TimeoutInMinutes: 10
       Parameters:
         RestApiIdParameter: !Ref TheGatewayRestAPI
