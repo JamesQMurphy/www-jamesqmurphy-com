@@ -219,54 +219,18 @@ Resources:
 
 
   TheDistResource:
-    Type: 'AWS::ApiGateway::Resource'
+    Type: 'AWS::CloudFormation::Stack'
     Properties:
-      RestApiId: !Ref TheGatewayRestAPI
-      ParentId: !GetAtt TheGatewayRestAPI.RootResourceId
-      PathPart: dist
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: dist
+        S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/dist'
 
 
-  TheProxyResourceUnderTheDistResource:
-    Type: 'AWS::ApiGateway::Resource'
-    Properties:
-      RestApiId: !Ref TheGatewayRestAPI
-      ParentId: !Ref TheDistResource
-      PathPart: '{proxy+}'
-
-
-  TheGetMethodForTheProxyResourceUnderTheDistResource:
-    Type: 'AWS::ApiGateway::Method'
-    Properties:
-      RestApiId: !Ref TheGatewayRestAPI
-      ResourceId: !Ref TheProxyResourceUnderTheDistResource
-      HttpMethod: GET
-      AuthorizationType: NONE
-      RequestParameters:
-        method.request.path.proxy: true
-      MethodResponses:
-        - StatusCode: 200
-          ResponseParameters:
-            'method.response.header.Timestamp': true
-            'method.response.header.Content-Length': true
-            'method.response.header.Content-Type': true
-            'method.response.header.Cache-Control': true
-      Integration:
-        Type: AWS
-        IntegrationHttpMethod: GET
-        Credentials: !GetAtt TheRoleForTheApiGateway.Arn
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/dist/{fullpath}
-        PassthroughBehavior: WHEN_NO_MATCH
-        RequestParameters:
-          integration.request.path.fullpath: 'method.request.path.proxy'
-        IntegrationResponses:
-        - StatusCode: 200
-          ResponseParameters:
-            'method.response.header.Timestamp': 'integration.response.header.Date'
-            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
-            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            'method.response.header.Cache-Control': "'public, max-age=31536000'"
-
-  TheNewBlogImagesResource:
+  TheBlogImagesResource:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
@@ -277,10 +241,11 @@ Resources:
         ApiResourceNameParameter: blogimages
         S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}'
 
+
   TheImagesResource:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/apiGatewayToS3.yaml'
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
       TimeoutInMinutes: 10
       Parameters:
         RestApiIdParameter: !Ref TheGatewayRestAPI
@@ -295,9 +260,7 @@ Resources:
       - TheRootGetMethod
       - TheProxyAnyMethod
       - TheDistResource
-      - TheProxyResourceUnderTheDistResource
-      - TheGetMethodForTheProxyResourceUnderTheDistResource
-      - TheNewBlogImagesResource
+      - TheBlogImagesResource
       - TheImagesResource
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
