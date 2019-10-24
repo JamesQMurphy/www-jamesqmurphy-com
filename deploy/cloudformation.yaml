@@ -134,15 +134,6 @@ Resources:
                   - 's3:Get*'
                   - 's3:List*'
                 Resource: !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/*'
-        - PolicyName: !Sub S3ReadOnly-${S3BucketPathForBlogImagesParameter}
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 's3:Get*'
-                  - 's3:List*'
-                Resource: !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}/*'
 
 
   TheLambdaFunction:
@@ -275,54 +266,27 @@ Resources:
             'method.response.header.Content-Type': 'integration.response.header.Content-Type'
             'method.response.header.Cache-Control': "'public, max-age=31536000'"
 
-
-  TheBlogImagesResource:
-    Type: 'AWS::ApiGateway::Resource'
+  TheNewBlogImagesResource:
+    Type: 'AWS::CloudFormation::Stack'
     Properties:
-      RestApiId: !Ref TheGatewayRestAPI
-      ParentId: !GetAtt TheGatewayRestAPI.RootResourceId
-      PathPart: blogimages
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForCodeParameter}/cf-apiGatewayToS3.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: blogimages
+        S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}'
 
-
-  TheProxyResourceUnderTheBlogImagesResource:
-    Type: 'AWS::ApiGateway::Resource'
+  TheImagesResource:
+    Type: 'AWS::CloudFormation::Stack'
     Properties:
-      RestApiId: !Ref TheGatewayRestAPI
-      ParentId: !Ref TheBlogImagesResource
-      PathPart: '{proxy+}'
-
-
-  TheGetMethodForTheProxyResourceUnderTheBlogImagesResource:
-    Type: 'AWS::ApiGateway::Method'
-    Properties:
-      RestApiId: !Ref TheGatewayRestAPI
-      ResourceId: !Ref TheProxyResourceUnderTheBlogImagesResource
-      HttpMethod: GET
-      AuthorizationType: NONE
-      RequestParameters:
-        method.request.path.proxy: true
-      MethodResponses:
-        - StatusCode: 200
-          ResponseParameters:
-            'method.response.header.Timestamp': true
-            'method.response.header.Content-Length': true
-            'method.response.header.Content-Type': true
-            'method.response.header.Cache-Control': true
-      Integration:
-        Type: AWS
-        IntegrationHttpMethod: GET
-        Credentials: !GetAtt TheRoleForTheApiGateway.Arn
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}/{fullpath}
-        PassthroughBehavior: WHEN_NO_MATCH
-        RequestParameters:
-          integration.request.path.fullpath: 'method.request.path.proxy'
-        IntegrationResponses:
-        - StatusCode: 200
-          ResponseParameters:
-            'method.response.header.Timestamp': 'integration.response.header.Date'
-            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
-            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            'method.response.header.Cache-Control': "'public, max-age=31536000'"
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/apiGatewayToS3.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: images
+        S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/images'
 
 
   TheDeploymentStage:
@@ -333,9 +297,8 @@ Resources:
       - TheDistResource
       - TheProxyResourceUnderTheDistResource
       - TheGetMethodForTheProxyResourceUnderTheDistResource
-      - TheBlogImagesResource
-      - TheProxyResourceUnderTheBlogImagesResource
-      - TheGetMethodForTheProxyResourceUnderTheBlogImagesResource
+      - TheNewBlogImagesResource
+      - TheImagesResource
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI

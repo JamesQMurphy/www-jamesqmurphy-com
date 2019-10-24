@@ -11,10 +11,10 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 2
-  versionPatch: 18
+  versionPatch: 19
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
-  JQM.cloudformationFileName: cloudformation.yaml
+  JQM.cloudformationFileName: '*.yaml'
   JQM.toolInstallDir: build/bin
   JQM.compareBranch: master
   JQM.versionFile: build/azure-pipelines.yml

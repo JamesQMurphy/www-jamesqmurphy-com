@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: 'Creates an API Gateway resource that forwards GET requests to a folder inside an S3 bucket'
+
+Parameters:
+
+  RestApiIdParameter:
+    Type: String
+    Description: Id of the API Gateway
+
+  ParentResourceIdParameter:
+    Type: String
+    Description: Id of the parent resource, typically the root resource id
+
+  ApiResourceNameParameter:
+    Type: String
+    Description: Name of the resource path to use 
+
+  S3BucketPathParameter:
+    Type: String
+    Description: S3 Bucket and path where static content is located
+
+  MaxAgeParameter:
+    Type: Number
+    Description: 'Value of max-age in the returned cache-control header'
+    Default: 31536000
+
+
+Resources:
+
+  TheIAMReadOnlyRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: S3ReadOnly
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:Get*'
+                  - 's3:List*'
+                Resource: !Sub 'arn:aws:s3:::${S3BucketPathParameter}/*'  
+
+
+  TheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ParentId: !Ref ParentResourceIdParameter
+      PathPart: !Ref ApiResourceNameParameter
+
+
+  TheProxyResourceUnderTheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ParentId: !Ref TheApiGatewayResource
+      PathPart: '{proxy+}'
+
+
+  TheGetMethodForTheProxyResourceUnderTheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ResourceId: !Ref TheProxyResourceUnderTheApiGatewayResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: true
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': true
+            'method.response.header.Content-Length': true
+            'method.response.header.Content-Type': true
+            'method.response.header.Cache-Control': true
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: GET
+        Credentials: !GetAtt TheIAMReadOnlyRole.Arn
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketPathParameter}/{fullpath}
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.fullpath: 'method.request.path.proxy'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': 'integration.response.header.Date'
+            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
+            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            'method.response.header.Cache-Control': !Sub "'public, max-age=${MaxAgeParameter}'"
+
+
+Outputs:
+  ApiGatewayResourceId:
+    Description: The Url to the Gateway API
+    Value: !Ref TheApiGatewayResource
