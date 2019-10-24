@@ -125,15 +125,6 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-        - PolicyName: !Sub S3ReadOnly-${S3BucketForCodeParameter}
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 's3:Get*'
-                  - 's3:List*'
-                Resource: !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/*'
 
 
   TheLambdaFunction:
