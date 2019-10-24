@@ -171,7 +171,7 @@ Resources:
 
   TheScheduledRuleToWarmTheLambda: 
     Type: AWS::Events::Rule
-	Condition: AreWarmingTheLambda
+    Condition: AreWarmingTheLambda
     Properties: 
       Description: Calls the Lambda function every 5 minutes to keep it warm
       ScheduleExpression: "rate(5 minutes)"
