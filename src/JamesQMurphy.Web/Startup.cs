@@ -36,6 +36,7 @@ namespace JamesQMurphy.Web
             });
 
             services.ConfigurePoco<WebSiteOptions>(Configuration);
+            services.AddHealthChecks();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
@@ -57,6 +58,7 @@ namespace JamesQMurphy.Web
                 app.UseHsts();
             }
 
+            app.UseHealthChecks(Configuration["WarmUrl"]);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

@@ -1,7 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: 'Creates an API Gateway resource that forwards GET requests to a folder inside an S3 bucket'
-
 Parameters:
 
   RestApiIdParameter:
