@@ -159,7 +159,6 @@ Resources:
       Environment:
         Variables:
           ImageBasePath: /blogimages
-          WarmUrl: !Ref WarmUrlParameter
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
       Tags:
