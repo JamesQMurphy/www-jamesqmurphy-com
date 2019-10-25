@@ -184,6 +184,7 @@ Resources:
 
   TheLambdaInvokePermissionForEvents: 
     Type: AWS::Lambda::Permission
+    Condition: AreWarmingTheLambda
     Properties: 
       FunctionName: !Ref TheLambdaFunction
       Action: "lambda:InvokeFunction"
