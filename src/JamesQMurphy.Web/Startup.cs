@@ -75,6 +75,8 @@ namespace JamesQMurphy.Web
                 .AddPasswordValidator<ApplicationPasswordValidator<ApplicationUser>>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
+            services.ConfigurePoco<WebSiteOptions>(Configuration);
+            services.AddHealthChecks();
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/account/login";
@@ -118,6 +120,7 @@ namespace JamesQMurphy.Web
                 app.UseHsts();
             }
 
+            app.UseHealthChecks(Configuration["WarmUrl"]);
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
