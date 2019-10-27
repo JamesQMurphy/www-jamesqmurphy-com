@@ -57,7 +57,9 @@ Resources:
                 Action:
                   - 's3:Get*'
                   - 's3:List*'
-                Resource: !Sub 'arn:aws:s3:::${S3BucketPathParameter}/*'  
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketPathParameter}'  
+                  - !Sub 'arn:aws:s3:::${S3BucketPathParameter}/*'  
 
 
   TheApiGatewayResource:
