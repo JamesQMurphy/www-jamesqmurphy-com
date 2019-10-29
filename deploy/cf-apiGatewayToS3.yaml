@@ -30,7 +30,7 @@ Parameters:
     Default: 31536000
 
 
-Conitions:
+Conditions:
    IsPath: !Not [!Equals [!Ref IsPathParameter, 'true']]
 
 
