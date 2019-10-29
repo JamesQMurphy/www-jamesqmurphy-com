@@ -21,7 +21,7 @@ Parameters:
   IsPathParameter:
     Type: String
     Description: '"true" if this refers to a path; false if it is a file. Defaults to "true"'
-    AllowedPattern: '^[true|false]$'
+    AllowedPattern: '^true|false$'
     Default: true
 
   MaxAgeParameter:
