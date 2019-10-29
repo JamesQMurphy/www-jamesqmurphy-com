@@ -31,6 +31,7 @@ Parameters:
 
 
 Conditions:
+   IsFolder: !Equals [!Ref IsPathParameter, 'true']
    IsPath: !Not [!Equals [!Ref IsPathParameter, 'true']]
 
 
@@ -81,7 +82,7 @@ Resources:
 
   TheGetMethodForTheApiGatewayResource:
     Type: 'AWS::ApiGateway::Method'
-    Condition: !Not [!Ref IsPath]
+    Condition: IsFolder
     Properties:
       RestApiId: !Ref RestApiIdParameter
       ResourceId: !Ref TheApiGatewayResource
@@ -111,7 +112,7 @@ Resources:
 
   TheProxyResourceUnderTheApiGatewayResource:
     Type: 'AWS::ApiGateway::Resource'
-    Condition: IsPath
+    Condition: IsFolder
     Properties:
       RestApiId: !Ref RestApiIdParameter
       ParentId: !Ref TheApiGatewayResource
