@@ -18,10 +18,20 @@ Parameters:
     Type: String
     Description: S3 Bucket and path where static content is located
 
+  IsPathParameter:
+    Type: String
+    Description: '"true" if this refers to a path; false if it is a file. Defaults to "true"'
+    AllowedPattern: '^[true|false]$'
+    Default: true
+
   MaxAgeParameter:
     Type: Number
     Description: 'Value of max-age in the returned cache-control header'
     Default: 31536000
+
+
+Conitions:
+   IsPath: !Not [!Equals [!Ref IsPathParameter, 'true']]
 
 
 Resources:
@@ -49,7 +59,7 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-        - PolicyName: S3ReadOnly
+        - PolicyName: S3ReadOnly-Path
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -57,7 +67,9 @@ Resources:
                 Action:
                   - 's3:Get*'
                   - 's3:List*'
-                Resource: !Sub 'arn:aws:s3:::${S3BucketPathParameter}/*'  
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketPathParameter}'
+                  - !Sub 'arn:aws:s3:::${S3BucketPathParameter}/*'
 
 
   TheApiGatewayResource:
@@ -67,9 +79,39 @@ Resources:
       ParentId: !Ref ParentResourceIdParameter
       PathPart: !Ref ApiResourceNameParameter
 
+  TheGetMethodForTheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Method'
+    Condition: !Not [!Ref IsPath]
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ResourceId: !Ref TheApiGatewayResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': true
+            'method.response.header.Content-Length': true
+            'method.response.header.Content-Type': true
+            'method.response.header.Cache-Control': true
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: GET
+        Credentials: !GetAtt TheIAMReadOnlyRole.Arn
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketPathParameter}
+        PassthroughBehavior: WHEN_NO_MATCH
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': 'integration.response.header.Date'
+            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
+            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            'method.response.header.Cache-Control': !Sub "'public, max-age=${MaxAgeParameter}'"
+
 
   TheProxyResourceUnderTheApiGatewayResource:
     Type: 'AWS::ApiGateway::Resource'
+    Condition: IsPath
     Properties:
       RestApiId: !Ref RestApiIdParameter
       ParentId: !Ref TheApiGatewayResource
