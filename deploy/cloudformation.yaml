@@ -295,6 +295,7 @@ Resources:
       - TheDistResourceStack
       - TheBlogImagesResourceStack
       - TheImagesResourceStack
+      - TheFavIconResourceStack
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI
