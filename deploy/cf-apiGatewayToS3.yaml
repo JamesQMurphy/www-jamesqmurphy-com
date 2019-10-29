@@ -121,6 +121,7 @@ Resources:
 
   TheGetMethodForTheProxyResourceUnderTheApiGatewayResource:
     Type: 'AWS::ApiGateway::Method'
+    Condition: IsFolder
     Properties:
       RestApiId: !Ref RestApiIdParameter
       ResourceId: !Ref TheProxyResourceUnderTheApiGatewayResource
