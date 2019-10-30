@@ -61,3 +61,9 @@ pre {
         line-height: inherit;
     }
 }
+
+// Issue #48 - fixes stretched images in IE
+// See https://stackoverflow.com/a/54815175/1001100
+.card img {
+    height: 100%;
+}
