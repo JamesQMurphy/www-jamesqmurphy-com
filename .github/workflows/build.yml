@@ -21,7 +21,7 @@ jobs:
   build:
     env:
       BUILDCONFIGURATION: 'Release'
-      JQM_PACKAGENAME: "${{ format('JamesQMurphy.Web.{0}.zip', ${{ env.BUILD_BUILDNUMBER }} ) }}"
+      JQM_PACKAGENAME: format('JamesQMurphy.Web.{0}.zip',  env.BUILD_BUILDNUMBER )
 #     JQM_PACKAGENAME: JamesQMurphy.Web.0.2.22.0.zip
       JQM_ARTIFACTFOLDER: a
       JQM_CLOUDFORMATIONFILENAME: '*.yaml'
