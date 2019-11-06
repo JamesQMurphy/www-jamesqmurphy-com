@@ -5,6 +5,7 @@ on:
     branches: 
       - master
       - features/try-github-actions
+      - features/try-github-actions-*
 
 env:
   VERSION_MAJOR: 0
