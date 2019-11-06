@@ -10,19 +10,19 @@ env:
   VERSION_MAJOR: 0
   VERSION_MINOR: 2
   VERSION_PATCH: 22
-  BUILD_BUILDNUMBER: ${{ format('{{{0}.{1}.{2}.{3}}}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH, 0) }}
+  BUILD_BUILDNUMBER: ${{ format('{{{0}.{1}.{2}.{3}}}', {{ env.VERSION_MAJOR }}, {{ env.VERSION_MINOR }}, {{ env.VERSION_PATCH }}, 0) }}
 
 
 jobs:
   build:
     env:
       BUILDCONFIGURATION: 'Release'
-      JQM_PACKAGENAME: ${{ format('JamesQMurphy.Web.{0}.zip', env.BUILD_BUILDNUMBER) }}
+      JQM_PACKAGENAME: ${{ format('JamesQMurphy.Web.{0}.zip', {{ env.BUILD_BUILDNUMBER }}) }}
       JQM_CLOUDFORMATIONFILENAME: '*.yaml'
       JQM_TOOLINSTALLDIR: build/bin
       JQM_COMPAREBRANCH: master
       JQM_VERSIONFILE: build/azure-pipelines.yml
-      JQM_GITTAGNAME: ${{ format('v{0}', env.BUILD_BUILDNUMBER) }} 
+      JQM_GITTAGNAME: ${{ format('v{0}', {{ env.BUILD_BUILDNUMBER }}) }} 
 
     runs-on: ubuntu-latest
 
