@@ -8,6 +8,18 @@ on:
 
 jobs:
   build:
+    env:
+      VERSION_MAJOR: 0
+      VERSION_MINOR: 2
+      VERSION_PATCH: 22
+      BUILD_BUILDNUMBER: $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH).0
+      BUILDCONFIGURATION: 'Release'
+      JQM_PACKAGENAME: JamesQMurphy.Web.$(BUILD_BUILDNUMBER).zip
+      JQM_CLOUDFORMATIONFILENAME: '*.yaml'
+      JQM_TOOLINSTALLDIR: build/bin
+      JQM_COMPAREBRANCH: master
+      JQM_VERSIONFILE: build/azure-pipelines.yml
+      JQM_GITTAGNAME: v$(BUILD_BUILDNUMBER)      
 
     runs-on: ubuntu-latest
 
@@ -21,8 +33,8 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Install Amazon.Lambda.Tools
-      run: dotnet tool install Amazon.Lambda.Tools --tool-path build/bin
+      run: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM_TOOLINSTALLDIR)
 
     - name: Run dotnet-lambda package
-      run: ./dotnet-lambda package -c Release -pl src/JamesQMurphy.Web -o a/JamesQMurphy.Web --msbuild-parameters "--self-contained true --runtime rhel-x64"
-      working-directory: build/bin
+      run: ./dotnet-lambda package -c $(BUILD_BUILDNUMBER) -pl $(GITHUB_WORKSPACE)/src/JamesQMurphy.Web -o $(GITHUB_WORKSPACE)/a/JamesQMurphy.Web --msbuild-parameters "--self-contained true --runtime rhel-x64"
+      working-directory: $(JQM_TOOLINSTALLDIR)
