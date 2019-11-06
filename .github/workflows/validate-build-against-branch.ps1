@@ -14,12 +14,13 @@ See https://www.jamesqmurphy.com/blog/brewing-the-blog-6 for an explanation
 #>
 
 param (
-    [String] $CompareBranch = 'master',
+    [String] $CompareBranch = $env:JQM_COMPAREBRANCH,
 
-    [String] $VersionFile  = 'azure-pipelines.yml'
+    [String] $VersionFile  = $env:JQM_VERSIONFILE
 )
 
-. "$PSScriptRoot/common-functions.ps1"
+Write-Output "CompareBranch: $CompareBranch"
+Write-Output "VesrionFile: $VersionFile"
 
 # Remove "refs/heads/" in front of compare branch name (if present)
 if ($CompareBranch.StartsWith('refs/heads/')) {
