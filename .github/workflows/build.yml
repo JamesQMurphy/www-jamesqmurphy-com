@@ -52,7 +52,7 @@ jobs:
       working-directory: ${{ env.JQM_TOOLINSTALLDIR }}
 
     - name: Copy Cloudformation files
-      run: cp release/$JQM_CLOUDFORMATIONFILE $GITHUB_WORKSPACE/$JQM_ARTIFACTFOLDER
+      run: cp deploy/$JQM_CLOUDFORMATIONFILE $GITHUB_WORKSPACE/$JQM_ARTIFACTFOLDER
 
     - name: Upload package 
       uses: actions/upload-artifact@master
