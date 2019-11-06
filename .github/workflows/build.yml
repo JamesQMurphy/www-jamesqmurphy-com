@@ -18,12 +18,12 @@ jobs:
   build:
     env:
       BUILDCONFIGURATION: 'Release'
-      JQM_PACKAGENAME: ${{ format('JamesQMurphy.Web.{0}.zip', env.BUILD_BUILDNUMBER) }}
+      JQM_PACKAGENAME: ${{ format('JamesQMurphy.Web.{0}.zip', $BUILD_BUILDNUMBER) }}
       JQM_CLOUDFORMATIONFILENAME: '*.yaml'
       JQM_TOOLINSTALLDIR: build/bin
       JQM_COMPAREBRANCH: master
       JQM_VERSIONFILE: build/azure-pipelines.yml
-      JQM_GITTAGNAME: ${{ format('v{0}', env.BUILD_BUILDNUMBER) }} 
+      JQM_GITTAGNAME: ${{ format('v{0}', $BUILD_BUILDNUMBER) }} 
 
     runs-on: ubuntu-latest
 
