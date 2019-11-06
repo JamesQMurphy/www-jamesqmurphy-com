@@ -13,6 +13,8 @@ env:
   VERSION_PATCH: 22
   BUILD_BUILDNUMBER: 0.2.22.0
 # BUILD_BUILDNUMBER: ${{ format('{{{0}.{1}.{2}.{3}}}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH, 0) }}
+  JQM_COMPAREBRANCH: master
+  JQM_VERSIONFILE: .github/build.yml
 
 
 jobs:
@@ -24,8 +26,6 @@ jobs:
       JQM_ARTIFACTFOLDER: a
       JQM_CLOUDFORMATIONFILENAME: '*.yaml'
       JQM_TOOLINSTALLDIR: build/bin
-      JQM_COMPAREBRANCH: master
-      JQM_VERSIONFILE: build/azure-pipelines.yml
 
     runs-on: ubuntu-latest
 
@@ -37,6 +37,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
+
+    - name: Validate build version
+      run: $GITHUB_WORKSPACE/.github/validate-build-against-branch.ps1 -CompareBranch $JQM_COMPAREBRANCH -VersionFile $JQM_VERSIONFILE
+      shell: pwsh
 
     - name: Print environment variables
       run: printenv
