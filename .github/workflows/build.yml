@@ -1,4 +1,4 @@
-name: .NET Core
+name: Trying GitHub Actions
 
 on:
   push:
