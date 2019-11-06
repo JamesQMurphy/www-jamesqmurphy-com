@@ -14,7 +14,7 @@ env:
   BUILD_BUILDNUMBER: 0.2.22.0
 # BUILD_BUILDNUMBER: ${{ format('{{{0}.{1}.{2}.{3}}}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH, 0) }}
   JQM_COMPAREBRANCH: master
-  JQM_VERSIONFILE: .github/build.yml
+  JQM_VERSIONFILE: .github/workflows/build.yml
 
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Validate build version
-      run: pwsh $GITHUB_WORKSPACE/.github/validate-build-against-branch.ps1
+      run: pwsh $GITHUB_WORKSPACE/.github/workflows/validate-build-against-branch.ps1
 
     - name: Print environment variables
       run: printenv
