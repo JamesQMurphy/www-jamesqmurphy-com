@@ -51,5 +51,5 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: ${{ env.JQM_PACKAGENAME }}
-        path: "${{ env.GITHUB_WORKSPACE }}/${{ env.JQM_ARTIFACTFOLDER }}"
+        path: ${{ env.JQM_ARTIFACTFOLDER }}
 
