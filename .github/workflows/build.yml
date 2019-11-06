@@ -51,7 +51,10 @@ jobs:
       run: ./dotnet-lambda package -c $BUILDCONFIGURATION -pl $GITHUB_WORKSPACE/src/JamesQMurphy.Web -o $GITHUB_WORKSPACE/$JQM_ARTIFACTFOLDER/$JQM_PACKAGENAME --msbuild-parameters "--self-contained true --runtime rhel-x64"
       working-directory: ${{ env.JQM_TOOLINSTALLDIR }}
 
-    - name: Upload artifact 
+    - name: Copy Cloudformation files
+      run: cp release/$JQM_CLOUDFORMATIONFILE $GITHUB_WORKSPACE/$JQM_ARTIFACTFOLDER
+
+    - name: Upload package 
       uses: actions/upload-artifact@master
       with:
         name: ${{ env.JQM_PACKAGENAME }}
