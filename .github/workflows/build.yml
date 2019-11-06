@@ -21,8 +21,8 @@ jobs:
   build:
     env:
       BUILDCONFIGURATION: 'Release'
-      JQM_PACKAGENAME: ${{ format('JamesQMurphy.Web.{0}.zip', jobs.build.env.BUILD_BUILDNUMBER ) }}
-#     JQM_PACKAGENAME: JamesQMurphy.Web.0.2.22.0.zip
+#     JQM_PACKAGENAME: ${{ format('JamesQMurphy.Web.{0}.zip', jobs.build.env.BUILD_BUILDNUMBER ) }}
+      JQM_PACKAGENAME: JamesQMurphy.Web.0.2.22.0.zip
       JQM_ARTIFACTFOLDER: a
       JQM_CLOUDFORMATIONFILENAME: '*.yaml'
       JQM_TOOLINSTALLDIR: build/bin
@@ -40,6 +40,34 @@ jobs:
 
     - name: Validate build version
       run: pwsh $GITHUB_WORKSPACE/.github/workflows/validate-build-against-branch.ps1
+
+    - name: Write To Console
+      run: echo Hello, world
+
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - name: Dump job context
+      env:
+        JOB_CONTEXT: ${{ toJson(job) }}
+      run: echo "$JOB_CONTEXT"
+    - name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
+    - name: Dump runner context
+      env:
+        RUNNER_CONTEXT: ${{ toJson(runner) }}
+      run: echo "$RUNNER_CONTEXT"
+    - name: Dump strategy context
+      env:
+        STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+      run: echo "$STRATEGY_CONTEXT"
+    - name: Dump matrix context
+      env:
+        MATRIX_CONTEXT: ${{ toJson(matrix) }}
+      run: echo "$MATRIX_CONTEXT"      
 
     - name: Print environment variables
       run: printenv
