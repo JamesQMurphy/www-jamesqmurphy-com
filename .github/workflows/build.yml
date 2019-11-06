@@ -10,8 +10,8 @@ on:
 env:
   VERSION_MAJOR: 0
   VERSION_MINOR: 2
-  VERSION_PATCH: 23
-  BUILD_BUILDNUMBER: 0.2.22.0
+  VERSION_PATCH: 24
+  BUILD_BUILDNUMBER: 0.2.24.0
 # BUILD_BUILDNUMBER: ${{ format('{{{0}.{1}.{2}.{3}}}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH, 0) }}
   JQM_COMPAREBRANCH: features/try-github-actions
   JQM_VERSIONFILE: .github/workflows/build.yml
