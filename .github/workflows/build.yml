@@ -39,7 +39,7 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Validate build version
-      run: $GITHUB_WORKSPACE/.github/validate-build-against-branch.ps1 -CompareBranch $JQM_COMPAREBRANCH -VersionFile $JQM_VERSIONFILE
+      run: '"$($env:GITHUB_WORKSPACE)/.github/validate-build-against-branch.ps1" -CompareBranch "$($env:JQM_COMPAREBRANCH)" -VersionFile "$($env:JQM_VERSIONFILE)"'
       shell: pwsh
 
     - name: Print environment variables
