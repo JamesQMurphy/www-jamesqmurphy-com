@@ -124,6 +124,7 @@ namespace JamesQMurphy.Web
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCookiePolicy();
 
             // If using a LocalFolder article store, map ImageBasePath to the article store path so that the images load
             if ((Configuration["ArticleStore:Service"] == "LocalFolder") && (Configuration["ImageBasePath"] != "/"))
