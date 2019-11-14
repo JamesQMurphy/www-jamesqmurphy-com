@@ -13,10 +13,12 @@
         <div class="toast-header bg-info text-light font-weight-bold lead">This Site Uses Cookies</div>
         <div id="cookieConsentBody" class="toast-body text-center">
             <p class="text-left lead">
-                Welcome to @webSiteTitle!  This site uses cookies to enable certain functionality,
-                such as logging in to the site.  We do <i>not</i> track
-                your browsing habits on other sites.  Read our <a asp-area="" asp-controller="home" asp-action="privacy">Privacy Policy</a>
-                to learn more.
+                <span class="d-none d-sm-block">
+                    Welcome to @webSiteTitle!  This site uses cookies to enable certain functionality,
+                    such as logging in to the site.  We do <i>not</i> track
+                    your browsing habits on other sites.
+                </span>
+                Read our <a asp-area="" asp-controller="home" asp-action="privacy">Privacy Policy</a> to learn more.
             </p>
             <button type="button" class="btn btn-primary" data-dismiss="toast" aria-label="Close" data-cookie-string="@cookieString">
                 <span aria-hidden="true">Got It</span>
