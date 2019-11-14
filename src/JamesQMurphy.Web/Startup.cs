@@ -36,6 +36,12 @@ namespace JamesQMurphy.Web
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.ConsentCookie = new CookieBuilder()
+                {
+                    Name = ".JQM.PrivacyConsent.20191115",
+                    Expiration = TimeSpan.FromDays(365),
+                    IsEssential = true
+                };
             });
 
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);

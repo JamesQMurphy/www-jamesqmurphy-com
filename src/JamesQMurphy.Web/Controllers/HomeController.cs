@@ -45,6 +45,7 @@ namespace JamesQMurphy.Web.Controllers
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
             ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteOptions.WebSiteTitle);
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View("Article");
         }
 
