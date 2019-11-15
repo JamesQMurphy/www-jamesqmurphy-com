@@ -103,6 +103,7 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             var pwForm = model.Password;
             model.Password = String.Empty;
             model.ConfirmPassword = String.Empty;

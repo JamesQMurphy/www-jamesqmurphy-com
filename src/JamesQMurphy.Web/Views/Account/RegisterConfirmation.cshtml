@@ -2,6 +2,14 @@
 @{
     ViewData[Constants.VIEWDATA_PAGETITLE] = "Confirm Your Email Address";
     var address = Model.Email;
+
+    // Registering means they have granted consent
+    var consentFeature = Context.Features.Get<Microsoft.AspNetCore.Http.Features.ITrackingConsentFeature>();
+    if (consentFeature != null)
+    {
+        consentFeature.GrantConsent();
+    }
+
 }
 
 <h1>@ViewData[Constants.VIEWDATA_PAGETITLE]</h1>
