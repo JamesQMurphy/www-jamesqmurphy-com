@@ -11,7 +11,16 @@
 @if (showBanner)
 {
     <div id="cookieConsent" class="toast" style="position: fixed; bottom: 4%; left: 8%; width:30em; max-width: 84%; z-index: 9999;" role="alert" data-autohide="false">
-        <div class="toast-header bg-info text-light font-weight-bold lead">This Site Uses Cookies</div>
+        <div class="toast-header bg-info text-light d-flex justify-content-between">
+            <span class="font-weight-bold lead">
+                This Site Uses Cookies
+            </span>
+            <span class="lead align-top">
+                <button type="button" class="close text-light font-weight-light" data-dismiss="toast" aria-label="Close">
+                    <span style="vertical-align:super;" aria-hidden="true">&times;</span>
+                </button>
+            </span>
+        </div>
         <div id="cookieConsentBody" class="toast-body text-center">
             <p class="text-left lead">
                 <span class="d-none d-sm-block">
