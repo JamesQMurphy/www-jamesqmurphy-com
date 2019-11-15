@@ -104,7 +104,44 @@ Resources:
                   - 'dynamodb:GetItem'
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}*'
+        - PolicyName: !Sub DynamoDbReadWriteAccess-${DynamoDbTableUsersParameter}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:BatchGetItem'
+                  - 'dynamodb:Describe*'
+                  - 'dynamodb:List*'
+                  - 'dynamodb:Get*'
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:Scan'
+                  - 'dynamodb:UpdateItem'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}*'
+        - PolicyName: !Sub SSM-WriteParameters
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ssm:PutParameter'
+                  - 'ssm:AddTagsToResource'
+                  - 'ssm:GetParametersByPath'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
+        - PolicyName: 'SendEmailAs-no-reply@jamesqmurphy.com'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+                Effect: Allow
+                Action:
+                  - 'ses:SendEmail'
+                  - 'ses:SendRawEmail'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'ses:FromAddress': "no-reply@jamesqmurphy.com"
 
 
   TheRoleForTheApiGateway:
@@ -158,9 +195,15 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
+          AppName: !Sub '${AppNameParameter}-${StageParameter}'
           ImageBasePath: /blogimages
+          DataProtection: AWS
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
+          UserStore__Service: DynamoDb
+          UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
+          UserStore__UserNameIndex: "normalizedUserName-index"
+          Email__Service: SES
       Tags:
         - Key: app
           Value: !Ref AppNameParameter

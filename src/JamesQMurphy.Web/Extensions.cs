@@ -36,7 +36,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     break;
 
                 case "DynamoDb":
-                    collection.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
                     collection.ConfigurePoco<DynamoDbArticleStore.Options>(configuration, "ArticleStore");
                     collection.AddSingleton<IArticleStore, DynamoDbArticleStore>();
                     break;

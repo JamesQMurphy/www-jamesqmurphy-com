@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.101.64" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.3.101.41" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JamesQMurphy.Blog\JamesQMurphy.Blog.csproj" />
+    <ProjectReference Include="..\JamesQMurphy.Email\JamesQMurphy.Email.csproj" />
   </ItemGroup>
 
 </Project>
