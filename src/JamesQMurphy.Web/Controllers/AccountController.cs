@@ -40,6 +40,7 @@ namespace JamesQMurphy.Web.Controllers
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View();
         }
 
@@ -48,6 +49,7 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             if (ModelState.IsValid)
             {
                 // If email is not verified, fail the login
@@ -92,6 +94,7 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult Register()
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View();
         }
 

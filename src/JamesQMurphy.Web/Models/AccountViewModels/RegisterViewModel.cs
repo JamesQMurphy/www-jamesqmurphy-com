@@ -32,5 +32,11 @@ namespace JamesQMurphy.Web.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public bool IsTrue => true;
+
+        [Required]
+        [Compare(nameof(IsTrue), ErrorMessage = "Please acknowledge the Privacy Policy")]
+        public bool AcceptPrivacy { get; set; }
     }
 }
