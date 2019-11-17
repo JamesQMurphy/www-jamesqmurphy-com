@@ -178,16 +178,7 @@ Resources:
       Description: !Sub Hosts ${AppNameParameter}-${VersionNumberParameter} ${StageParameter} ASP.NET Core application.  Created via CloudFormation stack ${AWS::StackName}.
       # Lambda does not allow periods in function names, so to include the version number,
       # we need to replace the periods with something else (hyphens in this case)
-      FunctionName: !Join
-        - '-'
-        - - !Ref AppNameParameter
-            # These !Select functions parse out the pieces of the version number
-          - !Select [0, !Split [".", !Ref VersionNumberParameter]]
-          - !Select [1, !Split [".", !Sub '${VersionNumberParameter}.' ]]
-          - !Select [2, !Split [".", !Sub '${VersionNumberParameter}..' ]]
-          - !Select [3, !Split [".", !Sub '${VersionNumberParameter}...' ]]
-          - !Select [4, !Split [".", !Sub '${VersionNumberParameter}....' ]]
-          - !Ref StageParameter
+      FunctionName: !Sub '${AppNameParameter}-${StageParameter}'
       Handler: JamesQMurphy.Web::JamesQMurphy.Web.LambdaEntryPoint::FunctionHandlerAsync
       MemorySize: 512
       Role: !GetAtt TheRoleForTheLambdaFunction.Arn
