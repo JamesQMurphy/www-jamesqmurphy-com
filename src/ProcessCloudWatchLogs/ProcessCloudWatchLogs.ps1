@@ -19,5 +19,17 @@ $event = $streamReader.ReadToEnd() | ConvertFrom-Json
 
 
 $event.logEvents | ForEach-Object {
-    Write-Host "$($_.id):$($_.timestamp): $($_.message)"
+
+    #Write-Host "$($_.id):$($_.timestamp): $($_.message)"
+
+    switch -regex ($_.message) {
+    
+        '^\([0-9a-f]{8}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{12}\)HTTP Method: (\w+), Resource Path: (.+)$' {
+            Write-Host "-->HTTP $($Matches[1]) $($Matches[2])"
+        }
+    
+        default {
+        }
+    }
+
 }
