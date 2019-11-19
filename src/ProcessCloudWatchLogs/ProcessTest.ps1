@@ -1,7 +1,7 @@
 ﻿cls
 
 $regexGuid = '[0-9a-f]{8}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{12}'
-
+$timestamp = 1574163075599
 $requestObjects = @{}
 
 Get-Content ("$PSScriptRoot\sample.txt") | ForEach-Object {
@@ -23,7 +23,8 @@ Get-Content ("$PSScriptRoot\sample.txt") | ForEach-Object {
             '^HTTP Method: (\w+), Resource Path: (.+)$' {
                 $requestObj |
                     Add-Member -MemberType NoteProperty -Name Method       -Value $Matches[1] -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ResourcePath -Value $Matches[2]
+                    Add-Member -MemberType NoteProperty -Name ResourcePath -Value $Matches[2] -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Timestamp    -Value ([DateTimeOffset]::FromUnixTimeMilliseconds($timestamp).UtcDateTime.ToString("O"))
             }
 
             'Method request headers: \{(.*)\}$' {
@@ -54,4 +55,4 @@ Get-Content ("$PSScriptRoot\sample.txt") | ForEach-Object {
 }
 
 
-$requestObjects | ConvertTo-Json
+$requestObjects.Values | ConvertTo-Json -Compress
