@@ -13,6 +13,43 @@ $LambdaInput = New-Object -TypeName PSCustomObject -Property @{
 }
 #>
 
+function Split-Headers {
+    param (
+        [string] $headers,
+
+        [string] $prefix
+    )
+
+    # Do a raw split by comma-space.  This will actually split too much and create "orphans"
+    $rawSplit = $Matches[1] -split ', '
+
+    # Look for any headers without the equals sign -- these are the orphans.
+    # If found, reunite them with the previous header
+    $headersList = @()
+    $lastHeader = $null
+    $rawSplit | ForEach-Object {
+        if ($_.Contains('=')) {
+            if ($lastHeader -ne $null) { $headersList += @($lastHeader) }
+            $lastHeader = $_
+        }
+        else {
+            $lastHeader += ", $_"
+        }
+    }
+    if ($lastHeader -ne $null) { $headersList += @($lastHeader) }
+
+    # Return a series of objects on the pipeline
+    $headersList | ForEach-Object {
+        $headerSplit = $_ -split '=',2
+        New-Object -TypeName PSObject -Property @{
+            name = "$prefix.$($headerSplit[0].ToLowerInvariant())"
+            value = $headerSplit[1]
+        }
+    }
+}
+
+
+
 # Decode the event
 $ZipBytes = [System.Convert]::FromBase64String($LambdaInput.awslogs.data)
 $ZipStream = New-Object System.IO.Memorystream
@@ -55,25 +92,21 @@ $event.logEvents | ForEach-Object {
                     Add-Member -MemberType NoteProperty -Name resourcepath -Value $Matches[2]
             }
 
-            'Method request headers: \{(.*)\}$' {
-                $rawSplit = $Matches[1] -split ', '
-                $headers = @()
-                $lastHeader = $null
-                $rawSplit | ForEach-Object {
-                    if ($_.Contains('=')) {
-                        if ($lastHeader -ne $null) { $headers += @($lastHeader) }
-                        $lastHeader = $_
-                    }
-                    else {
-                        $lastHeader += ", $_"
-                    }
+            '^Method request headers: \{(.*)\}$' {
+                Split-Headers -headers $Matches[1] -prefix request | ForEach-Object {
+                    $requestObj | Add-Member -MemberType NoteProperty -Name $_.name -Value $_.value
                 }
-                if ($lastHeader -ne $null) { $headers += @($lastHeader) }
+            }
 
-                $headers | ForEach-Object {
-                    $headerSplit = $_ -split '=',2
-                    $requestObj | Add-Member -MemberType NoteProperty -Name "header.$($headerSplit[0].ToLowerInvariant())" -Value $headerSplit[1]
+            '^Method response headers: \{(.*)\}$' {
+                Split-Headers -headers $Matches[1] -prefix response | ForEach-Object {
+                    $requestObj | Add-Member -MemberType NoteProperty -Name $_.name -Value $_.value
                 }
+            }
+
+            '^Method completed with status: (\d+)$' {
+                $requestObj |
+                    Add-Member -MemberType NoteProperty -Name httpstatus -Value $Matches[1]
             }
         }
 

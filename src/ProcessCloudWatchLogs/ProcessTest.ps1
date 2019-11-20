@@ -4,9 +4,49 @@ $regexGuid = '[0-9a-f]{8}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{1
 $timestamp = 1574163075599
 $requestObjects = @{}
 
+
+function Split-Headers {
+    param (
+        [string] $headers,
+
+        [string] $prefix
+    )
+
+    # Do a raw split by comma-space.  This will actually split too much and create "orphans"
+    $rawSplit = $Matches[1] -split ', '
+
+    # Look for any headers without the equals sign -- these are the orphans.
+    # If found, reunite them with the previous header
+    $headersList = @()
+    $lastHeader = $null
+    $rawSplit | ForEach-Object {
+        if ($_.Contains('=')) {
+            if ($lastHeader -ne $null) { $headersList += @($lastHeader) }
+            $lastHeader = $_
+        }
+        else {
+            $lastHeader += ", $_"
+        }
+    }
+    if ($lastHeader -ne $null) { $headersList += @($lastHeader) }
+
+    # Return a series of objects on the pipeline
+    $headersList | ForEach-Object {
+        $headerSplit = $_ -split '=',2
+        New-Object -TypeName PSObject -Property @{
+            name = "$prefix.$($headerSplit[0].ToLowerInvariant())"
+            value = $headerSplit[1]
+        }
+    }
+}
+
+
 Get-Content ("$PSScriptRoot\sample.txt") | ForEach-Object {
 
-    if ($_ -match "^\(($regexGuid)\) (.+)`$") {
+    $thisLogEvent = New-Object -TypeName PSObject -Property @{ message = $_ }
+
+    # See if message matches patten:  (GUID) logMessage
+    if ($thisLogEvent.message -match "^\(($regexGuid)\) (.+)`$") {
         $requestId = $Matches[1]
         $logMessage = $Matches[2]
 
@@ -14,38 +54,38 @@ Get-Content ("$PSScriptRoot\sample.txt") | ForEach-Object {
             $requestObj = $requestObjects[ $requestId ]
         }
         else {
-            $requestObj = New-Object -TypeName PSObject
+            $requestObj = New-Object -TypeName PSObject -Property @{
+                id = $requestId
+                timestamp = [DateTimeOffset]::FromUnixTimeMilliseconds($thisLogEvent.timestamp).UtcDateTime.ToString("O")
+                'aws.loggroup' = $event.logGroup
+                'aws.logstream' = $event.logStream
+            }
         }
 
-
+        # Look for log messages with specific patterns
         switch -Regex ($logMessage) {
 
             '^HTTP Method: (\w+), Resource Path: (.+)$' {
                 $requestObj |
-                    Add-Member -MemberType NoteProperty -Name Method       -Value $Matches[1] -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ResourcePath -Value $Matches[2] -PassThru |
-                    Add-Member -MemberType NoteProperty -Name Timestamp    -Value ([DateTimeOffset]::FromUnixTimeMilliseconds($timestamp).UtcDateTime.ToString("O"))
+                    Add-Member -MemberType NoteProperty -Name method       -Value $Matches[1] -PassThru |
+                    Add-Member -MemberType NoteProperty -Name resourcepath -Value $Matches[2]
             }
 
-            'Method request headers: \{(.*)\}$' {
-                $rawSplit = $Matches[1] -split ', '
-                $headers = @()
-                $lastHeader = $null
-                $rawSplit | ForEach-Object {
-                    if ($_.Contains('=')) {
-                        if ($lastHeader -ne $null) { $headers += @($lastHeader) }
-                        $lastHeader = $_
-                    }
-                    else {
-                        $lastHeader += ", $_"
-                    }
+            '^Method request headers: \{(.*)\}$' {
+                Split-Headers -headers $Matches[1] -prefix request | ForEach-Object {
+                    $requestObj | Add-Member -MemberType NoteProperty -Name $_.name -Value $_.value
                 }
-                if ($lastHeader -ne $null) { $headers += @($lastHeader) }
+            }
 
-                $headers | ForEach-Object {
-                    $headerSplit = $_ -split '=',2
-                    $requestObj | Add-Member -MemberType NoteProperty -Name "Header.$($headerSplit[0])" -Value $headerSplit[1]
+            '^Method response headers: \{(.*)\}$' {
+                Split-Headers -headers $Matches[1] -prefix response | ForEach-Object {
+                    $requestObj | Add-Member -MemberType NoteProperty -Name $_.name -Value $_.value
                 }
+            }
+
+            '^Method completed with status: (\d+)$' {
+                $requestObj |
+                    Add-Member -MemberType NoteProperty -Name httpstatus -Value $Matches[1]
             }
         }
 
@@ -55,4 +95,4 @@ Get-Content ("$PSScriptRoot\sample.txt") | ForEach-Object {
 }
 
 
-$requestObjects.Values | ConvertTo-Json -Compress
+$requestObjects.Values | ConvertTo-Json 
