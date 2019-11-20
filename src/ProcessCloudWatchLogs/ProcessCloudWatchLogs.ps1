@@ -39,10 +39,10 @@ $event.logEvents | ForEach-Object {
         }
         else {
             $requestObj = New-Object -TypeName PSObject -Property @{
-                Id = $requestId
-                Timestamp = [DateTimeOffset]::FromUnixTimeMilliseconds($thisLogEvent.timestamp).UtcDateTime.ToString("O")
-                'AWS.LogGroup' = $event.logGroup
-                'AWS.LogStream' = $event.logStream
+                id = $requestId
+                timestamp = [DateTimeOffset]::FromUnixTimeMilliseconds($thisLogEvent.timestamp).UtcDateTime.ToString("O")
+                'aws.loggroup' = $event.logGroup
+                'aws.logstream' = $event.logStream
             }
         }
 
@@ -51,8 +51,8 @@ $event.logEvents | ForEach-Object {
 
             '^HTTP Method: (\w+), Resource Path: (.+)$' {
                 $requestObj |
-                    Add-Member -MemberType NoteProperty -Name Method       -Value $Matches[1] -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ResourcePath -Value $Matches[2]
+                    Add-Member -MemberType NoteProperty -Name method       -Value $Matches[1] -PassThru |
+                    Add-Member -MemberType NoteProperty -Name resourcepath -Value $Matches[2]
             }
 
             'Method request headers: \{(.*)\}$' {
@@ -72,7 +72,7 @@ $event.logEvents | ForEach-Object {
 
                 $headers | ForEach-Object {
                     $headerSplit = $_ -split '=',2
-                    $requestObj | Add-Member -MemberType NoteProperty -Name "Header.$($headerSplit[0])" -Value $headerSplit[1]
+                    $requestObj | Add-Member -MemberType NoteProperty -Name "header.$($headerSplit[0].ToLowerInvariant())" -Value $headerSplit[1]
                 }
             }
         }
