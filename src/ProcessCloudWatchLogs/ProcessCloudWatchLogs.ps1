@@ -51,13 +51,15 @@ function Split-Headers {
 
 
 # Decode the event
-$ZipBytes = [System.Convert]::FromBase64String($LambdaInput.awslogs.data)
-$ZipStream = New-Object System.IO.Memorystream
-$ZipStream.Write($ZipBytes, 0, $ZipBytes.Length)
-$ZipStream.Seek(0, [System.IO.SeekOrigin]::Begin) | Out-Null
-$GZipStream = New-Object System.IO.Compression.GZipStream($ZipStream, [System.IO.Compression.CompressionMode]([System.IO.Compression.CompressionMode]::Decompress), $true)
-$streamReader = New-Object System.IO.StreamReader($GZipStream, [System.Text.Encoding]::UTF8)
-$event = $streamReader.ReadToEnd() | ConvertFrom-Json
+if ($event -eq $null) {
+    $ZipBytes = [System.Convert]::FromBase64String($LambdaInput.awslogs.data)
+    $ZipStream = New-Object System.IO.Memorystream
+    $ZipStream.Write($ZipBytes, 0, $ZipBytes.Length)
+    $ZipStream.Seek(0, [System.IO.SeekOrigin]::Begin) | Out-Null
+    $GZipStream = New-Object System.IO.Compression.GZipStream($ZipStream, [System.IO.Compression.CompressionMode]([System.IO.Compression.CompressionMode]::Decompress), $true)
+    $streamReader = New-Object System.IO.StreamReader($GZipStream, [System.Text.Encoding]::UTF8)
+    $event = $streamReader.ReadToEnd() | ConvertFrom-Json
+}
 
 # Process the log events and create request objects
 $regexGuid = '[0-9a-f]{8}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{12}'
@@ -77,7 +79,7 @@ $event.logEvents | ForEach-Object {
         else {
             $requestObj = New-Object -TypeName PSObject -Property @{
                 id = $requestId
-                timestamp = [DateTimeOffset]::FromUnixTimeMilliseconds($thisLogEvent.timestamp).UtcDateTime.ToString("O")
+                timestamp = $thisLogEvent.timestamp
                 'aws.loggroup' = $event.logGroup
                 'aws.logstream' = $event.logStream
             }
@@ -107,6 +109,12 @@ $event.logEvents | ForEach-Object {
             '^Method completed with status: (\d+)$' {
                 $requestObj |
                     Add-Member -MemberType NoteProperty -Name httpstatus -Value $Matches[1]
+            }
+
+            '^Successfully completed execution$' {
+                $elapsed = $thisLogEvent.timestamp - $requestObj.timestamp
+                $requestObj |
+                    Add-Member -MemberType NoteProperty -Name elapsed -Value $elapsed
             }
         }
 
