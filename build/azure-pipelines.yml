@@ -14,7 +14,7 @@ variables:
   versionPatch: 2
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
-  JQM.processLogsPackageName: JamesQMurphy.ProcessCloudWatchLogs.zip
+  JQM.processLogsPackageName: JamesQMurphy.ProcessCloudWatchLogs.$(Build.BuildNumber).zip
   JQM.cloudformationFileName: '*.yaml'
   JQM.toolInstallDir: build/bin
   JQM.compareBranch: master
