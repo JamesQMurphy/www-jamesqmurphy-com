@@ -428,7 +428,7 @@ Resources:
       FunctionName: !GetAtt TheLogProcessingLambdaFunction.Arn
       Action: 'lambda:InvokeFunction'
       Principal: !Sub logs.${AWS::Region}.amazonaws.com
-      SourceArn: !Sub arn:aws:logs:${AWS::Region}:log-group:${AWS::AccountId}:API-Gateway-Execution-Logs_${TheGatewayRestAPI.RootResourceId}/${ApiGatewayStageNameParameter}
+      SourceArn: !Sub arn:aws:logs:${AWS::Region}:log-group:${AWS::AccountId}:API-Gateway-Execution-Logs_${TheGatewayRestAPI.RootResourceId}/${ApiGatewayStageNameParameter}:*
   
 
   TheSubscriptionFilterForTheLogProcessingLambdaFunction:
