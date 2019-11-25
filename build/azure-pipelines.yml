@@ -11,9 +11,10 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 3
-  versionPatch: 1
+  versionPatch: 2
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
+  JQM.processLogsPackageName: JamesQMurphy.ProcessCloudWatchLogs.$(Build.BuildNumber).zip
   JQM.cloudformationFileName: '*.yaml'
   JQM.toolInstallDir: build/bin
   JQM.compareBranch: master
@@ -46,6 +47,15 @@ steps:
 - script: dotnet test -c $(buildConfiguration) --logger trx --results-directory $(Common.TestResultsDirectory)
   displayName: Run dotnet test
   workingDirectory: $(Build.SourcesDirectory)/src
+
+- task: PowerShell@2
+  displayName: Create package for ProcessCloudWatchLogs.ps1
+  inputs:
+    targetType: inline
+    pwsh: true
+    script: |
+      Install-Module AWSLambdaPSCore -Scope CurrentUser -Force
+      New-AWSPowerShellLambdaPackage -ScriptPath $(Build.SourcesDirectory)/src/ProcessCloudWatchLogs/ProcessCloudWatchLogs.ps1 -OutputPackage $(Build.ArtifactStagingDirectory)/$(JQM.processLogsPackageName)
 
 - task: CopyFiles@2
   displayName: Copy $(JQM.cloudformationFileName) to artifact staging folder

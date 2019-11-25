@@ -22,6 +22,10 @@ Parameters:
     Description: Path to blog images folder inside of bucket.  Do not include a leading backslash.
     Default: demo_blogimages
 
+  S3BucketPathForLogProcessingParameter:
+    Type: String
+    Description: Path to processing script inside of bucket.  Include the zip filename, but do not include a leading backslash.
+
   StageParameter:
     Type: String
     Description: Stage (environment)
@@ -154,6 +158,31 @@ Resources:
             Principal:
               Service:
                 - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+
+
+  TheRoleForTheLogProcessingLambdaFunction:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
             Action:
               - 'sts:AssumeRole'
       Policies:
@@ -350,6 +379,38 @@ Resources:
       DomainName: !Ref TheCustomDomainName
       RestApiId: !Ref TheGatewayRestAPI
       Stage: !Ref ApiGatewayStageNameParameter
+
+
+  TheLogProcessingLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref S3BucketForCodeParameter
+        S3Key: !Ref S3BucketPathForLogProcessingParameter
+      Description: !Sub Processes logs for ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
+      FunctionName: !Sub 'ProcessLogs-${AppNameParameter}-${StageParameter}'
+      Handler: ProcessCloudWatchLogs::ProcessCloudWatchLogs.Bootstrap::ExecuteFunction
+      MemorySize: 320
+      Role: !GetAtt TheRoleForTheLogProcessingLambdaFunction.Arn
+      Runtime: dotnetcore2.1
+      Timeout: 15
+
+
+  TheLambdaInvokePermissionForCloudWatchResource:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt TheLogProcessingLambdaFunction.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: !Sub logs.${AWS::Region}.amazonaws.com
+      SourceArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:API-Gateway-Execution-Logs_${TheGatewayRestAPI}/${ApiGatewayStageNameParameter}:*
+
+
+  TheSubscriptionFilterForTheLogProcessingLambdaFunction:
+    Type: 'AWS::Logs::SubscriptionFilter'
+    Properties:
+      DestinationArn: !GetAtt TheLogProcessingLambdaFunction.Arn
+      FilterPattern:  ""
+      LogGroupName: !Sub API-Gateway-Execution-Logs_${TheGatewayRestAPI}/${ApiGatewayStageNameParameter}
 
 
 Outputs:
