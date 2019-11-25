@@ -389,7 +389,7 @@ Resources:
         S3Key: !Ref S3BucketPathForLogProcessingParameter
       Description: !Sub Processes logs for ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       FunctionName: !Sub 'ProcessLogs-${AppNameParameter}-${StageParameter}'
-      Handler: lambdaPowerShell::lambdaPowerShell.Bootstrap::ExecuteFunction
+      Handler: ProcessCloudWatchLogs::ProcessCloudWatchLogs.Bootstrap::ExecuteFunction
       MemorySize: 320
       Role: !GetAtt TheRoleForTheLogProcessingLambdaFunction.Arn
       Runtime: dotnetcore2.1
