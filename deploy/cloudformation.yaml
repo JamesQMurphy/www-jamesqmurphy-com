@@ -198,32 +198,6 @@ Resources:
                 Resource: '*'
 
 
-  TheRoleForTheLogSubscription:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - logs.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Policies:
-        - PolicyName: CloudwatchReadOnlyAccess
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'logs:describeLogGroups'
-                  - 'logs:describeLogStreams'
-                  - 'logs:describeSubscriptionFilters'
-                  - 'logs:filterLogEvents'
-                  - 'logs:getLogEvents'
-                Resource: '*'
-
   TheLambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -429,7 +403,7 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: !Sub logs.${AWS::Region}.amazonaws.com
       SourceArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:API-Gateway-Execution-Logs_${TheGatewayRestAPI}/${ApiGatewayStageNameParameter}:*
-  
+
 
   TheSubscriptionFilterForTheLogProcessingLambdaFunction:
     Type: 'AWS::Logs::SubscriptionFilter'
@@ -437,7 +411,6 @@ Resources:
       DestinationArn: !GetAtt TheLogProcessingLambdaFunction.Arn
       FilterPattern:  ""
       LogGroupName: !Sub API-Gateway-Execution-Logs_${TheGatewayRestAPI}/${ApiGatewayStageNameParameter}
-      RoleArn:  TheRoleForTheLogSubscription
 
 
 Outputs:
