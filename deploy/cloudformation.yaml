@@ -134,6 +134,17 @@ Resources:
                   - 'ssm:AddTagsToResource'
                   - 'ssm:GetParametersByPath'
                 Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
+        - PolicyName: !Sub SQS-SendMessage-${StageParameter}-EmailQueue
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:ChangeMessageVisibility'
+                  - 'sqs:ChangeMessageVisibilityBatch'
+                  - 'sqs:SendMessage'
+                  - 'sqs:SendMessageBatch'
+                Resource: !Sub 'arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${StageParameter}-EmailQueue'
         - PolicyName: 'SendEmailAs-no-reply@jamesqmurphy.com'
           PolicyDocument:
             Version: 2012-10-17
@@ -197,6 +208,15 @@ Resources:
                   - 'logs:PutLogEvents'
                 Resource: '*'
 
+  TheEmailQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      DelaySeconds: 0
+      MessageRetentionPeriod: 604800
+      QueueName: !Sub ${StageParameter}-EmailQueue
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 60
+
 
   TheLambdaFunction:
     Type: 'AWS::Lambda::Function'
@@ -223,7 +243,8 @@ Resources:
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
           UserStore__UserNameIndex: "normalizedUserName-index"
-          Email__Service: SES
+          Email__Service: SQS
+          Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
