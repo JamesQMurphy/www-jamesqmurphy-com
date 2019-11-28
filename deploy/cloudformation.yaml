@@ -26,6 +26,10 @@ Parameters:
     Type: String
     Description: Path to processing script inside of bucket.  Include the zip filename, but do not include a leading backslash.
 
+  S3BucketPathForEmailSenderParameter:
+    Type: String
+    Description: Path to Email Sender inside of bucket.  Include the zip filename, but do not include a leading backslash.
+
   StageParameter:
     Type: String
     Description: Stage (environment)
@@ -159,6 +163,53 @@ Resources:
                     'ses:FromAddress': "no-reply@jamesqmurphy.com"
 
 
+  TheRoleForTheEmailSenderLambdaFunction:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: !Sub SQS-ReceiveMessage-${StageParameter}-EmailQueue
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:ReceiveMessage'
+                  - 'sqs:DeleteMessage'
+                  - 'sqs:GetQueueAttributes'
+                Resource: !Sub 'arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${StageParameter}-EmailQueue'
+        - PolicyName: 'SendEmailAs-no-reply@jamesqmurphy.com'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+                Effect: Allow
+                Action:
+                  - 'ses:SendEmail'
+                  - 'ses:SendRawEmail'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'ses:FromAddress': "no-reply@jamesqmurphy.com"
+
+
   TheRoleForTheApiGateway:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -208,6 +259,7 @@ Resources:
                   - 'logs:PutLogEvents'
                 Resource: '*'
 
+
   TheEmailQueue:
     Type: 'AWS::SQS::Queue'
     Properties:
@@ -215,7 +267,7 @@ Resources:
       MessageRetentionPeriod: 604800
       QueueName: !Sub ${StageParameter}-EmailQueue
       ReceiveMessageWaitTimeSeconds: 20
-      VisibilityTimeout: 60
+      VisibilityTimeout: 300
 
 
   TheLambdaFunction:
@@ -400,6 +452,28 @@ Resources:
       DomainName: !Ref TheCustomDomainName
       RestApiId: !Ref TheGatewayRestAPI
       Stage: !Ref ApiGatewayStageNameParameter
+
+
+  TheEmailSenderLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref S3BucketForCodeParameter
+        S3Key: !Ref S3BucketPathForEmailSenderParameter
+      Description: !Sub Sends emails for ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
+      FunctionName: !Sub 'EmailSender-${AppNameParameter}-${StageParameter}'
+      Handler: JamesQMurphy.Lambda.EmailSender::JamesQMurphy.Lambda.EmailSender.LambdaEntryPoint::Handler
+      MemorySize: 320
+      Role: !GetAtt TheRoleForTheEmailSenderLambdaFunction.Arn
+      Runtime: dotnetcore2.1
+      Timeout: 30
+
+
+  TheEmailSenderEventSourceMapping:
+    Type: 'AWS::Lambda::EventSourceMapping'
+    Properties:
+      EventSourceArn: !GetAtt TheEmailQueue.Arn
+      FunctionName: !Ref TheEmailSenderLambdaFunction
 
 
   TheLogProcessingLambdaFunction:
