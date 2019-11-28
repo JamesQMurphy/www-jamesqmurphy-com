@@ -22,13 +22,13 @@ Parameters:
     Description: Path to blog images folder inside of bucket.  Do not include a leading backslash.
     Default: demo_blogimages
 
-  S3BucketPathForLogProcessingParameter:
-    Type: String
-    Description: Path to processing script inside of bucket.  Include the zip filename, but do not include a leading backslash.
-
   S3BucketPathForEmailSenderParameter:
     Type: String
     Description: Path to Email Sender inside of bucket.  Include the zip filename, but do not include a leading backslash.
+
+  S3BucketPathForLogProcessingParameter:
+    Type: String
+    Description: Path to processing script inside of bucket.  Include the zip filename, but do not include a leading backslash.
 
   StageParameter:
     Type: String
