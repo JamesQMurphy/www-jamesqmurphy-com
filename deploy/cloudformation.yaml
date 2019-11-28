@@ -260,6 +260,16 @@ Resources:
                 Resource: '*'
 
 
+  TheEmailDeadLetterQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      DelaySeconds: 0
+      MessageRetentionPeriod: 1209600
+      QueueName: !Sub ${StageParameter}-EmailQueue-Failed
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 300
+
+
   TheEmailQueue:
     Type: 'AWS::SQS::Queue'
     Properties:
@@ -267,6 +277,9 @@ Resources:
       MessageRetentionPeriod: 604800
       QueueName: !Sub ${StageParameter}-EmailQueue
       ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt TheEmailDeadLetterQueue.Arn
+        maxReceiveCount: 3
       VisibilityTimeout: 300
 
 
