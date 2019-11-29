@@ -38,7 +38,12 @@ Parameters:
   DynamoDbTableBlogArticlesParameter:
     Type: String
     Description: Name of the DynamoDB table for blog articles
-    Default: demo-articles
+    Default: prod-blog
+
+  DynamoDbIndexBlogArticlesParameter:
+    Type: String
+    Description: Name of the DynamoDB index for blog articles
+    Default: articlesOnly
 
   DynamoDbTableUsersParameter:
     Type: String
@@ -290,8 +295,6 @@ Resources:
         S3Bucket: !Ref S3BucketForCodeParameter
         S3Key: !Ref S3BucketPathForCodeParameter
       Description: !Sub Hosts ${AppNameParameter}-${VersionNumberParameter} ${StageParameter} ASP.NET Core application.  Created via CloudFormation stack ${AWS::StackName}.
-      # Lambda does not allow periods in function names, so to include the version number,
-      # we need to replace the periods with something else (hyphens in this case)
       FunctionName: !Sub '${AppNameParameter}-${StageParameter}'
       Handler: JamesQMurphy.Web::JamesQMurphy.Web.LambdaEntryPoint::FunctionHandlerAsync
       MemorySize: 512
@@ -305,6 +308,7 @@ Resources:
           DataProtection: AWS
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
+          ArticleStore__DynamoDbIndexName: !Ref DynamoDbIndexBlogArticlesParameter
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
           UserStore__UserNameIndex: "normalizedUserName-index"

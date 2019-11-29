@@ -6,7 +6,8 @@ namespace JamesQMurphy.Blog
 {
     public interface IArticleStore
     {
-        Article GetArticle(string yearString, string monthString, string slug);
-        IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null);
+        Article GetArticle(string slug);
+        IEnumerable<ArticleMetadata> GetArticles(DateTime startDate, DateTime endDate);
+        IEnumerable<ArticleMetadata> GetLastArticles(int numberOfArticles);
     }
 }

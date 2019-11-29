@@ -14,18 +14,27 @@ namespace JamesQMurphy.Blog
             RootFolder = rootFolder;
         }
 
-        public Article GetArticle(string yearString, string monthString, string slug)
+        public Article GetArticle(string slug)
         {
             return LoadArticlesFromFiles()
-                .Where(article => (article.YearString == yearString) && (article.MonthString == monthString) && (article.Slug == slug))
+                .Where(a => a.Slug == slug)
                 .FirstOrDefault();
         }
 
-        public IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null)
+        public IEnumerable<ArticleMetadata> GetArticles(DateTime startDate, DateTime endDate)
         {
             return LoadArticlesFromFiles()
-                .Where(article => (yearString is null || article.YearString == yearString) && (monthString is null || article.MonthString == monthString))
-                .Select(article => article.Metadata);
+                .Where(a => (a.PublishDate >= startDate) && (a.PublishDate <= endDate))
+                .OrderByDescending(a => a.PublishDate)
+                .Select(a => a.Metadata);
+        }
+
+        public IEnumerable<ArticleMetadata> GetLastArticles(int numberOfArticles)
+        {
+            return LoadArticlesFromFiles()
+                .OrderByDescending(a => a.PublishDate)
+                .Take(numberOfArticles)
+                .Select(a => a.Metadata);
         }
 
         private IEnumerable<Article> LoadArticlesFromFiles()

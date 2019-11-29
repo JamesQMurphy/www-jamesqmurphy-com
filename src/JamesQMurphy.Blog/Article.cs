@@ -19,8 +19,6 @@ namespace JamesQMurphy.Blog
         public string Slug { get => Metadata.Slug; set => Metadata.Slug = value; }
         public DateTime PublishDate { get => Metadata.PublishDate; set => Metadata.PublishDate = value; }
         public string Description { get => Metadata.Description; set => Metadata.Description = value; }
-        public string MonthString { get => Metadata.MonthString; }
-        public string YearString { get => Metadata.YearString; }
 
         public static async Task<Article> ReadFromAsync(TextReader reader)
         {

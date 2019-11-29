@@ -223,20 +223,6 @@ publish-date: {publishDate:O}
 
 
         [Test]
-        public void MonthAndYearFields()
-        {
-            var articleMetaData = new ArticleMetadata();
-
-            articleMetaData.PublishDate = new System.DateTime(2012, 2, 4);
-            Assert.AreEqual("2012", articleMetaData.YearString);
-            Assert.AreEqual("02", articleMetaData.MonthString);
-
-            articleMetaData.PublishDate = new System.DateTime(2034, 11, 30);
-            Assert.AreEqual("2034", articleMetaData.YearString);
-            Assert.AreEqual("11", articleMetaData.MonthString);
-        }
-
-        [Test]
         public void TestEquality()
         {
             var articleMetaData1 = new ArticleMetadata()

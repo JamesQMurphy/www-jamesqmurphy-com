@@ -18,12 +18,27 @@ namespace JamesQMurphy.Web.Controllers
 
         public IActionResult Index(string year = null, string month = null)
         {
-            return View(articleStore.GetArticles(year, month));
+            var startDate = DateTime.MinValue;
+            var endDate = DateTime.MaxValue;
+            if (year != null)
+            {
+                if (month != null)
+                {
+                    startDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
+                    endDate = startDate.AddMonths(1).AddMilliseconds(-1);
+                }
+                else
+                {
+                    startDate = new DateTime(Convert.ToInt32(year), 1, 1);
+                    endDate = startDate.AddYears(1).AddMilliseconds(-1);
+                }
+            }
+            return View(articleStore.GetArticles(startDate, endDate));
         }
 
         public IActionResult Details(string year, string month, string slug)
         {
-            var article = articleStore.GetArticle(year, month, slug);
+            var article = articleStore.GetArticle($"{year}/{month}/{slug}");
             if (article != null)
             {
                 if (String.IsNullOrWhiteSpace(article.Description))

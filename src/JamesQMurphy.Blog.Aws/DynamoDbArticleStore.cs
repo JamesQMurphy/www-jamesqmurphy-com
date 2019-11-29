@@ -12,71 +12,112 @@ namespace JamesQMurphy.Blog.Aws
         public class Options
         {
             public string DynamoDbTableName { get; set; }
+            public string DynamoDbIndexName { get; set; }
         }
 
-        private readonly Table table;
-        private readonly List<string> metadataAttributesToGet = new List<string> { "slug", "title", "publishDate", "description" };
+        private const string SLUG = "slug";
+        private const string PUBLISH_DATE = "publishDate";
+        private const string TITLE = "title";
+        private const string DESCRIPTION = "description";
+        private const string CONTENT = "content";
+
+        private readonly List<string> metadataAttributesToGet = new List<string> { SLUG, TITLE, PUBLISH_DATE, DESCRIPTION };
+
+        private readonly IAmazonDynamoDB _dbClient;
+        private readonly Options _options;
 
         public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient, Options settings)
         {
-            table = Table.LoadTable(dynamoDbClient, settings.DynamoDbTableName);
+            _dbClient = dynamoDbClient;
+            _options = settings;
         }
 
-        public Article GetArticle(string yearString, string monthString, string slug)
+        public Article GetArticle(string slug)
         {
-            var yearMonthString = $"{yearString}{monthString}";
-            var result = table.GetItemAsync(yearMonthString, slug).GetAwaiter().GetResult();
-            return new Article()
+            QueryRequest queryRequest = new QueryRequest
             {
-                Slug = result["slug"],
-                Title = result["title"],
-                PublishDate = DateTime.Parse(result["publishDate"]).ToUniversalTime(),
-                Description = result.ContainsKey("description") ? (string)result["description"] : "",
-                Content = result["content"]
+                TableName = _options.DynamoDbTableName,
+                IndexName = _options.DynamoDbIndexName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{SLUG} = :v_slug",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":v_slug", new AttributeValue { S =  slug }}
+                },
+                ScanIndexForward = true
             };
-
-        }
-
-        public IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null)
-        {
-            var results = new List<ArticleMetadata>();
-
-            var config = new ScanOperationConfig()
+            var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
+            if (result.Items.Count > 0)
             {
-                AttributesToGet = metadataAttributesToGet,
-                Select = SelectValues.SpecificAttributes,
-                Filter = new ScanFilter()
-            };
-
-
-            if (yearString != null)
-            {
-                if (monthString == null)
+                var item = result.Items[0];
+                return new Article()
                 {
-                    config.Filter.AddCondition("yearMonth", ScanOperator.BeginsWith, yearString);
-                }
-                else
-                {
-                    config.Filter.AddCondition("yearMonth", ScanOperator.Equal, $"{yearString}{monthString}");
-                }
+                    Metadata = ToArticleMetadata(item),
+                    Content = item[CONTENT].S
+                };
             }
-
-            var search = table.Scan(config);
-            do
+            else
             {
-                var documentSet = search.GetNextSetAsync().GetAwaiter().GetResult();
-                results.AddRange(documentSet.ConvertAll((d) => new ArticleMetadata()
-                {
-                    Slug = d["slug"],
-                    Title = d["title"],
-                    PublishDate = DateTime.Parse(d["publishDate"]).ToUniversalTime(),
-                    Description = d.ContainsKey("description") ? (string)d["description"] : ""
-                }
-                ));
-            } while (!search.IsDone);
-
-            results.Sort();
-            return results;
+                return null;
+            }
         }
+
+        public IEnumerable<ArticleMetadata> GetArticles(DateTime startDate, DateTime endDate)
+        {
+            QueryRequest queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                IndexName = _options.DynamoDbIndexName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{PUBLISH_DATE} >= :v_startDate and {PUBLISH_DATE} <= :v_endDate",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":v_startDate", new AttributeValue { S =  startDate.ToString("O") }},
+                    {":v_endDate", new AttributeValue { S =  endDate.ToString("O") }}
+                },
+                ScanIndexForward = false,
+            };
+            var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
+            return result.Items.ConvertAll(i => ToArticleMetadata(i));
+        }
+
+        public IEnumerable<ArticleMetadata> GetLastArticles(int numberOfArticles)
+        {
+            QueryRequest queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                IndexName = _options.DynamoDbIndexName,
+                Select = Select.ALL_ATTRIBUTES,
+                ScanIndexForward = false
+            };
+            var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
+            return result.Items.ConvertAll(i => ToArticleMetadata(i));
+        }
+
+
+        private static ArticleMetadata ToArticleMetadata(Dictionary<string, AttributeValue> attributeMap)
+        {
+            return new ArticleMetadata()
+            {
+                Slug = attributeMap[SLUG].S,
+                PublishDate = DateTime.Parse(attributeMap[PUBLISH_DATE].S).ToUniversalTime(),
+                Title = attributeMap[TITLE].S,
+                Description = attributeMap.ContainsKey(DESCRIPTION) ? attributeMap[DESCRIPTION].S : ""
+            };
+        }
+
+        private static Document FromArticleMetadata(ArticleMetadata user)
+        {
+            var d = new Document
+            {
+                [SLUG] = user.Slug,
+                [PUBLISH_DATE] = user.PublishDate.ToString("O"),
+                [TITLE] = user.Title
+            };
+            if (!String.IsNullOrWhiteSpace(user.Description))
+            {
+                d[DESCRIPTION] = user.Description;
+            }
+            return d;
+        }
+
     }
 }

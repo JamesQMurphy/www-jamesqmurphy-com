@@ -26,9 +26,9 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult Index()
         {
             // Need to optimize this
-            var lastTwoArticles = articleStore.GetArticles().TakeLast(2).ToList();
-            var article1 = articleStore.GetArticle(lastTwoArticles[1].YearString, lastTwoArticles[1].MonthString, lastTwoArticles[1].Slug);
-            var article2 = articleStore.GetArticle(lastTwoArticles[0].YearString, lastTwoArticles[0].MonthString, lastTwoArticles[0].Slug);
+            var lastTwoArticles = articleStore.GetLastArticles(2).ToList();
+            var article1 = articleStore.GetArticle(lastTwoArticles[0].Slug);
+            var article2 = articleStore.GetArticle(lastTwoArticles[1].Slug);
             var homePageItems = new HomePageItems(article1, article2);
 
             return View(homePageItems);

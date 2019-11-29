@@ -30,7 +30,7 @@ namespace JamesQMurphy.Web.UnitTests
             {
                 Title = title,
                 PublishDate = new DateTime(year, month, 1),
-                Slug = slug
+                Slug = $"{year}/{month}/{slug}"
             };
             articleStore.Articles.Add(article);
 
@@ -52,7 +52,7 @@ namespace JamesQMurphy.Web.UnitTests
             {
                 Title = title,
                 PublishDate = new DateTime(year, month, 1),
-                Slug = slug,
+                Slug = $"{year}/{month}/{slug}",
                 Description = description
             };
             articleStore.Articles.Add(article);

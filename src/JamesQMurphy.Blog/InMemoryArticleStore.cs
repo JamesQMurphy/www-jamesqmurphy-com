@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace JamesQMurphy.Blog
 {
@@ -8,19 +7,26 @@ namespace JamesQMurphy.Blog
     {
         public readonly List<Article> Articles = new List<Article>();
 
-        public Article GetArticle(string yearString, string monthString, string slug)
+        public Article GetArticle(string slug)
         {
-            return Articles.FindLast(a => (a.Slug == slug) && (a.YearString == yearString) && (a.MonthString == monthString));
+            return Articles.FindLast(a => a.Slug == slug);
         }
 
-        public IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null)
+        public IEnumerable<ArticleMetadata> GetArticles(DateTime startDate, DateTime endDate)
         {
             var list = Articles.FindAll(a =>
-                (yearString == null || yearString == a.YearString) &&
-                (monthString == null || monthString == a.MonthString)
+                (a.PublishDate >= startDate) && (a.PublishDate <= endDate)
                 ).ConvertAll(a => a.Metadata);
             list.Sort();
             return list;
+        }
+
+        public IEnumerable<ArticleMetadata> GetLastArticles(int numberOfArticles)
+        {
+            var list = Articles.ConvertAll(a => a.Metadata);
+            list.Sort();
+            list.Reverse();
+            return list.GetRange(0, numberOfArticles);
         }
     }
 }
