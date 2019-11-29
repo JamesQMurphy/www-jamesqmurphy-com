@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.3.101.41" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.3.102.37" />
   </ItemGroup>
 
   <ItemGroup>
