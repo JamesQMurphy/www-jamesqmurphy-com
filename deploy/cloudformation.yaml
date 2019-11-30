@@ -43,7 +43,7 @@ Parameters:
   DynamoDbIndexBlogArticlesParameter:
     Type: String
     Description: Name of the DynamoDB index for blog articles
-    Default: articlesOnly
+    Default: articleType-timestamp-index
 
   DynamoDbTableUsersParameter:
     Type: String

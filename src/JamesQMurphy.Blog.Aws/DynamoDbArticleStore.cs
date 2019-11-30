@@ -16,12 +16,13 @@ namespace JamesQMurphy.Blog.Aws
         }
 
         private const string SLUG = "slug";
-        private const string PUBLISH_DATE = "publishDate";
+        private const string TIMESTAMP = "timestamp";
         private const string TITLE = "title";
         private const string DESCRIPTION = "description";
+        //private const string PUBLISH_DATE = "publishDate";
         private const string CONTENT = "content";
-
-        private readonly List<string> metadataAttributesToGet = new List<string> { SLUG, TITLE, PUBLISH_DATE, DESCRIPTION };
+        private const string ARTICLE_TYPE = "articleType";
+        private const string ARTICLE_TYPE_PUBLISHED = "published";
 
         private readonly IAmazonDynamoDB _dbClient;
         private readonly Options _options;
@@ -34,17 +35,17 @@ namespace JamesQMurphy.Blog.Aws
 
         public Article GetArticle(string slug)
         {
-            QueryRequest queryRequest = new QueryRequest
+            var queryRequest = new QueryRequest
             {
                 TableName = _options.DynamoDbTableName,
-                IndexName = _options.DynamoDbIndexName,
                 Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{SLUG} = :v_slug",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":v_slug", new AttributeValue { S =  slug }}
+                    {":v_articleType", new AttributeValue { S = slug }}
                 },
                 ScanIndexForward = true
             };
+
             var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
             if (result.Items.Count > 0)
             {
@@ -68,10 +69,11 @@ namespace JamesQMurphy.Blog.Aws
                 TableName = _options.DynamoDbTableName,
                 IndexName = _options.DynamoDbIndexName,
                 Select = Select.ALL_ATTRIBUTES,
-                KeyConditionExpression = $"{PUBLISH_DATE} >= :v_startDate and {PUBLISH_DATE} <= :v_endDate",
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and {TIMESTAMP} BETWEEN :v_startDate and :v_endDate",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":v_startDate", new AttributeValue { S =  startDate.ToString("O") }},
-                    {":v_endDate", new AttributeValue { S =  endDate.ToString("O") }}
+                    {":v_articleType", new AttributeValue { S = ARTICLE_TYPE_PUBLISHED }},
+                    {":v_startDate", new AttributeValue { S = startDate.ToString("O") }},
+                    {":v_endDate", new AttributeValue { S = endDate.ToString("O") }}
                 },
                 ScanIndexForward = false,
             };
@@ -86,7 +88,13 @@ namespace JamesQMurphy.Blog.Aws
                 TableName = _options.DynamoDbTableName,
                 IndexName = _options.DynamoDbIndexName,
                 Select = Select.ALL_ATTRIBUTES,
-                ScanIndexForward = false
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and {TIMESTAMP} < :v_now",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":v_articleType", new AttributeValue { S = ARTICLE_TYPE_PUBLISHED }},
+                    {":v_now", new AttributeValue { S = DateTime.UtcNow.ToString("O") }}
+                },
+                Limit = numberOfArticles,
+                ScanIndexForward = false,
             };
             var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
             return result.Items.ConvertAll(i => ToArticleMetadata(i));
@@ -98,7 +106,7 @@ namespace JamesQMurphy.Blog.Aws
             return new ArticleMetadata()
             {
                 Slug = attributeMap[SLUG].S,
-                PublishDate = DateTime.Parse(attributeMap[PUBLISH_DATE].S).ToUniversalTime(),
+                PublishDate = DateTime.Parse(attributeMap[TIMESTAMP].S).ToUniversalTime(),
                 Title = attributeMap[TITLE].S,
                 Description = attributeMap.ContainsKey(DESCRIPTION) ? attributeMap[DESCRIPTION].S : ""
             };
@@ -109,7 +117,7 @@ namespace JamesQMurphy.Blog.Aws
             var d = new Document
             {
                 [SLUG] = user.Slug,
-                [PUBLISH_DATE] = user.PublishDate.ToString("O"),
+                [TIMESTAMP] = user.PublishDate.ToString("O"),
                 [TITLE] = user.Title
             };
             if (!String.IsNullOrWhiteSpace(user.Description))
