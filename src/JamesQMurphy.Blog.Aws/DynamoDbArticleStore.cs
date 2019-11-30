@@ -69,7 +69,11 @@ namespace JamesQMurphy.Blog.Aws
                 TableName = _options.DynamoDbTableName,
                 IndexName = _options.DynamoDbIndexName,
                 Select = Select.ALL_ATTRIBUTES,
-                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and {TIMESTAMP} BETWEEN :v_startDate and :v_endDate",
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and #ts BETWEEN :v_startDate and :v_endDate",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    {"#ts", TIMESTAMP }
+                },
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
                     {":v_articleType", new AttributeValue { S = ARTICLE_TYPE_PUBLISHED }},
                     {":v_startDate", new AttributeValue { S = startDate.ToString("O") }},
@@ -88,8 +92,13 @@ namespace JamesQMurphy.Blog.Aws
                 TableName = _options.DynamoDbTableName,
                 IndexName = _options.DynamoDbIndexName,
                 Select = Select.ALL_ATTRIBUTES,
-                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and {TIMESTAMP} < :v_now",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and #ts < :v_now",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    {"#ts", TIMESTAMP }
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
                     {":v_articleType", new AttributeValue { S = ARTICLE_TYPE_PUBLISHED }},
                     {":v_now", new AttributeValue { S = DateTime.UtcNow.ToString("O") }}
                 },
