@@ -1,6 +1,6 @@
 ---
 title: Code Samples
-slug: code-samples
+slug: 2019/07/code-samples
 publish-date: 2019-07-15T12:30:59.0100033Z
 ...
 Here are some code samples.

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
     public interface IArticleStore
     {
-        Article GetArticle(string yearString, string monthString, string slug);
-        IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null);
+        Task<Article> GetArticleAsync(string slug);
+        Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles);
     }
 }

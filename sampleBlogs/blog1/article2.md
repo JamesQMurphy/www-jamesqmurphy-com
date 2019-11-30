@@ -1,6 +1,6 @@
 ---
 title: Article Two
-slug: article-two
+slug: 2019/07/article-two
 publish-date: 2019-07-08T12:30:59.0100033Z
 description: See how Article Two captures the essence of the "Lorum Ipsum" test.
 ...

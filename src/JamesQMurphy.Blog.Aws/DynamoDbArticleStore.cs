@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using JamesQMurphy.Blog;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog.Aws
 {
@@ -12,71 +12,129 @@ namespace JamesQMurphy.Blog.Aws
         public class Options
         {
             public string DynamoDbTableName { get; set; }
+            public string DynamoDbIndexName { get; set; }
         }
 
-        private readonly Table table;
-        private readonly List<string> metadataAttributesToGet = new List<string> { "slug", "title", "publishDate", "description" };
+        private const string SLUG = "slug";
+        private const string TIMESTAMP = "timestamp";
+        private const string TITLE = "title";
+        private const string DESCRIPTION = "description";
+        //private const string PUBLISH_DATE = "publishDate";
+        private const string CONTENT = "content";
+        private const string ARTICLE_TYPE = "articleType";
+        private const string ARTICLE_TYPE_PUBLISHED = "published";
+
+        private readonly IAmazonDynamoDB _dbClient;
+        private readonly Options _options;
 
         public DynamoDbArticleStore(IAmazonDynamoDB dynamoDbClient, Options settings)
         {
-            table = Table.LoadTable(dynamoDbClient, settings.DynamoDbTableName);
+            _dbClient = dynamoDbClient;
+            _options = settings;
         }
 
-        public Article GetArticle(string yearString, string monthString, string slug)
+        public async Task<Article> GetArticleAsync(string slug)
         {
-            var yearMonthString = $"{yearString}{monthString}";
-            var result = table.GetItemAsync(yearMonthString, slug).GetAwaiter().GetResult();
-            return new Article()
+            var queryRequest = new QueryRequest
             {
-                Slug = result["slug"],
-                Title = result["title"],
-                PublishDate = DateTime.Parse(result["publishDate"]).ToUniversalTime(),
-                Description = result.ContainsKey("description") ? (string)result["description"] : "",
-                Content = result["content"]
+                TableName = _options.DynamoDbTableName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{SLUG} = :v_slug",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":v_slug", new AttributeValue { S = slug }}
+                },
+                ScanIndexForward = true
             };
 
-        }
-
-        public IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null)
-        {
-            var results = new List<ArticleMetadata>();
-
-            var config = new ScanOperationConfig()
+            var result = await _dbClient.QueryAsync(queryRequest);
+            if (result.Items.Count > 0)
             {
-                AttributesToGet = metadataAttributesToGet,
-                Select = SelectValues.SpecificAttributes,
-                Filter = new ScanFilter()
-            };
-
-
-            if (yearString != null)
-            {
-                if (monthString == null)
+                var item = result.Items[0];
+                return new Article()
                 {
-                    config.Filter.AddCondition("yearMonth", ScanOperator.BeginsWith, yearString);
-                }
-                else
-                {
-                    config.Filter.AddCondition("yearMonth", ScanOperator.Equal, $"{yearString}{monthString}");
-                }
+                    Metadata = ToArticleMetadata(item),
+                    Content = item[CONTENT].S
+                };
             }
-
-            var search = table.Scan(config);
-            do
+            else
             {
-                var documentSet = search.GetNextSetAsync().GetAwaiter().GetResult();
-                results.AddRange(documentSet.ConvertAll((d) => new ArticleMetadata()
-                {
-                    Slug = d["slug"],
-                    Title = d["title"],
-                    PublishDate = DateTime.Parse(d["publishDate"]).ToUniversalTime(),
-                    Description = d.ContainsKey("description") ? (string)d["description"] : ""
-                }
-                ));
-            } while (!search.IsDone);
-
-            results.Sort();
-            return results;
+                return null;
+            }
         }
+
+        public async Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
+        {
+            QueryRequest queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                IndexName = _options.DynamoDbIndexName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and #ts BETWEEN :v_startDate and :v_endDate",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    {"#ts", TIMESTAMP }
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":v_articleType", new AttributeValue { S = ARTICLE_TYPE_PUBLISHED }},
+                    {":v_startDate", new AttributeValue { S = startDate.ToString("O") }},
+                    {":v_endDate", new AttributeValue { S = endDate.ToString("O") }}
+                },
+                ScanIndexForward = false,
+            };
+            var result = await _dbClient.QueryAsync(queryRequest);
+            return result.Items.ConvertAll(i => ToArticleMetadata(i));
+        }
+
+        public async Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        {
+            QueryRequest queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                IndexName = _options.DynamoDbIndexName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and #ts < :v_now",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    {"#ts", TIMESTAMP }
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":v_articleType", new AttributeValue { S = ARTICLE_TYPE_PUBLISHED }},
+                    {":v_now", new AttributeValue { S = DateTime.UtcNow.ToString("O") }}
+                },
+                Limit = numberOfArticles,
+                ScanIndexForward = false,
+            };
+            var result = await _dbClient.QueryAsync(queryRequest);
+            return result.Items.ConvertAll(i => ToArticleMetadata(i));
+        }
+
+
+        private static ArticleMetadata ToArticleMetadata(Dictionary<string, AttributeValue> attributeMap)
+        {
+            return new ArticleMetadata()
+            {
+                Slug = attributeMap[SLUG].S,
+                PublishDate = DateTime.Parse(attributeMap[TIMESTAMP].S).ToUniversalTime(),
+                Title = attributeMap[TITLE].S,
+                Description = attributeMap.ContainsKey(DESCRIPTION) ? attributeMap[DESCRIPTION].S : ""
+            };
+        }
+
+        private static Document FromArticleMetadata(ArticleMetadata user)
+        {
+            var d = new Document
+            {
+                [SLUG] = user.Slug,
+                [TIMESTAMP] = user.PublishDate.ToString("O"),
+                [TITLE] = user.Title
+            };
+            if (!String.IsNullOrWhiteSpace(user.Description))
+            {
+                d[DESCRIPTION] = user.Description;
+            }
+            return d;
+        }
+
     }
 }

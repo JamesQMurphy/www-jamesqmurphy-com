@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
@@ -14,18 +15,31 @@ namespace JamesQMurphy.Blog
             RootFolder = rootFolder;
         }
 
-        public Article GetArticle(string yearString, string monthString, string slug)
+        public Task<Article> GetArticleAsync(string slug)
         {
-            return LoadArticlesFromFiles()
-                .Where(article => (article.YearString == yearString) && (article.MonthString == monthString) && (article.Slug == slug))
-                .FirstOrDefault();
+            return Task.FromResult(LoadArticlesFromFiles()
+                .Where(a => a.Slug == slug)
+                .FirstOrDefault());
         }
 
-        public IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null)
+        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
         {
-            return LoadArticlesFromFiles()
-                .Where(article => (yearString is null || article.YearString == yearString) && (monthString is null || article.MonthString == monthString))
-                .Select(article => article.Metadata);
+            return Task.FromResult(
+                LoadArticlesFromFiles()
+                    .Where(a => (a.PublishDate >= startDate) && (a.PublishDate <= endDate))
+                    .OrderByDescending(a => a.PublishDate)
+                    .Select(a => a.Metadata)
+                );
+        }
+
+        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        {
+            return Task.FromResult(
+                LoadArticlesFromFiles()
+                    .OrderByDescending(a => a.PublishDate)
+                    .Take(numberOfArticles)
+                    .Select(a => a.Metadata)
+                );
         }
 
         private IEnumerable<Article> LoadArticlesFromFiles()
