@@ -41,7 +41,7 @@ namespace JamesQMurphy.Blog.Aws
                 Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{SLUG} = :v_slug",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":v_articleType", new AttributeValue { S = slug }}
+                    {":v_slug", new AttributeValue { S = slug }}
                 },
                 ScanIndexForward = true
             };
