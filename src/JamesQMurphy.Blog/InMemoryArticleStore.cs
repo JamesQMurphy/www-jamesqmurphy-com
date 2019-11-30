@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
@@ -7,26 +8,28 @@ namespace JamesQMurphy.Blog
     {
         public readonly List<Article> Articles = new List<Article>();
 
-        public Article GetArticle(string slug)
+        public Task<Article> GetArticleAsync(string slug)
         {
-            return Articles.FindLast(a => a.Slug == slug);
+            return Task.FromResult(Articles.FindLast(a => a.Slug == slug));
         }
 
-        public IEnumerable<ArticleMetadata> GetArticles(DateTime startDate, DateTime endDate)
+        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
         {
             var list = Articles.FindAll(a =>
                 (a.PublishDate >= startDate) && (a.PublishDate <= endDate)
                 ).ConvertAll(a => a.Metadata);
             list.Sort();
-            return list;
+            IEnumerable<ArticleMetadata> ienum = list;
+            return Task.FromResult(ienum);
         }
 
-        public IEnumerable<ArticleMetadata> GetLastArticles(int numberOfArticles)
+        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
         {
             var list = Articles.ConvertAll(a => a.Metadata);
             list.Sort();
             list.Reverse();
-            return list.GetRange(0, numberOfArticles);
+            IEnumerable<ArticleMetadata> ienum = list.GetRange(0, numberOfArticles);
+            return Task.FromResult(ienum);
         }
     }
 }

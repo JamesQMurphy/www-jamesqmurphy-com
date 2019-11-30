@@ -63,14 +63,14 @@ namespace Tests
         {
             foreach (Article article in Store.Articles)
             {
-                Assert.AreEqual(article.Metadata, Store.GetArticle(article.Slug).Metadata);
+                Assert.AreEqual(article.Metadata, Store.GetArticleAsync(article.Slug).GetAwaiter().GetResult().Metadata);
             }
         }
 
         [Test]
         public void GetSingleArticleReturnsNull()
         {
-            Assert.IsNull(Store.GetArticle("0000/00/not-a-slug"));
+            Assert.IsNull(Store.GetArticleAsync("0000/00/not-a-slug").GetAwaiter().GetResult());
         }
 
         private void AssertArticleListsAreEqual(IList<ArticleMetadata> expected, IList<ArticleMetadata> actual)
@@ -93,7 +93,7 @@ namespace Tests
                 articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                 // Get articles thru service.  They should be sorted
-                var returnedArticles = Store.GetArticles(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1).AddSeconds(-1));
+                var returnedArticles = Store.GetArticlesAsync(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1).AddSeconds(-1)).GetAwaiter().GetResult();
                 var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
                 AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
@@ -112,7 +112,7 @@ namespace Tests
                     articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                     // Get articles thru service.  They should be sorted
-                    var returnedArticles = Store.GetArticles(new DateTime(year, month, 1), new DateTime(year, month, 1).AddMonths(1).AddSeconds(-1));
+                    var returnedArticles = Store.GetArticlesAsync(new DateTime(year, month, 1), new DateTime(year, month, 1).AddMonths(1).AddSeconds(-1)).GetAwaiter().GetResult();
                     var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
                     AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
@@ -128,7 +128,7 @@ namespace Tests
             articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
             // Get articles thru service.  They should be sorted
-            var returnedArticles = Store.GetArticles(DateTime.MinValue, DateTime.MaxValue);
+            var returnedArticles = Store.GetArticlesAsync(DateTime.MinValue, DateTime.MaxValue).GetAwaiter().GetResult();
             var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
             AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);

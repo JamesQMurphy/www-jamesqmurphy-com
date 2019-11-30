@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
@@ -14,27 +15,31 @@ namespace JamesQMurphy.Blog
             RootFolder = rootFolder;
         }
 
-        public Article GetArticle(string slug)
+        public Task<Article> GetArticleAsync(string slug)
         {
-            return LoadArticlesFromFiles()
+            return Task.FromResult(LoadArticlesFromFiles()
                 .Where(a => a.Slug == slug)
-                .FirstOrDefault();
+                .FirstOrDefault());
         }
 
-        public IEnumerable<ArticleMetadata> GetArticles(DateTime startDate, DateTime endDate)
+        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
         {
-            return LoadArticlesFromFiles()
-                .Where(a => (a.PublishDate >= startDate) && (a.PublishDate <= endDate))
-                .OrderByDescending(a => a.PublishDate)
-                .Select(a => a.Metadata);
+            return Task.FromResult(
+                LoadArticlesFromFiles()
+                    .Where(a => (a.PublishDate >= startDate) && (a.PublishDate <= endDate))
+                    .OrderByDescending(a => a.PublishDate)
+                    .Select(a => a.Metadata)
+                );
         }
 
-        public IEnumerable<ArticleMetadata> GetLastArticles(int numberOfArticles)
+        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
         {
-            return LoadArticlesFromFiles()
-                .OrderByDescending(a => a.PublishDate)
-                .Take(numberOfArticles)
-                .Select(a => a.Metadata);
+            return Task.FromResult(
+                LoadArticlesFromFiles()
+                    .OrderByDescending(a => a.PublishDate)
+                    .Take(numberOfArticles)
+                    .Select(a => a.Metadata)
+                );
         }
 
         private IEnumerable<Article> LoadArticlesFromFiles()

@@ -69,7 +69,7 @@ namespace JamesQMurphy.Web.UnitTests
         [Test]
         public void TestIndex()
         {
-            var result = _controller.Index() as ViewResult;
+            var result = _controller.Index().GetAwaiter().GetResult() as ViewResult;
             Assert.IsInstanceOf<HomePageItems>(result.Model);
 
             var model = result.Model as HomePageItems;

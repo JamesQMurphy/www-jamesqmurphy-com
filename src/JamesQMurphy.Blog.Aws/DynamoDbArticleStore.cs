@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using JamesQMurphy.Blog;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog.Aws
 {
@@ -33,7 +33,7 @@ namespace JamesQMurphy.Blog.Aws
             _options = settings;
         }
 
-        public Article GetArticle(string slug)
+        public async Task<Article> GetArticleAsync(string slug)
         {
             var queryRequest = new QueryRequest
             {
@@ -46,7 +46,7 @@ namespace JamesQMurphy.Blog.Aws
                 ScanIndexForward = true
             };
 
-            var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
+            var result = await _dbClient.QueryAsync(queryRequest);
             if (result.Items.Count > 0)
             {
                 var item = result.Items[0];
@@ -62,7 +62,7 @@ namespace JamesQMurphy.Blog.Aws
             }
         }
 
-        public IEnumerable<ArticleMetadata> GetArticles(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -81,11 +81,11 @@ namespace JamesQMurphy.Blog.Aws
                 },
                 ScanIndexForward = false,
             };
-            var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
+            var result = await _dbClient.QueryAsync(queryRequest);
             return result.Items.ConvertAll(i => ToArticleMetadata(i));
         }
 
-        public IEnumerable<ArticleMetadata> GetLastArticles(int numberOfArticles)
+        public async Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -105,7 +105,7 @@ namespace JamesQMurphy.Blog.Aws
                 Limit = numberOfArticles,
                 ScanIndexForward = false,
             };
-            var result = _dbClient.QueryAsync(queryRequest).GetAwaiter().GetResult();
+            var result = await _dbClient.QueryAsync(queryRequest);
             return result.Items.ConvertAll(i => ToArticleMetadata(i));
         }
 

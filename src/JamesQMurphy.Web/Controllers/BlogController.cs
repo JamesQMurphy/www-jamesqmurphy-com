@@ -16,7 +16,7 @@ namespace JamesQMurphy.Web.Controllers
             articleStore = iarticleStore;
         }
 
-        public IActionResult Index(string year = null, string month = null)
+        public async Task<IActionResult> Index(string year = null, string month = null)
         {
             var startDate = DateTime.MinValue;
             var endDate = DateTime.MaxValue;
@@ -33,12 +33,12 @@ namespace JamesQMurphy.Web.Controllers
                     endDate = startDate.AddYears(1).AddMilliseconds(-1);
                 }
             }
-            return View(articleStore.GetArticles(startDate, endDate));
+            return View(await articleStore.GetArticlesAsync(startDate, endDate));
         }
 
-        public IActionResult Details(string year, string month, string slug)
+        public async Task<IActionResult> Details(string year, string month, string slug)
         {
-            var article = articleStore.GetArticle($"{year}/{month}/{slug}");
+            var article = await articleStore.GetArticleAsync($"{year}/{month}/{slug}");
             if (article != null)
             {
                 if (String.IsNullOrWhiteSpace(article.Description))
