@@ -1,6 +1,6 @@
 ---
 title: Displaying a Wide Image
-slug: wide-image
+slug: 2019/07/wide-image
 publish-date: 2019-07-31T12:30:59.0100033Z
 ...
 What to do with a wide image on a page?  Here's an example between two nonsense paragraphs.

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
@@ -8,19 +8,28 @@ namespace JamesQMurphy.Blog
     {
         public readonly List<Article> Articles = new List<Article>();
 
-        public Article GetArticle(string yearString, string monthString, string slug)
+        public Task<Article> GetArticleAsync(string slug)
         {
-            return Articles.FindLast(a => (a.Slug == slug) && (a.YearString == yearString) && (a.MonthString == monthString));
+            return Task.FromResult(Articles.FindLast(a => a.Slug == slug));
         }
 
-        public IEnumerable<ArticleMetadata> GetArticles(string yearString = null, string monthString = null)
+        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
         {
             var list = Articles.FindAll(a =>
-                (yearString == null || yearString == a.YearString) &&
-                (monthString == null || monthString == a.MonthString)
+                (a.PublishDate >= startDate) && (a.PublishDate <= endDate)
                 ).ConvertAll(a => a.Metadata);
             list.Sort();
-            return list;
+            IEnumerable<ArticleMetadata> ienum = list;
+            return Task.FromResult(ienum);
+        }
+
+        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        {
+            var list = Articles.ConvertAll(a => a.Metadata);
+            list.Sort();
+            list.Reverse();
+            IEnumerable<ArticleMetadata> ienum = list.GetRange(0, numberOfArticles);
+            return Task.FromResult(ienum);
         }
     }
 }

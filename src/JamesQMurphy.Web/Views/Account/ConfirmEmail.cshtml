@@ -1,0 +1,26 @@
+﻿
+<h1>@ViewData[Constants.VIEWDATA_PAGETITLE]</h1>
+@if ((bool)ViewData["Success"])
+{
+    <div>
+        <p>
+            Thank you for confirming your email address.  You may now log into the site.
+        </p>
+        <p>
+            <a asp-action="login">Log in</a>
+        </p>
+    </div>
+}
+else
+{
+    <div>
+        <p>
+            We're sorry - there was a problem confirming your email address.  It is possible that the
+            validation link has expired.  In any case, you can try to re-register your
+            email address by clicking on the registration link below.
+        </p>
+        <p>
+            <a asp-action="register">Re-Register</a>
+        </p>
+    </div>
+}

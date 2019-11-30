@@ -22,6 +22,14 @@ Parameters:
     Description: Path to blog images folder inside of bucket.  Do not include a leading backslash.
     Default: demo_blogimages
 
+  S3BucketPathForEmailSenderParameter:
+    Type: String
+    Description: Path to Email Sender inside of bucket.  Include the zip filename, but do not include a leading backslash.
+
+  S3BucketPathForLogProcessingParameter:
+    Type: String
+    Description: Path to processing script inside of bucket.  Include the zip filename, but do not include a leading backslash.
+
   StageParameter:
     Type: String
     Description: Stage (environment)
@@ -30,7 +38,12 @@ Parameters:
   DynamoDbTableBlogArticlesParameter:
     Type: String
     Description: Name of the DynamoDB table for blog articles
-    Default: demo-articles
+    Default: prod-blog
+
+  DynamoDbIndexBlogArticlesParameter:
+    Type: String
+    Description: Name of the DynamoDB index for blog articles
+    Default: articleType-timestamp-index
 
   DynamoDbTableUsersParameter:
     Type: String
@@ -104,7 +117,102 @@ Resources:
                   - 'dynamodb:GetItem'
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}*'
+        - PolicyName: !Sub DynamoDbReadWriteAccess-${DynamoDbTableUsersParameter}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:BatchGetItem'
+                  - 'dynamodb:Describe*'
+                  - 'dynamodb:List*'
+                  - 'dynamodb:Get*'
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:Scan'
+                  - 'dynamodb:UpdateItem'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}*'
+        - PolicyName: !Sub SSM-WriteParameters
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ssm:PutParameter'
+                  - 'ssm:AddTagsToResource'
+                  - 'ssm:GetParametersByPath'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
+        - PolicyName: !Sub SQS-SendMessage-${StageParameter}-EmailQueue
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:ChangeMessageVisibility'
+                  - 'sqs:ChangeMessageVisibilityBatch'
+                  - 'sqs:SendMessage'
+                  - 'sqs:SendMessageBatch'
+                Resource: !Sub 'arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${StageParameter}-EmailQueue'
+        - PolicyName: 'SendEmailAs-no-reply@jamesqmurphy.com'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+                Effect: Allow
+                Action:
+                  - 'ses:SendEmail'
+                  - 'ses:SendRawEmail'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'ses:FromAddress': "no-reply@jamesqmurphy.com"
+
+
+  TheRoleForTheEmailSenderLambdaFunction:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: !Sub SQS-ReceiveMessage-${StageParameter}-EmailQueue
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:ReceiveMessage'
+                  - 'sqs:DeleteMessage'
+                  - 'sqs:GetQueueAttributes'
+                Resource: !Sub 'arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${StageParameter}-EmailQueue'
+        - PolicyName: 'SendEmailAs-no-reply@jamesqmurphy.com'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+                Effect: Allow
+                Action:
+                  - 'ses:SendEmail'
+                  - 'ses:SendRawEmail'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'ses:FromAddress': "no-reply@jamesqmurphy.com"
 
 
   TheRoleForTheApiGateway:
@@ -132,6 +240,54 @@ Resources:
                 Resource: '*'
 
 
+  TheRoleForTheLogProcessingLambdaFunction:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+
+
+  TheEmailDeadLetterQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      DelaySeconds: 0
+      MessageRetentionPeriod: 1209600
+      QueueName: !Sub ${StageParameter}-EmailQueue-Failed
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 300
+
+
+  TheEmailQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      DelaySeconds: 0
+      MessageRetentionPeriod: 604800
+      QueueName: !Sub ${StageParameter}-EmailQueue
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt TheEmailDeadLetterQueue.Arn
+        maxReceiveCount: 3
+      VisibilityTimeout: 300
+
+
   TheLambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -139,18 +295,7 @@ Resources:
         S3Bucket: !Ref S3BucketForCodeParameter
         S3Key: !Ref S3BucketPathForCodeParameter
       Description: !Sub Hosts ${AppNameParameter}-${VersionNumberParameter} ${StageParameter} ASP.NET Core application.  Created via CloudFormation stack ${AWS::StackName}.
-      # Lambda does not allow periods in function names, so to include the version number,
-      # we need to replace the periods with something else (hyphens in this case)
-      FunctionName: !Join
-        - '-'
-        - - !Ref AppNameParameter
-            # These !Select functions parse out the pieces of the version number
-          - !Select [0, !Split [".", !Ref VersionNumberParameter]]
-          - !Select [1, !Split [".", !Sub '${VersionNumberParameter}.' ]]
-          - !Select [2, !Split [".", !Sub '${VersionNumberParameter}..' ]]
-          - !Select [3, !Split [".", !Sub '${VersionNumberParameter}...' ]]
-          - !Select [4, !Split [".", !Sub '${VersionNumberParameter}....' ]]
-          - !Ref StageParameter
+      FunctionName: !Sub '${AppNameParameter}-${StageParameter}'
       Handler: JamesQMurphy.Web::JamesQMurphy.Web.LambdaEntryPoint::FunctionHandlerAsync
       MemorySize: 512
       Role: !GetAtt TheRoleForTheLambdaFunction.Arn
@@ -158,9 +303,17 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
+          AppName: !Sub '${AppNameParameter}-${StageParameter}'
           ImageBasePath: /blogimages
+          DataProtection: AWS
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
+          ArticleStore__DynamoDbIndexName: !Ref DynamoDbIndexBlogArticlesParameter
+          UserStore__Service: DynamoDb
+          UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
+          UserStore__UserNameIndex: "normalizedUserName-index"
+          Email__Service: SQS
+          Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
@@ -331,6 +484,60 @@ Resources:
       DomainName: !Ref TheCustomDomainName
       RestApiId: !Ref TheGatewayRestAPI
       Stage: !Ref ApiGatewayStageNameParameter
+
+
+  TheEmailSenderLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref S3BucketForCodeParameter
+        S3Key: !Ref S3BucketPathForEmailSenderParameter
+      Description: !Sub Sends emails for ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
+      FunctionName: !Sub 'EmailSender-${AppNameParameter}-${StageParameter}'
+      Handler: JamesQMurphy.Lambda.EmailSender::JamesQMurphy.Lambda.EmailSender.LambdaEntryPoint::Handler
+      MemorySize: 320
+      Role: !GetAtt TheRoleForTheEmailSenderLambdaFunction.Arn
+      Runtime: dotnetcore2.1
+      Timeout: 30
+
+
+  TheEmailSenderEventSourceMapping:
+    Type: 'AWS::Lambda::EventSourceMapping'
+    Properties:
+      EventSourceArn: !GetAtt TheEmailQueue.Arn
+      FunctionName: !Ref TheEmailSenderLambdaFunction
+
+
+  TheLogProcessingLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref S3BucketForCodeParameter
+        S3Key: !Ref S3BucketPathForLogProcessingParameter
+      Description: !Sub Processes logs for ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
+      FunctionName: !Sub 'ProcessLogs-${AppNameParameter}-${StageParameter}'
+      Handler: ProcessCloudWatchLogs::ProcessCloudWatchLogs.Bootstrap::ExecuteFunction
+      MemorySize: 320
+      Role: !GetAtt TheRoleForTheLogProcessingLambdaFunction.Arn
+      Runtime: dotnetcore2.1
+      Timeout: 15
+
+
+  TheLambdaInvokePermissionForCloudWatchResource:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt TheLogProcessingLambdaFunction.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: !Sub logs.${AWS::Region}.amazonaws.com
+      SourceArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:API-Gateway-Execution-Logs_${TheGatewayRestAPI}/${ApiGatewayStageNameParameter}:*
+
+
+  TheSubscriptionFilterForTheLogProcessingLambdaFunction:
+    Type: 'AWS::Logs::SubscriptionFilter'
+    Properties:
+      DestinationArn: !GetAtt TheLogProcessingLambdaFunction.Arn
+      FilterPattern:  ""
+      LogGroupName: !Sub API-Gateway-Execution-Logs_${TheGatewayRestAPI}/${ApiGatewayStageNameParameter}
 
 
 Outputs:

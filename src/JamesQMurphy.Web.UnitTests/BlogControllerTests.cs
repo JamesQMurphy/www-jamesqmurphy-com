@@ -30,11 +30,11 @@ namespace JamesQMurphy.Web.UnitTests
             {
                 Title = title,
                 PublishDate = new DateTime(year, month, 1),
-                Slug = slug
+                Slug = $"{year}/{month}/{slug}"
             };
             articleStore.Articles.Add(article);
 
-            var result = controller.Details(year.ToString(), month.ToString(), slug) as ViewResult;
+            var result = controller.Details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);
             Assert.AreEqual(title, result.ViewData[Constants.VIEWDATA_PAGETITLE]);
         }
@@ -52,12 +52,12 @@ namespace JamesQMurphy.Web.UnitTests
             {
                 Title = title,
                 PublishDate = new DateTime(year, month, 1),
-                Slug = slug,
+                Slug = $"{year}/{month}/{slug}",
                 Description = description
             };
             articleStore.Articles.Add(article);
 
-            var result = controller.Details(year.ToString(), month.ToString(), slug) as ViewResult;
+            var result = controller.Details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);
             Assert.AreEqual($"{title}: {description}", result.ViewData[Constants.VIEWDATA_PAGETITLE]);
         }

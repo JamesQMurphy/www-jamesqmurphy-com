@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Blog.UnitTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Blog.Aws", "JamesQMurphy.Blog.Aws\JamesQMurphy.Blog.Aws.csproj", "{A871E94A-9F08-4C8A-B471-E994CA28EB1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Web.UnitTests", "JamesQMurphy.Web.UnitTests\JamesQMurphy.Web.UnitTests.csproj", "{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Web.UnitTests", "JamesQMurphy.Web.UnitTests\JamesQMurphy.Web.UnitTests.csproj", "{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Email", "JamesQMurphy.Email\JamesQMurphy.Email.csproj", "{25E13A19-D69F-4736-B577-434774812052}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Email.Aws", "JamesQMurphy.Email.Aws\JamesQMurphy.Email.Aws.csproj", "{353D7F6D-9EB1-481D-A917-151E3502D39B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Lambda.EmailSender", "JamesQMurphy.Lambda.EmailSender\JamesQMurphy.Lambda.EmailSender.csproj", "{DECB3A77-2E79-4CB1-882F-E944BE242858}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61BD34C8-CDF1-4A17-B3F5-C03929BD4E17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25E13A19-D69F-4736-B577-434774812052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25E13A19-D69F-4736-B577-434774812052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25E13A19-D69F-4736-B577-434774812052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25E13A19-D69F-4736-B577-434774812052}.Release|Any CPU.Build.0 = Release|Any CPU
+		{353D7F6D-9EB1-481D-A917-151E3502D39B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{353D7F6D-9EB1-481D-A917-151E3502D39B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{353D7F6D-9EB1-481D-A917-151E3502D39B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{353D7F6D-9EB1-481D-A917-151E3502D39B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DECB3A77-2E79-4CB1-882F-E944BE242858}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DECB3A77-2E79-4CB1-882F-E944BE242858}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DECB3A77-2E79-4CB1-882F-E944BE242858}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DECB3A77-2E79-4CB1-882F-E944BE242858}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

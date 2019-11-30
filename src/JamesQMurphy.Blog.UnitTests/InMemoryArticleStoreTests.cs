@@ -17,7 +17,7 @@ namespace Tests
                 new Article()
                 {
                     Title = "Article One",
-                    Slug = "article-one",
+                    Slug = "2019/01/article-one",
                     PublishDate = new DateTime(2019, 1, 10, 12, 34, 56),
                     Content = "This is article one, published on January 10, 2019 at 12:34pm UTC"
                 },
@@ -25,7 +25,7 @@ namespace Tests
                 new Article()
                 {
                     Title = "Article Three",
-                    Slug = "article-three",
+                    Slug = "2019/07/article-three",
                     PublishDate = new DateTime(2019, 7, 6, 18, 34, 56),
                     Content = "This is article three, published on January 10, 2019 at 6:34pm UTC"
                 },
@@ -33,7 +33,7 @@ namespace Tests
                 new Article()
                 {
                     Title = "Article Two",
-                    Slug = "article-two",
+                    Slug = "2019/01/article-two",
                     PublishDate = new DateTime(2019, 1, 10, 14, 57, 32),
                     Content = "This is article two, published on January 10, 2019 at 2:57pm UTC"
                 },
@@ -41,7 +41,7 @@ namespace Tests
                 new Article()
                 {
                     Title = "Older Article",
-                    Slug = "older-article",
+                    Slug = "2018/07/older-article",
                     PublishDate = new DateTime(2018, 7, 30, 10, 2, 0),
                     Content = "This is an older article from the previous year (2018)"
                 },
@@ -49,7 +49,7 @@ namespace Tests
                 new Article()
                 {
                     Title = "Article Four",
-                    Slug = "article-four",
+                    Slug = "2019/08/article-four",
                     PublishDate = new DateTime(2019, 8, 31, 10, 2, 0),
                     Content = "This is article two, published on August 31, 2019 at 10:02am UTC"
                 },
@@ -63,14 +63,14 @@ namespace Tests
         {
             foreach (Article article in Store.Articles)
             {
-                Assert.AreEqual(article.Metadata, Store.GetArticle(article.YearString, article.MonthString, article.Slug).Metadata);
+                Assert.AreEqual(article.Metadata, Store.GetArticleAsync(article.Slug).GetAwaiter().GetResult().Metadata);
             }
         }
 
         [Test]
         public void GetSingleArticleReturnsNull()
         {
-            Assert.IsNull(Store.GetArticle("0000", "00", "not-a-slug"));
+            Assert.IsNull(Store.GetArticleAsync("0000/00/not-a-slug").GetAwaiter().GetResult());
         }
 
         private void AssertArticleListsAreEqual(IList<ArticleMetadata> expected, IList<ArticleMetadata> actual)
@@ -93,7 +93,7 @@ namespace Tests
                 articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                 // Get articles thru service.  They should be sorted
-                var returnedArticles = Store.GetArticles(yearString: year.ToString());
+                var returnedArticles = Store.GetArticlesAsync(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1).AddSeconds(-1)).GetAwaiter().GetResult();
                 var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
                 AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
@@ -112,7 +112,7 @@ namespace Tests
                     articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                     // Get articles thru service.  They should be sorted
-                    var returnedArticles = Store.GetArticles(yearString: year.ToString(), monthString:month.ToString("D2"));
+                    var returnedArticles = Store.GetArticlesAsync(new DateTime(year, month, 1), new DateTime(year, month, 1).AddMonths(1).AddSeconds(-1)).GetAwaiter().GetResult();
                     var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
                     AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
@@ -128,7 +128,7 @@ namespace Tests
             articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
             // Get articles thru service.  They should be sorted
-            var returnedArticles = Store.GetArticles();
+            var returnedArticles = Store.GetArticlesAsync(DateTime.MinValue, DateTime.MaxValue).GetAwaiter().GetResult();
             var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
             AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);

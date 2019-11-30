@@ -219,19 +219,5 @@ publish-date: {publishDate:O}
             Assert.AreEqual(compareString, article.ToString());
         }
 
-        [Test]
-        public void MonthAndYearFields()
-        {
-            var article = new Article();
-
-            article.PublishDate = new System.DateTime(2012, 2, 4);
-            Assert.AreEqual("2012", article.YearString);
-            Assert.AreEqual("02", article.MonthString);
-
-            article.PublishDate = new System.DateTime(2034, 11, 30);
-            Assert.AreEqual("2034", article.YearString);
-            Assert.AreEqual("11", article.MonthString);
-        }
-
     }
 }
