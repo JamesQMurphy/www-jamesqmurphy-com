@@ -1,14 +1,47 @@
 ﻿I've always wanted to build a living, breathing site with Continuous Integration/Continuous Deployment tools -- and blog about it.  So why not build the blog website itself?  Here are the main elements of the CI/CD process:
 
-#### Source Control - Github
+# Source Control Stored In Github
 https://github.com/JamesQMurphy/www-jamesqmurphy-com
 
-#### Build and Deploy - Azure DevOps Services</h4>
+When it comes to source control for a public project, GitHub is still the obvious choice.  My
+branching strategy is more-or-less [GitHub Flow](https://guides.github.com/introduction/flow/index.html):
+
+1. Create feature branch named `features\new-feature`
+2. Update version number in `azure-pipelines.yml` (see [my post on build numbering](/blog/2019/08/build-numbering))
+3. Add commits
+4. Build and deploy to **DEV** environment, if necessary
+5. Open pull request against `master`
+6. Merge to `master`, which triggers the production build
+
+Sometimes, if I'm working on a bigger, long-running release, I'll create a branch named `releases\X.Y.Z` to serve as an intermediate
+checkpoint.  Pushes to release branches automatically get built and deployed to **DEV**.
+
+# Built and Deployed By Azure DevOps Services
 https://dev.azure.com/jamesqmurphy/www-jamesqmurphy-com
 
-#### Hosting - Amazon Web Services</h4>
+The build tools available with Azure DevOps Services are excellent -- and essentially free for
+public projects.  [Builds](https://dev.azure.com/jamesqmurphy/www-jamesqmurphy-com/_build?definitionId=5)
+are automatically triggered when commits are pushed to either the
+`master` branch or a branch that starts with `releases/`.  However, *any* branch can be built
+by manually triggering a build from within Azure DevOps Services.
+
+I also have an Azure DevOps Release Pipeline named [Deploy to AWS](https://dev.azure.com/jamesqmurphy/www-jamesqmurphy-com/_release?_a=releases&definitionId=1).  Every build, except for pull-request builds, will trigger this pipeline.  If
+the build came from the `master` branch, then the pipeline deploys to the **Staging and Production** environments; otherwise,
+it deploys to **DEV**.
+
+# Hosted On Amazon Web Services
 https://aws.amazon.com/
 
+The website is hosted on AWS, and takes advantage of several AWS services:
+
+![Diagram of JamesQMurphy.com website using AWS Services like API Gateway, Lambda Functions, S3 Storage, CloudWatch Logs, SQS, SES, and DynamoDb](JamesQMurphy-AWS-Diagram.png){.mx-auto .d-block}
+
+At its center, the website is ASP.NET Core 2.2 MVC application, hosted inside an
+[AWS Lambda Function](https://aws.amazon.com/lambda/) and
+exposed to the outside world via [AWS API Gateway](https://aws.amazon.com/api-gateway/).  Requests for
+static content, such as images, style sheets, and JavaScript files, are forwarded to [AWS S3](https://aws.amazon.com/s3/).
+The site uses [AWS DynamoDB](https://aws.amazon.com/dynamodb/) for data storage.  Sending email is
+accomplished using [AWS SES](https://aws.amazon.com/ses/) protected behind an [AWS SQS Queue](https://aws.amazon.com/sqs/).
 
 # About Me
 
