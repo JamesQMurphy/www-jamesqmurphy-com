@@ -26,7 +26,7 @@ namespace JamesQMurphy.Auth.Aws
         private const string USERNAME = "userName";
         private const string CONFIRMED = "confirmed";
         private const string PASSWORD_HASH = "passwordHash";
-        private const string LAST_UPDATED = "timestamp";
+        private const string LAST_UPDATED = "lastUpdated";
         private const string IS_ADMINISTRATOR = "isAdministrator";
 
         private readonly IAmazonDynamoDB _dynamoDbClient;
@@ -80,10 +80,11 @@ namespace JamesQMurphy.Auth.Aws
             {
                 return null;
             }
-            else
+            if (result.Count == 1)
             {
-                return ToApplicationUser(result.Items.Where(i=>i.ContainsKey(USER_ID)).First());
+                return ToApplicationUser(result.Items[0]);
             }
+            throw new Exception($"Found {result.Count} items with userId = {userId}");
         }
 
         public async Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
