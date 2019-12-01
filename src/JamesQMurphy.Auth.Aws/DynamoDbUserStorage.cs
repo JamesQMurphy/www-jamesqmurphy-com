@@ -91,7 +91,7 @@ namespace JamesQMurphy.Auth.Aws
             var queryRequest = new QueryRequest
             {
                 TableName = _options.DynamoDbTableName,
-                IndexName = _options.UserNameIndex,
+                IndexName = _options.EmailIndex,
                 Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{NORMALIZED_EMAIL} = :v_normalizedEmail",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
