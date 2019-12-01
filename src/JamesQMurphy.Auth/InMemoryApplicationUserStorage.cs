@@ -16,6 +16,7 @@ namespace JamesQMurphy.Auth
         {
             var user = new ApplicationUser()
             {
+                UserId = "+++User+++",
                 Email = "user@local",
                 EmailConfirmed = true,
                 NormalizedEmail = "USER@LOCAL",
@@ -27,6 +28,7 @@ namespace JamesQMurphy.Auth
 
             var adminUser = new ApplicationUser()
             {
+                UserId = "x+xAdminx+x",
                 Email = "admin@local",
                 EmailConfirmed = true,
                 NormalizedEmail = "ADMIN@LOCAL",
@@ -41,23 +43,23 @@ namespace JamesQMurphy.Auth
 
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_dictUsers.ContainsKey(user.NormalizedEmail))
+            if (_dictUsers.ContainsKey(user.UserId))
             {
                 return Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = "Already present" }));
             }
-            _dictUsers.Add(user.NormalizedEmail, user);
+            _dictUsers.Add(user.UserId, user);
             user.LastUpdated = DateTime.UtcNow;
             return Task.FromResult(IdentityResult.Success);
         }
         public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _dictUsers[user.NormalizedEmail] = user;
+            _dictUsers[user.UserId] = user;
             user.LastUpdated = DateTime.UtcNow;
             return Task.FromResult(IdentityResult.Success);
         }
         public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_dictUsers.Remove(user.NormalizedEmail))
+            if (_dictUsers.Remove(user.UserId))
             {
                 return Task.FromResult(IdentityResult.Success);
             }
@@ -66,16 +68,22 @@ namespace JamesQMurphy.Auth
                 return Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = "User not found" }));
             }
         }
-        public Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_dictUsers.ContainsKey(normalizedEmailAddress))
+            if (_dictUsers.ContainsKey(userId))
             {
-                return Task.FromResult(_dictUsers[normalizedEmailAddress]);
+                return Task.FromResult(_dictUsers[userId]);
             }
             else
             {
                 return Task.FromResult((ApplicationUser)null);
             }
+        }
+
+        public Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var user = _dictUsers.Values.Where(u => u.NormalizedEmail == normalizedEmailAddress).FirstOrDefault();
+            return Task.FromResult(user);
         }
 
         public Task<ApplicationUser> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))

@@ -16,15 +16,17 @@ namespace JamesQMurphy.Auth.Aws
         {
             public string DynamoDbTableName { get; set; }
             public string UserNameIndex { get; set; }
+            public string EmailIndex { get; set; }
         }
 
+        private const string USER_ID = "userId";
         private const string NORMALIZED_EMAIL = "normalizedEmail";
         private const string EMAIL = "email";
         private const string NORMALIZED_USERNAME = "normalizedUserName";
         private const string USERNAME = "userName";
         private const string CONFIRMED = "confirmed";
         private const string PASSWORD_HASH = "passwordHash";
-        private const string LAST_UPDATED = "lastUpdated";
+        private const string LAST_UPDATED = "timestamp";
         private const string IS_ADMINISTRATOR = "isAdministrator";
 
         private readonly IAmazonDynamoDB _dynamoDbClient;
@@ -58,11 +60,38 @@ namespace JamesQMurphy.Auth.Aws
             return IdentityResult.Success;
         }
 
+        public async Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            var queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{USER_ID} = :v_userId",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":v_userId", new AttributeValue {S = userId} }
+                },
+                ScanIndexForward = false
+            };
+
+            var result = await _dynamoDbClient.QueryAsync(queryRequest, cancellationToken);
+
+            if (result.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return ToApplicationUser(result.Items.Where(i=>i.ContainsKey(USER_ID)).First());
+            }
+        }
+
         public async Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
             var queryRequest = new QueryRequest
             {
                 TableName = _options.DynamoDbTableName,
+                IndexName = _options.UserNameIndex,
                 Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{NORMALIZED_EMAIL} = :v_normalizedEmail",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -91,7 +120,7 @@ namespace JamesQMurphy.Auth.Aws
             {
                 TableName = _options.DynamoDbTableName,
                 IndexName = _options.UserNameIndex,
-                Select = Select.ALL_PROJECTED_ATTRIBUTES,
+                Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{NORMALIZED_USERNAME} = :v_normalizedUserName",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
@@ -133,6 +162,7 @@ namespace JamesQMurphy.Auth.Aws
 
             return new ApplicationUser()
             {
+                UserId = attributeMap[USER_ID].S,
                 NormalizedEmail = attributeMap[NORMALIZED_EMAIL].S,
                 Email = attributeMap[EMAIL].S,
                 NormalizedUserName = attributeMap[NORMALIZED_USERNAME].S,
@@ -148,6 +178,7 @@ namespace JamesQMurphy.Auth.Aws
         {
             return new Document
             {
+                [USER_ID] = user.UserId,
                 [NORMALIZED_EMAIL] = user.NormalizedEmail,
                 [EMAIL] = user.Email,
                 [NORMALIZED_USERNAME] = user.NormalizedUserName,
@@ -158,6 +189,5 @@ namespace JamesQMurphy.Auth.Aws
                 [IS_ADMINISTRATOR] = new DynamoDBBool(user.IsAdministrator)
             };
         }
-
     }
 }
