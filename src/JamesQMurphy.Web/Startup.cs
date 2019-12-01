@@ -53,8 +53,8 @@ namespace JamesQMurphy.Web
             switch (Configuration["UserStore:Service"])
             {
                 case "DynamoDb":
-                    services.ConfigurePoco<DynamoDbUserStorage.Options>(Configuration, "UserStore");
-                    services.AddSingleton<IApplicationUserStorage, DynamoDbUserStorage>();
+                    services.ConfigurePoco<JamesQMurphy.Auth.Aws.DynamoDbUserStorage.Options>(Configuration, "UserStore");
+                    services.AddSingleton<IApplicationUserStorage, JamesQMurphy.Auth.Aws.DynamoDbUserStorage>();
                     break;
 
                 default:  //InMemory

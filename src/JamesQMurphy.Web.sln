@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Auth", "JamesQ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Auth.UnitTests", "JamesQMurphy.Auth.UnitTests\JamesQMurphy.Auth.UnitTests.csproj", "{C141D34E-E61D-496B-845B-4329019C3214}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Auth.Aws", "JamesQMurphy.Auth.Aws\JamesQMurphy.Auth.Aws.csproj", "{B7BE817D-A605-47D3-909A-A0591D2646F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{C141D34E-E61D-496B-845B-4329019C3214}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C141D34E-E61D-496B-845B-4329019C3214}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C141D34E-E61D-496B-845B-4329019C3214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7BE817D-A605-47D3-909A-A0591D2646F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7BE817D-A605-47D3-909A-A0591D2646F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7BE817D-A605-47D3-909A-A0591D2646F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7BE817D-A605-47D3-909A-A0591D2646F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
