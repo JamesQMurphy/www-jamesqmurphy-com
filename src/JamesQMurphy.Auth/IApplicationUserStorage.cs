@@ -1,10 +1,9 @@
-﻿using JamesQMurphy.Web.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JamesQMurphy.Web.Services
+namespace JamesQMurphy.Auth
 {
     public interface IApplicationUserStorage
     {
@@ -17,3 +16,4 @@ namespace JamesQMurphy.Web.Services
         Task<IEnumerable<ApplicationUser>> GetAllUsersAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }
+

@@ -1,7 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
-using JamesQMurphy.Web.Models;
+using JamesQMurphy.Auth;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

@@ -1,12 +1,12 @@
-﻿using JamesQMurphy.Web.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JamesQMurphy.Web.Services
+
+namespace JamesQMurphy.Auth
 {
     public class InMemoryApplicationUserStorage : IApplicationUserStorage
     {
@@ -41,15 +41,13 @@ namespace JamesQMurphy.Web.Services
 
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_dictUsers.TryAdd(user.NormalizedEmail, user))
-            {
-                user.LastUpdated = DateTime.UtcNow;
-                return Task.FromResult(IdentityResult.Success);
-            }
-            else
+            if (_dictUsers.ContainsKey(user.NormalizedEmail))
             {
                 return Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = "Already present" }));
             }
+            _dictUsers.Add(user.NormalizedEmail, user);
+            user.LastUpdated = DateTime.UtcNow;
+            return Task.FromResult(IdentityResult.Success);
         }
         public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {

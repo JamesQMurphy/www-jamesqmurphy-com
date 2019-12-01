@@ -1,4 +1,4 @@
-﻿using JamesQMurphy.Web.Models;
+﻿using JamesQMurphy.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System;

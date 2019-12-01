@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace JamesQMurphy.Web.Services
+namespace JamesQMurphy.Auth
 {
     public class ApplicationUserStore :
         IDisposable,

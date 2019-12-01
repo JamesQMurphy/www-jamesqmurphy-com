@@ -17,7 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Email", "James
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Email.Aws", "JamesQMurphy.Email.Aws\JamesQMurphy.Email.Aws.csproj", "{353D7F6D-9EB1-481D-A917-151E3502D39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Lambda.EmailSender", "JamesQMurphy.Lambda.EmailSender\JamesQMurphy.Lambda.EmailSender.csproj", "{DECB3A77-2E79-4CB1-882F-E944BE242858}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Lambda.EmailSender", "JamesQMurphy.Lambda.EmailSender\JamesQMurphy.Lambda.EmailSender.csproj", "{DECB3A77-2E79-4CB1-882F-E944BE242858}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Auth", "JamesQMurphy.Auth\JamesQMurphy.Auth.csproj", "{35EA8064-4C7B-4A0B-9E09-AAAFA4A3D44B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Auth.UnitTests", "JamesQMurphy.Auth.UnitTests\JamesQMurphy.Auth.UnitTests.csproj", "{C141D34E-E61D-496B-845B-4329019C3214}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,14 @@ Global
 		{DECB3A77-2E79-4CB1-882F-E944BE242858}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DECB3A77-2E79-4CB1-882F-E944BE242858}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DECB3A77-2E79-4CB1-882F-E944BE242858}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35EA8064-4C7B-4A0B-9E09-AAAFA4A3D44B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35EA8064-4C7B-4A0B-9E09-AAAFA4A3D44B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35EA8064-4C7B-4A0B-9E09-AAAFA4A3D44B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35EA8064-4C7B-4A0B-9E09-AAAFA4A3D44B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C141D34E-E61D-496B-845B-4329019C3214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C141D34E-E61D-496B-845B-4329019C3214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C141D34E-E61D-496B-845B-4329019C3214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C141D34E-E61D-496B-845B-4329019C3214}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

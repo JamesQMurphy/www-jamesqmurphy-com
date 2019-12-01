@@ -1,5 +1,6 @@
-﻿using JamesQMurphy.Email;
-using JamesQMurphy.Web.Models;
+﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Email;
+using JamesQMurphy.Web.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

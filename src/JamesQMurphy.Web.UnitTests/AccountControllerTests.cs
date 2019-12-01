@@ -1,5 +1,5 @@
 using System;
-using JamesQMurphy.Email;
+using JamesQMurphy.Auth;
 using JamesQMurphy.Web.Controllers;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.AccountViewModels;

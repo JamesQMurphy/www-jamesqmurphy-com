@@ -1,9 +1,10 @@
 ﻿using System;
 
-namespace JamesQMurphy.Web.Models
+namespace JamesQMurphy.Auth
 {
     public class ApplicationUser
     {
+        public string UserId { get; set; }
         public string NormalizedEmail { get; set; }
         public string Email { get; set; }
         public bool EmailConfirmed { get; set; } = false;
