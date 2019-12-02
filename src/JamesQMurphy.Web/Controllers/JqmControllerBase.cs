@@ -1,4 +1,4 @@
-﻿using JamesQMurphy.Web.Models;
+﻿using JamesQMurphy.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -11,6 +11,7 @@ namespace JamesQMurphy.Web.Controllers
         private ApplicationUser _applicationUser = null;
 
         protected string CurrentUserName => this.User?.Identity?.Name;
+        protected string CurrentUserId => this.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         protected bool IsLoggedIn => (this.User?.Identity?.IsAuthenticated == true);
 
         protected async Task<ApplicationUser> GetApplicationUserAsync(UserManager<ApplicationUser> userManager)

@@ -1,5 +1,4 @@
-﻿using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Services;
+﻿using JamesQMurphy.Auth;
 using NUnit.Framework;
 using System.Linq;
 using System.Threading;

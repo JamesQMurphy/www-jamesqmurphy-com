@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using JamesQMurphy.Auth;
 using System.Threading.Tasks;
-using JamesQMurphy.Web.Models;
 
 namespace JamesQMurphy.Web.Services
 {

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace JamesQMurphy.Web.Services
+namespace JamesQMurphy.Auth
 {
     public class ApplicationUserStore :
         IDisposable,
@@ -27,7 +25,7 @@ namespace JamesQMurphy.Web.Services
         }
 
         #region Helpers
-        public Task<string> GetUserIdAsync(ApplicationUser user) => Task.FromResult(user.NormalizedEmail);
+        public Task<string> GetUserIdAsync(ApplicationUser user) => Task.FromResult(user.UserId);
         public Task<string> GetUserNameAsync(ApplicationUser user) => Task.FromResult(user.UserName);
         public Task<string> GetNormalizedUserNameAsync(ApplicationUser user) => Task.FromResult(user.NormalizedUserName);
         public Task<string> GetPasswordHashAsync(ApplicationUser user) => Task.FromResult(user.PasswordHash);
@@ -78,6 +76,10 @@ namespace JamesQMurphy.Web.Services
         {
             return await _storage.DeleteAsync(user, cancellationToken);
         }
+        public async Task<ApplicationUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await _storage.FindByIdAsync(userId, cancellationToken);
+        }
         public async Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken);
@@ -117,7 +119,7 @@ namespace JamesQMurphy.Web.Services
         Task<ApplicationUser> IUserStore<ApplicationUser>.FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return FindByEmailAddress(userId, cancellationToken);
+            return FindById(userId, cancellationToken);
         }
 
         Task<ApplicationUser> IUserStore<ApplicationUser>.FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)

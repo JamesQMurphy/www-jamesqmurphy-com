@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace JamesQMurphy.Web.Services
+namespace JamesQMurphy.Auth
 {
     public class ApplicationPasswordValidator<TUser> : IPasswordValidator<TUser> where TUser : class
     {
@@ -18,10 +18,6 @@ namespace JamesQMurphy.Web.Services
             if (password == null)
             {
                 throw new ArgumentNullException(nameof(password));
-            }
-            if (manager == null)
-            {
-                throw new ArgumentNullException(nameof(manager));
             }
 
             if (Regex.IsMatch(password, REGEX_PATTERN, RegexOptions.CultureInvariant))

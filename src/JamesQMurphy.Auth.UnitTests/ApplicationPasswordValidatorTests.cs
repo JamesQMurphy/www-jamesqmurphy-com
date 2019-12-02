@@ -1,23 +1,16 @@
-﻿using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+﻿using JamesQMurphy.Auth;
 using NUnit.Framework;
-using System;
 
 namespace JamesQMurphy.Web.UnitTests
 {
     public class ApplicationPasswordValidatorTests
     {
         private ApplicationPasswordValidator<ApplicationUser> _validator;
-        private UserManager<ApplicationUser> _userManager;
 
         [SetUp]
         public void Setup()
         {
             _validator = new ApplicationPasswordValidator<ApplicationUser>();
-            var serviceProvider = ConfigurationHelper.CreateServiceProvider();
-            _userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
         }
 
         [Test]
@@ -46,7 +39,7 @@ namespace JamesQMurphy.Web.UnitTests
         {
             Assert.AreEqual(
                 expected,
-                _validator.ValidateAsync(_userManager, null, password).GetAwaiter().GetResult().Succeeded
+                _validator.ValidateAsync(null, null, password).GetAwaiter().GetResult().Succeeded
             );
         }
     }

@@ -1,6 +1,6 @@
+using JamesQMurphy.Auth;
 using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
-using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
