@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,6 +11,7 @@ namespace JamesQMurphy.Blog
     {
         private const string yamlHeader = "---";
         private const string yamlFooter = "...";
+        public readonly SortedSet<ArticleComment> ArticleComments = new SortedSet<ArticleComment>();
 
         public ArticleMetadata Metadata { get; set; } = new ArticleMetadata();
         public string Content { get; set; }
@@ -94,7 +96,6 @@ namespace JamesQMurphy.Blog
                 await WriteToAsync(writer);
             }
         }
-
         public override string ToString()
         {
             var writer = new StringWriter();
