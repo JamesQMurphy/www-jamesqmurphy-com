@@ -50,5 +50,15 @@ namespace JamesQMurphy.Blog
                 yield return article;
             }
         }
+
+        public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceArticleId = "", int pageSize = 50, bool latest = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AddComment(string articleSlug, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        {
+            throw new NotImplementedException();
+        }
     }
 }

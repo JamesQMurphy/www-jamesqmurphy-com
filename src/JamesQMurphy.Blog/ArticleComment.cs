@@ -13,5 +13,6 @@ namespace JamesQMurphy.Blog
         public string Content { get; set; }
         public ArticleComment ReplyingTo { get; set; }
         public int CompareTo(ArticleComment other) => PublishDate.CompareTo(other.PublishDate);
+        public static string IdFromPublishDate(DateTime utcDateTime) => utcDateTime.ToString("O");
     }
 }
