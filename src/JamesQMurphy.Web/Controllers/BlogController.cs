@@ -57,5 +57,11 @@ namespace JamesQMurphy.Web.Controllers
                 return NotFound();
             }
         }
+
+        public async Task<IActionResult> Comments(string year, string month, string slug)
+        {
+            var comments = await articleStore.GetArticleComments($"{year}/{month}/{slug}");
+            return new JsonResult(comments);
+        }
     }
 }

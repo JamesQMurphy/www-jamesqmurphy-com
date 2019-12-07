@@ -109,7 +109,7 @@ namespace JamesQMurphy.Blog.Aws
             return result.Items.ConvertAll(i => ToArticleMetadata(i));
         }
 
-        public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceArticleId = "", int pageSize = 50, bool latest = false)
+        public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
             throw new NotImplementedException();
         }

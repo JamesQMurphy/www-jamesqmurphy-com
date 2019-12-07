@@ -157,6 +157,11 @@ namespace JamesQMurphy.Web
                     defaults: new { controller = "Blog", action = "Details" });
 
                 routes.MapRoute(
+                    name: "blogDetails",
+                    template: "blog/{year}/{month}/{slug}/comments",
+                    defaults: new { controller = "Blog", action = "Comments" });
+
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });

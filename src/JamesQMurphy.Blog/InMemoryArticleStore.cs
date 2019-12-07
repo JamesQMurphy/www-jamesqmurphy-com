@@ -8,7 +8,7 @@ namespace JamesQMurphy.Blog
     public class InMemoryArticleStore : IArticleStore
     {
         public readonly List<Article> Articles = new List<Article>();
-        private readonly Dictionary<string,SortedSet<ArticleComment>> _articleComments = new Dictionary<string, SortedSet<ArticleComment>>
+        private readonly Dictionary<string, SortedSet<ArticleComment>> _articleComments = new Dictionary<string, SortedSet<ArticleComment>>();
 
         public Task<Article> GetArticleAsync(string slug)
         {
@@ -34,35 +34,38 @@ namespace JamesQMurphy.Blog
             return Task.FromResult(ienum);
         }
 
-        public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceArticleId = "", int pageSize = 50, bool latest = false)
+        public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
-            throw new NotImplementedException();
+            var comments = _GetCommentsDictionaryForArticle(articleSlug).Where(ac => ac.Timestamp.CompareTo(sinceTimestamp) > 0);
+            return Task.FromResult(latest ? comments.Reverse().Take(pageSize) : comments.Take(pageSize));
         }
 
         public Task<bool> AddComment(string articleSlug, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
-            ArticleComment articleCommentReplyingTo = null;
-            SortedSet<ArticleComment> comments;
-            if (!_articleComments.TryGetValue(articleSlug, out comments))
+            var result = _GetCommentsDictionaryForArticle(articleSlug).Add(new ArticleComment
             {
-                comments = new SortedSet<ArticleComment>();
-                _articleComments.Add(articleSlug, comments);
-            }
-            else
-            {
-                articleCommentReplyingTo = comments.Where(c => c.Id == replyingTo).FirstOrDefault();
-            }
-
-            var result = comments.Add(new ArticleComment
-            {
-                Id = ArticleComment.IdFromPublishDate(timestamp),
+                ArticleSlug = articleSlug,
+                Timestamp = ArticleComment.TimestampPlusReplyTo(timestamp, replyingTo),
                 Content = content,
-                UserName = userName,
-                PublishDate = timestamp,
-                ReplyingTo = String.IsNullOrWhiteSpace(replyingTo) ? null : articleCommentReplyingTo
+                AuthorId = userId,
+                AuthorName = userName,
             });
 
             return Task.FromResult(result);
+        }
+
+        private SortedSet<ArticleComment> _GetCommentsDictionaryForArticle(string articleSlug)
+        {
+            SortedSet<ArticleComment> comments;
+            lock (_articleComments)
+            {
+                if (!_articleComments.TryGetValue(articleSlug, out comments))
+                {
+                    comments = new SortedSet<ArticleComment>();
+                    _articleComments.Add(articleSlug, comments);
+                }
+            }
+            return comments;
         }
     }
 }
