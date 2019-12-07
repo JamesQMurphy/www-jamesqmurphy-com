@@ -1,4 +1,4 @@
-﻿@model JamesQMurphy.Blog.ArticleMetadata
+﻿@model JamesQMurphy.Blog.Article
 @inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
 
 @section Scripts {
@@ -13,12 +13,9 @@
     {
         title = ViewData[Constants.VIEWDATA_PAGETITLE].ToString();
     }
-    if (Model != null)
+    if (!String.IsNullOrWhiteSpace(Model.Title))
     {
-        if (!String.IsNullOrWhiteSpace(Model.Title))
-        {
-            title = Model.Title;
-        }
+        title = Model.Title;
     }
 }
 
@@ -27,17 +24,17 @@
     {
         <h1 class="display-4">@title</h1>
     }
-    @if (Model != null)
+    @if (!String.IsNullOrWhiteSpace(Model.Description))
     {
-        @if (!String.IsNullOrWhiteSpace(Model.Description))
-        {
-            <h3>@Model.Description</h3>
-        }
+        <h3>@Model.Description</h3>
+    }
+    @if (Model.PublishDate != DateTime.MinValue)
+    {
         <h6 class="text-muted">by JamesQMurphy | @Model.PublishDate.ToString("MMMM d, yyyy")</h6>
     }
     <br />
-    @if (ViewData.ContainsKey(Constants.VIEWDATA_MARKDOWN))
+    @if (!String.IsNullOrWhiteSpace(Model.Content))
     {
-        @Html.Raw(Renderer.RenderHtml(ViewData[Constants.VIEWDATA_MARKDOWN].ToString()))
+        @Html.Raw(Renderer.RenderHtml(Model.Content))
     }
 </article>

@@ -37,16 +37,21 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult About()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "About This Site";
-            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/About.md");
-            return View("Article");
+            
+            return View("_Article", new Article {
+                Content = System.IO.File.ReadAllText("Views/Home/About.md")
+            });
         }
 
         public IActionResult Privacy()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
-            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteOptions.WebSiteTitle);
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
-            return View("Article");
+
+            return View("_Article", new Article
+            {
+                Content = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteOptions.WebSiteTitle)
+            });
         }
 
         [Microsoft.AspNetCore.Authorization.Authorize]
