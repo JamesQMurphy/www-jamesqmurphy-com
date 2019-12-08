@@ -1,2 +1,9 @@
 ﻿<partial name="_Article" />
 <h6>Comments will go here</h6>
+<div id="commentsSection"></div>
+@section Scripts {
+    <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
+    <script>mermaid.initialize({ startOnLoad: true });</script>
+
+    <script src="~/js/blogdetails.js" asp-append-version="true"></script>
+}
