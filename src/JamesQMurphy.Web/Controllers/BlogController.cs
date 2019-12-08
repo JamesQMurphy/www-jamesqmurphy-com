@@ -7,16 +7,16 @@ using JamesQMurphy.Blog;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class BlogController : JqmControllerBase
+    public class blogController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
 
-        public BlogController(IArticleStore iarticleStore)
+        public blogController(IArticleStore iarticleStore)
         {
             articleStore = iarticleStore;
         }
 
-        public async Task<IActionResult> Index(string year = null, string month = null)
+        public async Task<IActionResult> index(string year = null, string month = null)
         {
             var startDate = DateTime.MinValue;
             var endDate = DateTime.MaxValue;
@@ -36,7 +36,7 @@ namespace JamesQMurphy.Web.Controllers
             return View(await articleStore.GetArticlesAsync(startDate, endDate));
         }
 
-        public async Task<IActionResult> Details(string year, string month, string slug)
+        public async Task<IActionResult> details(string year, string month, string slug)
         {
             var article = await articleStore.GetArticleAsync($"{year}/{month}/{slug}");
             if (article != null)

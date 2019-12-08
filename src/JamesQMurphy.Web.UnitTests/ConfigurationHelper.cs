@@ -31,10 +31,10 @@ namespace JamesQMurphy.Web.UnitTests
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddSingleton<ILogger<AccountController>>(NullLogger<AccountController>.Instance);
-            serviceCollection.AddSingleton<ILogger<AdminController>>(NullLogger<AdminController>.Instance);
-            serviceCollection.AddSingleton<ILogger<BlogController>>(NullLogger<BlogController>.Instance);
-            serviceCollection.AddSingleton<ILogger<HomeController>>(NullLogger<HomeController>.Instance);
+            serviceCollection.AddSingleton<ILogger<accountController>>(NullLogger<accountController>.Instance);
+            serviceCollection.AddSingleton<ILogger<adminController>>(NullLogger<adminController>.Instance);
+            serviceCollection.AddSingleton<ILogger<blogController>>(NullLogger<blogController>.Instance);
+            serviceCollection.AddSingleton<ILogger<homeController>>(NullLogger<homeController>.Instance);
 
             serviceCollection.AddSingleton<ILogger<UserManager<ApplicationUser>>>(NullLogger<UserManager<ApplicationUser>>.Instance);
             serviceCollection.AddSingleton<ILogger<RoleManager<ApplicationRole>>>(NullLogger<RoleManager<ApplicationRole>>.Instance);
