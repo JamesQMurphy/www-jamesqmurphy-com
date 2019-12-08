@@ -1,7 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
-using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JamesQMurphy.Web.Services
+namespace JamesQMurphy.Auth.Aws
 {
     public class DynamoDbUserStorage : IApplicationUserStorage
     {
@@ -17,8 +16,10 @@ namespace JamesQMurphy.Web.Services
         {
             public string DynamoDbTableName { get; set; }
             public string UserNameIndex { get; set; }
+            public string EmailIndex { get; set; }
         }
 
+        private const string USER_ID = "userId";
         private const string NORMALIZED_EMAIL = "normalizedEmail";
         private const string EMAIL = "email";
         private const string NORMALIZED_USERNAME = "normalizedUserName";
@@ -59,11 +60,39 @@ namespace JamesQMurphy.Web.Services
             return IdentityResult.Success;
         }
 
+        public async Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            var queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{USER_ID} = :v_userId",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":v_userId", new AttributeValue {S = userId} }
+                },
+                ScanIndexForward = false
+            };
+
+            var result = await _dynamoDbClient.QueryAsync(queryRequest, cancellationToken);
+
+            if (result.Count == 0)
+            {
+                return null;
+            }
+            if (result.Count == 1)
+            {
+                return ToApplicationUser(result.Items[0]);
+            }
+            throw new Exception($"Found {result.Count} items with userId = {userId}");
+        }
+
         public async Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
             var queryRequest = new QueryRequest
             {
                 TableName = _options.DynamoDbTableName,
+                IndexName = _options.EmailIndex,
                 Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{NORMALIZED_EMAIL} = :v_normalizedEmail",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -92,7 +121,7 @@ namespace JamesQMurphy.Web.Services
             {
                 TableName = _options.DynamoDbTableName,
                 IndexName = _options.UserNameIndex,
-                Select = Select.ALL_PROJECTED_ATTRIBUTES,
+                Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{NORMALIZED_USERNAME} = :v_normalizedUserName",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
@@ -134,6 +163,7 @@ namespace JamesQMurphy.Web.Services
 
             return new ApplicationUser()
             {
+                UserId = attributeMap[USER_ID].S,
                 NormalizedEmail = attributeMap[NORMALIZED_EMAIL].S,
                 Email = attributeMap[EMAIL].S,
                 NormalizedUserName = attributeMap[NORMALIZED_USERNAME].S,
@@ -149,6 +179,7 @@ namespace JamesQMurphy.Web.Services
         {
             return new Document
             {
+                [USER_ID] = user.UserId,
                 [NORMALIZED_EMAIL] = user.NormalizedEmail,
                 [EMAIL] = user.Email,
                 [NORMALIZED_USERNAME] = user.NormalizedUserName,
@@ -159,6 +190,5 @@ namespace JamesQMurphy.Web.Services
                 [IS_ADMINISTRATOR] = new DynamoDBBool(user.IsAdministrator)
             };
         }
-
     }
 }

@@ -1,6 +1,6 @@
-﻿using JamesQMurphy.Email;
+﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Email;
 using JamesQMurphy.Web.Controllers;
-using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

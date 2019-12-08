@@ -312,6 +312,7 @@ Resources:
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
           UserStore__UserNameIndex: "normalizedUserName-index"
+          UserStore__EmailIndex: "normalizedEmail-index"
           Email__Service: SQS
           Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
       Tags:

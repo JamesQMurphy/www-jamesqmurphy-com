@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Blog;
+using JamesQMurphy.Web.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using JamesQMurphy.Blog;
-using JamesQMurphy.Web.Models;
 
 namespace JamesQMurphy.Web.Controllers
 {

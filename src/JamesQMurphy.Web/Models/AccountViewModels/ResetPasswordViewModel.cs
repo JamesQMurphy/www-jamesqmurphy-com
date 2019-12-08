@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using JamesQMurphy.Auth;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Models.AccountViewModels
 {
@@ -10,8 +7,8 @@ namespace JamesQMurphy.Web.Models.AccountViewModels
     {
         [Required]
         [RegularExpression(
-            Services.ApplicationPasswordValidator<ApplicationUser>.REGEX_PATTERN,
-            ErrorMessage = Services.ApplicationPasswordValidator<ApplicationUser>.REGEX_DESCRIPTION
+            ApplicationPasswordValidator<ApplicationUser>.REGEX_PATTERN,
+            ErrorMessage = ApplicationPasswordValidator<ApplicationUser>.REGEX_DESCRIPTION
             )]
         [DataType(DataType.Password)]
         public string Password { get; set; }
