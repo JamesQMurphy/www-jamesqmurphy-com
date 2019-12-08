@@ -39,7 +39,6 @@ Resources:
       Integration:
         Type: AWS_PROXY
         IntegrationHttpMethod: POST
-        Credentials: !GetAtt TheIAMReadOnlyRole.Arn
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArnParameter}/invocations
 
 
@@ -61,7 +60,6 @@ Resources:
       Integration:
         Type: AWS_PROXY
         IntegrationHttpMethod: POST
-        Credentials: !GetAtt TheIAMReadOnlyRole.Arn
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArnParameter}/invocations
 
 

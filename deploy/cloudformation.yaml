@@ -433,7 +433,7 @@ Resources:
       Integration:
         Type: AWS
         IntegrationHttpMethod: GET
-        Credentials: !GetAtt TheIAMReadOnlyRole.Arn
+        Credentials: !GetAtt TheRoleForTheProxyGetMethod.Arn
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/{fullpath}
         PassthroughBehavior: WHEN_NO_MATCH
         RequestParameters:
@@ -444,7 +444,7 @@ Resources:
             'method.response.header.Timestamp': 'integration.response.header.Date'
             'method.response.header.Content-Length': 'integration.response.header.Content-Length'
             'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            'method.response.header.Cache-Control': !Sub "'public, max-age=${MaxAgeParameter}'"
+            'method.response.header.Cache-Control': !Sub "'public, max-age=31536000'"
 
 
   TheHomeRouteResourceStack:
