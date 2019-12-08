@@ -240,6 +240,42 @@ Resources:
                 Resource: '*'
 
 
+  TheRoleForTheProxyGetMethod:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudwatchWriteOnlyAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: S3ReadOnly-Path
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:Get*'
+                  - 's3:List*'
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}'
+                  - !Sub 'arn:aws:s3:::${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/*'
+
+
   TheRoleForTheLogProcessingLambdaFunction:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -378,43 +414,84 @@ Resources:
       PathPart: '{proxy+}'
 
 
-  TheProxyAnyMethod:
+  TheProxyGetMethod:
     Type: 'AWS::ApiGateway::Method'
     Properties:
       RestApiId: !Ref TheGatewayRestAPI
       ResourceId: !Ref TheProxyResource
-      HttpMethod: ANY
+      HttpMethod: GET
       AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: true
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': true
+            'method.response.header.Content-Length': true
+            'method.response.header.Content-Type': true
+            'method.response.header.Cache-Control': true
       Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TheLambdaFunction.Arn}/invocations
+        Type: AWS
+        IntegrationHttpMethod: GET
+        Credentials: !GetAtt TheIAMReadOnlyRole.Arn
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/{fullpath}
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.fullpath: 'method.request.path.proxy'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            'method.response.header.Timestamp': 'integration.response.header.Date'
+            'method.response.header.Content-Length': 'integration.response.header.Content-Length'
+            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            'method.response.header.Cache-Control': !Sub "'public, max-age=${MaxAgeParameter}'"
 
 
-  TheFavIconResourceStack:
+  TheHomeRouteResourceStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToLambda.yaml'
       TimeoutInMinutes: 10
       Parameters:
         RestApiIdParameter: !Ref TheGatewayRestAPI
         ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
-        ApiResourceNameParameter: favicon.ico
-        S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/favicon.ico'
-        IsPathParameter: false
-        MaxAgeParameter: 600
+        ApiResourceNameParameter: home
+        LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
 
-
-  TheDistResourceStack:
+  TheBlogRouteResourceStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToLambda.yaml'
       TimeoutInMinutes: 10
       Parameters:
         RestApiIdParameter: !Ref TheGatewayRestAPI
         ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
-        ApiResourceNameParameter: dist
-        S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/dist'
+        ApiResourceNameParameter: blog
+        LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
+
+
+  TheAccountRouteResourceStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToLambda.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: account
+        LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
+
+
+  TheAdminRouteResourceStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToLambda.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: admin
+        LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
 
 
   TheBlogImagesResourceStack:
@@ -429,40 +506,30 @@ Resources:
         S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForBlogImagesParameter}'
 
 
-  TheImagesResourceStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Properties:
-      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToS3.yaml'
-      TimeoutInMinutes: 10
-      Parameters:
-        RestApiIdParameter: !Ref TheGatewayRestAPI
-        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
-        ApiResourceNameParameter: images
-        S3BucketPathParameter: !Sub '${S3BucketForCodeParameter}/${S3BucketPathForStaticFilesParameter}/images'
-
 
   TheDeploymentStage:
     Type: 'AWS::ApiGateway::Deployment'
     DependsOn:
       - TheRootGetMethod
-      - TheProxyAnyMethod
-      - TheDistResourceStack
+      - TheProxyGetMethod
+      - TheHomeRouteResourceStack
+      - TheBlogRouteResourceStack
+      - TheAccountRouteResourceStack
+      - TheAdminRouteResourceStack
       - TheBlogImagesResourceStack
-      - TheImagesResourceStack
-      - TheFavIconResourceStack
     Properties:
       Description: !Sub ${AppNameParameter}-${VersionNumberParameter} ${StageParameter}.  Created via CloudFormation stack ${AWS::StackName}.
       RestApiId: !Ref TheGatewayRestAPI
       StageName: !Ref ApiGatewayStageNameParameter
 
 
-  TheLambdaInvokePermissionForProxyResource:
+  TheLambdaInvokePermissionForTheRootResource:
     Type: 'AWS::Lambda::Permission'
     Properties:
       FunctionName: !GetAtt TheLambdaFunction.Arn
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${TheGatewayRestAPI}*
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${TheGatewayRestAPI}/${ApiGatewayStageNameParameter}/GET/
 
 
   TheCustomDomainName:
