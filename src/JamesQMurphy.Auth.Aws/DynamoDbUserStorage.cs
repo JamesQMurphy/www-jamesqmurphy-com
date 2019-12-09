@@ -60,7 +60,7 @@ namespace JamesQMurphy.Auth.Aws
             return IdentityResult.Success;
         }
 
-        public async Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default)
+        public async Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             var queryRequest = new QueryRequest
             {

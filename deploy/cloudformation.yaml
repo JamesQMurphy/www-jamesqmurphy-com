@@ -342,6 +342,7 @@ Resources:
           AppName: !Sub '${AppNameParameter}-${StageParameter}'
           ImageBasePath: /blogimages
           DataProtection: AWS
+          UseStaticFiles: "false"
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
           ArticleStore__DynamoDbIndexName: !Ref DynamoDbIndexBlogArticlesParameter
