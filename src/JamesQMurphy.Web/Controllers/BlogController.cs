@@ -4,16 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using JamesQMurphy.Blog;
+using JamesQMurphy.Web.Models.BlogViewModels;
 
 namespace JamesQMurphy.Web.Controllers
 {
     public class blogController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
+        private readonly IMarkdownHtmlRenderer htmlRenderer;
 
-        public blogController(IArticleStore iarticleStore)
+        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer ihtmlRenderer)
         {
             articleStore = iarticleStore;
+            htmlRenderer = ihtmlRenderer;
         }
 
         public async Task<IActionResult> index(string year = null, string month = null)
@@ -60,7 +63,14 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> Comments(string year, string month, string slug)
         {
             var comments = await articleStore.GetArticleComments($"{year}/{month}/{slug}");
-            return new JsonResult(comments);
+            var thisUserId = CurrentUserId;
+
+            return new JsonResult(comments.Select(c => new BlogArticleComment {
+                ArticleSlug = c.ArticleSlug,
+                Timestamp = c.Timestamp,
+                IsMine = (c.AuthorId == thisUserId),
+                HtmlContent = htmlRenderer.RenderHtml(c.Content)
+            }));
         }
     }
 }
