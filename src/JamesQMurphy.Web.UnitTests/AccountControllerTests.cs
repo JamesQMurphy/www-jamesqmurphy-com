@@ -15,7 +15,7 @@ namespace JamesQMurphy.Web.UnitTests
     {
         private ServiceProvider _serviceProvider;
         private MockEmailGenerator _emailGenerator;
-        private AccountController _controller;
+        private accountController _controller;
 
         [SetUp]
         public void Setup()
@@ -23,9 +23,9 @@ namespace JamesQMurphy.Web.UnitTests
             _emailGenerator = new MockEmailGenerator();
             _serviceProvider = ConfigurationHelper.CreateServiceProvider();
 
-            _controller = new AccountController(
+            _controller = new accountController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
-                _serviceProvider.GetService<ILogger<AccountController>>(),
+                _serviceProvider.GetService<ILogger<accountController>>(),
                 _emailGenerator);
         }
 
@@ -44,12 +44,12 @@ namespace JamesQMurphy.Web.UnitTests
                 RememberMe = false
             };
 
-            var result = _controller.Login(loginViewModel).GetAwaiter().GetResult();
+            var result = _controller.login(loginViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
             var redirectToActionResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
             Assert.AreEqual("home", redirectToActionResult.ControllerName);
-            Assert.AreEqual(nameof(HomeController.Index).ToLowerInvariant(), redirectToActionResult.ActionName);
+            Assert.AreEqual(nameof(homeController.index).ToLowerInvariant(), redirectToActionResult.ActionName);
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
         }
 
@@ -68,7 +68,7 @@ namespace JamesQMurphy.Web.UnitTests
                 RememberMe = false
             };
 
-            var result = _controller.Login(loginViewModel).GetAwaiter().GetResult();
+            var result = _controller.login(loginViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             Assert.AreEqual(1, _controller.ModelState.ErrorCount);
@@ -89,7 +89,7 @@ namespace JamesQMurphy.Web.UnitTests
                 RememberMe = false
             };
 
-            var result = _controller.Login(loginViewModel).GetAwaiter().GetResult();
+            var result = _controller.login(loginViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             Assert.AreEqual(1, _controller.ModelState.ErrorCount);
@@ -110,7 +110,7 @@ namespace JamesQMurphy.Web.UnitTests
                 RememberMe = false
             };
 
-            var result = _controller.Login(loginViewModel).GetAwaiter().GetResult();
+            var result = _controller.login(loginViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             Assert.AreEqual(1, _controller.ModelState.ErrorCount);
@@ -131,7 +131,7 @@ namespace JamesQMurphy.Web.UnitTests
                 UserName = username
             };
 
-            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+            var result = _controller.register(registerViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
@@ -170,7 +170,7 @@ namespace JamesQMurphy.Web.UnitTests
                 UserName = usernameReplace
             };
 
-            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+            var result = _controller.register(registerViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
@@ -208,7 +208,7 @@ namespace JamesQMurphy.Web.UnitTests
                 UserName = username
             };
 
-            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+            var result = _controller.register(registerViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
@@ -247,7 +247,7 @@ namespace JamesQMurphy.Web.UnitTests
                 UserName = usernameReplace
             };
 
-            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+            var result = _controller.register(registerViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
@@ -285,7 +285,7 @@ namespace JamesQMurphy.Web.UnitTests
                 UserName = username
             };
 
-            var result = _controller.Register(registerViewModel).GetAwaiter().GetResult();
+            var result = _controller.register(registerViewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
@@ -319,11 +319,11 @@ namespace JamesQMurphy.Web.UnitTests
                 Email = email
             };
 
-            var result = _controller.ForgotPassword(viewModel).GetAwaiter().GetResult();
+            var result = _controller.forgotpassword(viewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
-            Assert.AreEqual(nameof(AccountController.ForgotPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(nameof(accountController.forgotpasswordconfirmation), viewResult.ActionName);
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was NOT updated
@@ -353,11 +353,11 @@ namespace JamesQMurphy.Web.UnitTests
                 Email = email
             };
 
-            var result = _controller.ForgotPassword(viewModel).GetAwaiter().GetResult();
+            var result = _controller.forgotpassword(viewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
-            Assert.AreEqual(nameof(AccountController.ForgotPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(nameof(accountController.forgotpasswordconfirmation), viewResult.ActionName);
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was NOT updated
@@ -381,11 +381,11 @@ namespace JamesQMurphy.Web.UnitTests
                 Email = "doesnotexist@atall"
             };
 
-            var result = _controller.ForgotPassword(viewModel).GetAwaiter().GetResult();
+            var result = _controller.forgotpassword(viewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
-            Assert.AreEqual(nameof(AccountController.ForgotPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(nameof(accountController.forgotpasswordconfirmation), viewResult.ActionName);
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that "Reset Password" message was NOT sent
@@ -416,11 +416,11 @@ namespace JamesQMurphy.Web.UnitTests
                 ConfirmPassword = passwordReplace
             };
 
-            var result = _controller.ResetPassword(viewModel).GetAwaiter().GetResult();
+            var result = _controller.resetpassword(viewModel).GetAwaiter().GetResult();
 
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
             var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
-            Assert.AreEqual(nameof(AccountController.ResetPasswordConfirmation), viewResult.ActionName);
+            Assert.AreEqual(nameof(accountController.resetpasswordconfirmation), viewResult.ActionName);
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was updated
@@ -457,7 +457,7 @@ namespace JamesQMurphy.Web.UnitTests
                 ConfirmPassword = passwordReplace
             };
 
-            var result = _controller.ResetPassword(viewModel).GetAwaiter().GetResult();
+            var result = _controller.resetpassword(viewModel).GetAwaiter().GetResult();
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             Assert.AreEqual(1, _controller.ModelState.ErrorCount);
 
@@ -483,7 +483,7 @@ namespace JamesQMurphy.Web.UnitTests
                 ConfirmPassword = passwordReplace
             };
 
-            var result = _controller.ResetPassword(viewModel).GetAwaiter().GetResult();
+            var result = _controller.resetpassword(viewModel).GetAwaiter().GetResult();
             Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
             Assert.AreEqual(1, _controller.ModelState.ErrorCount);
 

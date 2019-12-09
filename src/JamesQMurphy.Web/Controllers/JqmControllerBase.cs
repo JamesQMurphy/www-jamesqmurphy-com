@@ -31,7 +31,7 @@ namespace JamesQMurphy.Web.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(HomeController.Index).ToLowerInvariant(), "home");
+                return RedirectToAction(nameof(homeController.index).ToLowerInvariant(), "home");
             }
         }
 
