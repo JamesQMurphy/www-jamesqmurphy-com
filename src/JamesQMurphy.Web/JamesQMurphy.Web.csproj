@@ -23,10 +23,10 @@
     <None Update="bootstrap">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\Home\About.md">
+    <None Update="Views\home\About.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\Home\Privacy.md">
+    <None Update="Views\home\Privacy.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

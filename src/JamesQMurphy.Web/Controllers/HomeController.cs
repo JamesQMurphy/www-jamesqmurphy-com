@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class HomeController : JqmControllerBase
+    public class homeController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
         private readonly WebSiteOptions webSiteOptions;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public HomeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions, UserManager<ApplicationUser> userMgr)
+        public homeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions, UserManager<ApplicationUser> userMgr)
         {
             articleStore = iarticleStore;
             this.webSiteOptions = webSiteOptions;
             userManager = userMgr;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> index()
         {
             // Need to optimize this
             var lastTwoArticles = await articleStore.GetLastArticlesAsync(2);
@@ -34,7 +34,7 @@ namespace JamesQMurphy.Web.Controllers
             return View(homePageItems);
         }
 
-        public IActionResult About()
+        public IActionResult about()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "About This Site";
             
@@ -43,7 +43,7 @@ namespace JamesQMurphy.Web.Controllers
             });
         }
 
-        public IActionResult Privacy()
+        public IActionResult privacy()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
@@ -55,7 +55,7 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [Microsoft.AspNetCore.Authorization.Authorize]
-        public async Task<IActionResult> Secret()
+        public async Task<IActionResult> secret()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Secret Page";
             ViewData["User"] = await GetApplicationUserAsync(userManager);

@@ -9,13 +9,13 @@ namespace JamesQMurphy.Web.UnitTests
     public class BlogControllerTests
     {
         private InMemoryArticleStore articleStore;
-        private Controllers.BlogController controller;
+        private Controllers.blogController controller;
 
         [SetUp]
         public void Setup()
         {
             articleStore = new InMemoryArticleStore();
-            controller = new Controllers.BlogController(articleStore);
+            controller = new Controllers.blogController(articleStore);
         }
 
         [Test]
@@ -34,7 +34,7 @@ namespace JamesQMurphy.Web.UnitTests
             };
             articleStore.Articles.Add(article);
 
-            var result = controller.Details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
+            var result = controller.details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);
             Assert.AreEqual(title, result.ViewData[Constants.VIEWDATA_PAGETITLE]);
         }
@@ -57,7 +57,7 @@ namespace JamesQMurphy.Web.UnitTests
             };
             articleStore.Articles.Add(article);
 
-            var result = controller.Details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
+            var result = controller.details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);
             Assert.AreEqual($"{title}: {description}", result.ViewData[Constants.VIEWDATA_PAGETITLE]);
         }

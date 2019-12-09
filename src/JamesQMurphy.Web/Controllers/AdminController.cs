@@ -11,31 +11,31 @@ using Microsoft.AspNetCore.Authorization;
 namespace JamesQMurphy.Web.Controllers
 {
     [Authorize(Roles = "Administrator")]
-    public class AdminController : JqmControllerBase
+    public class adminController : JqmControllerBase
     {
         private readonly IEmailService _emailService;
         private readonly string _siteName;
 
-        public AdminController(IEmailService emailService, WebSiteOptions webSiteOptions)
+        public adminController(IEmailService emailService, WebSiteOptions webSiteOptions)
         {
             _emailService = emailService;
             _siteName = webSiteOptions.WebSiteTitle;
         }
 
-        public IActionResult Index()
+        public IActionResult index()
         {
             return View();
         }
 
         [HttpGet]
-        public IActionResult TestEmail()
+        public IActionResult testemail()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> TestEmail(TestEmailModel model)
+        public async Task<IActionResult> testemail(TestEmailModel model)
         {
             if (ModelState.IsValid)
             {

@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  RestApiIdParameter:
+    Type: String
+    Description: Id of the API Gateway
+
+  ParentResourceIdParameter:
+    Type: String
+    Description: Id of the parent resource, typically the root resource id
+
+  ApiResourceNameParameter:
+    Type: String
+    Description: Name of the resource path to use 
+
+  LambdaArnParameter:
+    Type: String
+    Description: ARN of Lambda function to invoke
+
+
+Resources:
+
+  TheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ParentId: !Ref ParentResourceIdParameter
+      PathPart: !Ref ApiResourceNameParameter
+
+
+  TheAnyMethodForTheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ResourceId: !Ref TheApiGatewayResource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArnParameter}/invocations
+
+
+  TheProxyResourceUnderTheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ParentId: !Ref TheApiGatewayResource
+      PathPart: '{proxy+}'
+
+
+  TheAnyMethodForTheProxyResourceUnderTheApiGatewayResource:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      RestApiId: !Ref RestApiIdParameter
+      ResourceId: !Ref TheProxyResourceUnderTheApiGatewayResource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArnParameter}/invocations
+
+
+  TheLambdaInvokePermissionForProxyResource:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !Ref LambdaArnParameter
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiIdParameter}/*/*/${ApiResourceNameParameter}*
+
+
+
+Outputs:
+  ApiGatewayResourceId:
+    Description: The Id of the newly created Gateway Resource
+    Value: !Ref TheApiGatewayResource

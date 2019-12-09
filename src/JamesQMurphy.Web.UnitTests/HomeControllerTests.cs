@@ -12,7 +12,7 @@ namespace JamesQMurphy.Web.UnitTests
     public class HomeControllerTests
     {
         private InMemoryArticleStore _articleStore;
-        private Controllers.HomeController _controller;
+        private Controllers.homeController _controller;
         private const string SITE_NAME = "TEST SITE 820ae666";
 
         [SetUp]
@@ -63,13 +63,13 @@ namespace JamesQMurphy.Web.UnitTests
                 .CreateServiceProvider()
                 .GetService<Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>>();
 
-            _controller = new Controllers.HomeController(_articleStore, options, userManager);
+            _controller = new Controllers.homeController(_articleStore, options, userManager);
         }
 
         [Test]
         public void TestIndex()
         {
-            var result = _controller.Index().GetAwaiter().GetResult() as ViewResult;
+            var result = _controller.index().GetAwaiter().GetResult() as ViewResult;
             Assert.IsInstanceOf<HomePageItems>(result.Model);
 
             var model = result.Model as HomePageItems;
@@ -80,14 +80,14 @@ namespace JamesQMurphy.Web.UnitTests
         [Test]
         public void TestAbout()
         {
-            var result = _controller.About() as ViewResult;
+            var result = _controller.about() as ViewResult;
             Assert.IsInstanceOf<ViewResult>(result);
         }
 
         [Test]
         public void TestPrivacy()
         {
-            var result = _controller.Privacy() as ViewResult;
+            var result = _controller.privacy() as ViewResult;
             Assert.IsInstanceOf<ViewResult>(result);
             var article = (Article)result.Model;
             Assert.IsTrue(article.Content.Contains(SITE_NAME));

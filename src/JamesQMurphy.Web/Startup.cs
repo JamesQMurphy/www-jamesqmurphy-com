@@ -149,12 +149,12 @@ namespace JamesQMurphy.Web
                 routes.MapRoute(
                     name: "blogIndex",
                     template: "blog/{year?}/{month?}",
-                    defaults: new { controller = "Blog", action = "Index" });
+                    defaults: new { controller = "blog", action = "index" });
 
                 routes.MapRoute(
                     name: "blogDetails",
                     template: "blog/{year}/{month}/{slug}",
-                    defaults: new { controller = "Blog", action = "Details" });
+                    defaults: new { controller = "blog", action = "details" });
 
                 routes.MapRoute(
                     name: "blogDetails",
@@ -163,7 +163,7 @@ namespace JamesQMurphy.Web
 
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=home}/{action=index}/{id?}");
             });
         }
     }

@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    public class AccountController : JqmControllerBase
+    public class accountController : JqmControllerBase
     {
         private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailGenerator _emailGenerator;
 
-        public AccountController
+        public accountController
         (
             ApplicationSignInManager<ApplicationUser> signInManager,
-            ILogger<AccountController> logger,
+            ILogger<accountController> logger,
             IEmailGenerator emailGenerator
         )
         {
@@ -34,7 +34,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl = null)
+        public async Task<IActionResult> login(string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -46,7 +46,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
@@ -82,7 +82,7 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Logout(string returnUrl = null)
+        public async Task<IActionResult> logout(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
@@ -91,7 +91,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register()
+        public IActionResult register()
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
@@ -100,7 +100,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> register(RegisterViewModel model)
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
@@ -179,7 +179,7 @@ namespace JamesQMurphy.Web.Controllers
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(userFromEmail);
 
                     // Note that Url is null when we create the controller as part of a unit test
-                    var link = Url?.Action(nameof(AccountController.ConfirmEmail), "account", new { userFromEmail.UserName, code }, Request.Scheme);
+                    var link = Url?.Action(nameof(accountController.confirmemail), "account", new { userFromEmail.UserName, code }, Request.Scheme);
                     await _emailGenerator.GenerateEmailAsync(userFromEmail, EmailType.EmailVerification, link);
 
                     // Note that we do *not* sign in the user
@@ -202,7 +202,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userName, string code)
+        public async Task<IActionResult> confirmemail(string userName, string code)
         {
             if (userName == null || code == null)
             {
@@ -237,7 +237,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ForgotPassword()
+        public IActionResult forgotpassword()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Reset Your Password";
             return View();
@@ -245,7 +245,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<IActionResult> forgotpassword(ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -255,12 +255,12 @@ namespace JamesQMurphy.Web.Controllers
                     // User exists and email is confirmed; generate a password reset link
                     var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                     // Note that Url is null when we create the controller as part of a unit test
-                    var link = Url?.Action(nameof(AccountController.ResetPassword), "account", new { user.UserName, code }, Request.Scheme);
+                    var link = Url?.Action(nameof(accountController.resetpassword), "account", new { user.UserName, code }, Request.Scheme);
                     await _emailGenerator.GenerateEmailAsync(user, EmailType.PasswordReset, link);
                 }
 
                 // Even if user doesn't exist, show the confirmation page
-                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+                return RedirectToAction(nameof(forgotpasswordconfirmation));
             }
 
             // If we got this far, something failed, redisplay form
@@ -269,7 +269,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ForgotPasswordConfirmation()
+        public IActionResult forgotpasswordconfirmation()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Check Your Email";
             return View();
@@ -277,11 +277,11 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null, string username = null)
+        public IActionResult resetpassword(string code = null, string username = null)
         {
             if (code == null || username == null)
             {
-                return RedirectToAction(nameof(ForgotPassword));
+                return RedirectToAction(nameof(forgotpassword));
             }
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Enter New Password";
             var model = new ResetPasswordViewModel { Code = code, Username = username };
@@ -290,7 +290,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        public async Task<IActionResult> resetpassword(ResetPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -306,7 +306,7 @@ namespace JamesQMurphy.Web.Controllers
                 }
                 if (result.Succeeded)
                 {
-                    return RedirectToAction(nameof(ResetPasswordConfirmation));
+                    return RedirectToAction(nameof(resetpasswordconfirmation));
                 }
                 foreach (var error in result.Errors)
                 {
@@ -322,7 +322,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPasswordConfirmation()
+        public IActionResult resetpasswordconfirmation()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Password Changed";
             return View();
