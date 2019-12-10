@@ -131,7 +131,10 @@ namespace JamesQMurphy.Web
             app.UseHealthChecks(Configuration["WarmUrl"]);
             app.UseAuthentication();
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            if (Configuration["UseStaticFiles"].ToLowerInvariant() == "true")
+            {
+                app.UseStaticFiles();
+            }
             app.UseCookiePolicy();
 
             // If using a LocalFolder article store, map ImageBasePath to the article store path so that the images load
