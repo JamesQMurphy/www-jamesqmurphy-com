@@ -8,6 +8,7 @@ namespace JamesQMurphy.Web.Models.BlogViewModels
     public class BlogArticleComment
     {
         public string ArticleSlug { get; set; }
+        public string AuthorName { get; set; }
         public string Timestamp { get; set; }
         public bool IsMine { get; set; }
         public string HtmlContent { get; set; }
