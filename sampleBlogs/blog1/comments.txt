@@ -8,14 +8,14 @@ It spans two lines.
 2019/08/breaks-matter
 2019-12-01T18:01:00.0000000Z
 userid002
-Username2
+AReallyReallyReallyReallyReallyReallyReallyReallyReallyLongUserName
 This is a reply to the Line Breaks Matter article.
 It was posted on December 1, 2019.
 -------------------------------------------------------------
 2019/06/article-one
 2019-12-01T18:00:00.0000000Z
 userid002
-Username2
+AReallyReallyReallyReallyReallyReallyReallyReallyReallyLongUserName
 This is another reply to Article One.
 It was posted on December 1, 2019.
 -------------------------------------------------------------

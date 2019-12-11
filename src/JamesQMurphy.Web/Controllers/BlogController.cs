@@ -60,7 +60,7 @@ namespace JamesQMurphy.Web.Controllers
             }
         }
 
-        public async Task<IActionResult> Comments(string year, string month, string slug)
+        public async Task<IActionResult> comments(string year, string month, string slug)
         {
             var comments = await articleStore.GetArticleComments($"{year}/{month}/{slug}");
             var thisUserId = CurrentUserId;
