@@ -1,20 +1,33 @@
 ﻿$(function () {
-    getComments();
+    getLatestComments();
 });
 
-function getComments() {
-    $.getJSON(document.URL + '/comments', function (comments) {
-        $.each(comments, function (index, value) {
-            $("#commentsSection").append(
-                '<div class="jqm-comment media my-3" id="' + value.timestamp + '">' +
-                    '<div class="jqm-comment-user-icon">' +
-                        '<img class="img-fluid" src="' + value.authorImageUrl + '">' +
-                    '</div>' +
-                    '<div class="jqm-comment media-body px-3">' +
-                        '<b>' + value.authorName + '</b><br/>' +
-                        value.htmlContent +
-                    '</div>' +
-                '</div>');
-        });
+function getLatestComments() {
+    $.getJSON(document.URL + '/comments?sinceTimestamp=' + getLatestComments.lastCommentRetrieved, function (commentsArray) {
+        if (commentsArray.length > 0) {
+            insertCommentsIntoDOM(commentsArray);
+            getLatestComments.lastCommentRetrieved = commentsArray[commentsArray.length - 1].timestamp;
+            setTimeout(getLatestComments, 15000);
+        }
+        else {
+            setTimeout(getLatestComments, 15000);
+        }
+    });
+}
+
+getLatestComments.lastCommentRetrieved = '';
+
+function insertCommentsIntoDOM(commentsArray) {
+    $.each(commentsArray, function (index, blogArticleComment) {
+        $("#commentsSection").append(
+            '<div class="jqm-comment media my-3" id="' + blogArticleComment.timestamp + '">' +
+                '<div class="jqm-comment-user-icon">' +
+                    '<img class="img-fluid" src="' + blogArticleComment.authorImageUrl + '">' +
+                '</div>' +
+                '<div class="jqm-comment media-body px-3">' +
+                    '<b>' + blogArticleComment.authorName + '</b><br/>' +
+                    blogArticleComment.htmlContent +
+                '</div>' +
+            '</div>');
     });
 }
