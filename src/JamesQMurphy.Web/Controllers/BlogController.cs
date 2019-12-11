@@ -68,6 +68,7 @@ namespace JamesQMurphy.Web.Controllers
             return new JsonResult(comments.Select(c => new BlogArticleComment {
                 ArticleSlug = c.ArticleSlug,
                 AuthorName = c.AuthorName,
+                AuthorImageUrl = "/images/unknownPersonPlaceholder.png",
                 Timestamp = c.Timestamp,
                 IsMine = (c.AuthorId == thisUserId),
                 HtmlContent = htmlRenderer.RenderHtml(c.Content)
