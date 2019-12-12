@@ -62,7 +62,7 @@ namespace JamesQMurphy.Blog
             {
                 if(currentComment.ArticleSlug == articleSlug)
                 {
-                    if (string.IsNullOrWhiteSpace(sinceTimestamp) || currentComment.Timestamp.CompareTo(sinceTimestamp) > 0)
+                    if (string.IsNullOrWhiteSpace(sinceTimestamp) || currentComment.TimestampId.CompareTo(sinceTimestamp) > 0)
                     {
                         listToReturn.Add(currentComment);
                     }
@@ -90,7 +90,7 @@ namespace JamesQMurphy.Blog
                         else
                         {
                             currentComment.ArticleSlug = lineRead;
-                            currentComment.Timestamp = await reader.ReadLineAsync();
+                            currentComment.TimestampId = await reader.ReadLineAsync();
                             currentComment.AuthorId = await reader.ReadLineAsync();
                             currentComment.AuthorName = await reader.ReadLineAsync();
                             currentComment.Content = await reader.ReadLineAsync();

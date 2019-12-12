@@ -25,7 +25,7 @@ namespace Tests
             var slug = "Some-Slug";
             var authorId = "abc123";
             var authorName = "SomeUserName";
-            var timestamp = "2019-12-07T15:27:47.8710606Z";
+            var timestampId = "2019-12-07T15:27:47.8710606Z";
 
             var ArticleComment = new ArticleComment()
             {
@@ -33,14 +33,14 @@ namespace Tests
                 Content = content,
                 AuthorId = authorId,
                 AuthorName = authorName,
-                Timestamp = timestamp
+                TimestampId = timestampId
             };
 
             Assert.AreEqual(slug, ArticleComment.ArticleSlug);
             Assert.AreEqual(content, ArticleComment.Content);
             Assert.AreEqual(authorId, ArticleComment.AuthorId);
             Assert.AreEqual(authorName, ArticleComment.AuthorName);
-            Assert.AreEqual(timestamp, ArticleComment.Timestamp);
+            Assert.AreEqual(timestampId, ArticleComment.TimestampId);
         }
 
         [Test]
@@ -52,14 +52,14 @@ namespace Tests
                 Content = null,
                 AuthorId = null,
                 AuthorName = null,
-                Timestamp = null
+                TimestampId = null
             };
 
             Assert.AreEqual(string.Empty, ArticleComment.ArticleSlug);
             Assert.AreEqual(string.Empty, ArticleComment.Content);
             Assert.AreEqual(string.Empty, ArticleComment.AuthorId);
             Assert.AreEqual(string.Empty, ArticleComment.AuthorName);
-            Assert.AreEqual(string.Empty, ArticleComment.Timestamp);
+            Assert.AreEqual(string.Empty, ArticleComment.TimestampId);
         }
 
         [Test]

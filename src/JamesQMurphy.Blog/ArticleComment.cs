@@ -12,7 +12,7 @@ namespace JamesQMurphy.Blog
         }
 
         private string _articleSlug = string.Empty;
-        private string _timestamp = string.Empty;
+        private string _timestampId = string.Empty;
         private string _authorId = string.Empty;
         private string _authorName = string.Empty;
         private string _content = string.Empty;
@@ -22,11 +22,11 @@ namespace JamesQMurphy.Blog
             return TimestampPlusReplyTo(timestampUtc.ToString("O"), replyTo);
         }
         public string ArticleSlug { get => _articleSlug; set => _articleSlug = value ?? string.Empty; }
-        public string Timestamp { get => _timestamp; set => _timestamp = value ?? string.Empty; }
+        public string TimestampId { get => _timestampId; set => _timestampId = value ?? string.Empty; }
         public string AuthorId { get => _authorId; set => _authorId = value ?? string.Empty; }
         public string AuthorName { get => _authorName; set => _authorName = value ?? string.Empty; }
         public string Content { get => _content; set => _content = value ?? string.Empty; }
-        public DateTime PublishDate => DateTime.Parse(Timestamp.Split(_timestampSplit)[0]);
-        public int CompareTo(ArticleComment other) => Timestamp.CompareTo(other.Timestamp);
+        public DateTime PublishDate => DateTime.Parse(TimestampId.Split(_timestampSplit)[0]);
+        public int CompareTo(ArticleComment other) => TimestampId.CompareTo(other.TimestampId);
     }
 }

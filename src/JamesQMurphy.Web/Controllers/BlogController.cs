@@ -69,7 +69,7 @@ namespace JamesQMurphy.Web.Controllers
                 ArticleSlug = c.ArticleSlug,
                 AuthorName = c.AuthorName,
                 AuthorImageUrl = "/images/unknownPersonPlaceholder.png",
-                Timestamp = c.Timestamp,
+                Timestamp = c.TimestampId,
                 IsMine = (c.AuthorId == thisUserId),
                 HtmlContent = htmlRenderer.RenderHtml(c.Content)
             }));
