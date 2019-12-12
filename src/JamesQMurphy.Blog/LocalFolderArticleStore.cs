@@ -117,7 +117,7 @@ namespace JamesQMurphy.Blog
             {
                 await writer.WriteLineAsync(COMMENT_SEPARATOR);
                 await writer.WriteLineAsync(articleSlug);
-                await writer.WriteLineAsync(ArticleComment.TimestampPlusReplyTo(timestamp, replyingTo));
+                await writer.WriteLineAsync((new ArticleCommentTimestampId(timestamp, replyingTo)).ToString());
                 await writer.WriteLineAsync(userId);
                 await writer.WriteLineAsync(userName);
                 await writer.WriteLineAsync(content);

@@ -65,14 +65,37 @@ namespace Tests
         [Test]
         public void TimestampParsing()
         {
-            var originalTime = System.DateTime.UtcNow.AddHours(-1);
+            var originalTime = new System.DateTime(2019, 10, 15, 8, 30, 0);
+            var originalTimestamp = originalTime.ToString("O");
+            var originalTimestampId = originalTimestamp;
+            var originalComment = new ArticleComment()
+            {
+                TimestampId = originalTimestampId
+            };
+
+            Assert.AreEqual(originalTime, originalComment.PublishDate);
+            Assert.AreEqual(originalTimestamp, originalComment.CommentId);
+            Assert.AreEqual(originalTimestampId, originalComment.TimestampId);
+            Assert.IsEmpty(originalComment.ReplyToId);
+
             var replyTime = originalTime.AddMinutes(30);
+            var replyTimestamp = replyTime.ToString("O");
+            var replyTimestampId = $"{replyTimestamp}/{originalTimestamp}";
+            var replyComment = new ArticleComment()
+            {
+                TimestampId = replyTimestampId
+            };
 
-            var idOriginal = originalTime.ToString("O");
-            var idReply = replyTime.ToString("O") + "/" + idOriginal;
+            Assert.AreEqual(replyTime, replyComment.PublishDate);
+            Assert.AreEqual($"{originalTimestamp}/{replyTimestamp}", replyComment.CommentId);
+            Assert.AreEqual(replyTimestampId, replyComment.TimestampId);
+            Assert.AreEqual(originalComment.CommentId, replyComment.ReplyToId);
+        }
 
-            Assert.AreEqual(idOriginal, ArticleComment.TimestampPlusReplyTo(originalTime, ""));
-            Assert.AreEqual(idReply, ArticleComment.TimestampPlusReplyTo(replyTime, idOriginal));
+        [Test]
+        void CompareToNull()
+        {
+            Assert.AreEqual(0, new ArticleComment().CompareTo(new ArticleComment()));
         }
     }
 }
