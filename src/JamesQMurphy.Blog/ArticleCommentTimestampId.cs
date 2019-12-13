@@ -40,7 +40,7 @@ namespace JamesQMurphy.Blog
             {
                 retVal = $"{retVal}{SEPARATOR}{_components[i]}";
             }
-            return retVal;
+            return retVal.Replace(':','-').Replace('.','-');
 
         }
 

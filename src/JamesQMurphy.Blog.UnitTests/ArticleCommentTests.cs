@@ -68,18 +68,21 @@ namespace Tests
             var originalTime = new System.DateTime(2019, 10, 15, 8, 30, 0).ToUniversalTime();
             var originalTimestamp = originalTime.ToString("O");
             var originalTimestampId = originalTimestamp;
+            var originalCommentId = originalTimestamp.Replace('.', '-').Replace(':', '-');
             var originalComment = new ArticleComment()
             {
                 TimestampId = originalTimestampId
             };
 
             Assert.AreEqual(originalTime, originalComment.PublishDate);
-            Assert.AreEqual(originalTimestamp, originalComment.CommentId);
+            Assert.AreEqual(originalTimestamp, originalComment.TimestampString);
+            Assert.AreEqual(originalCommentId, originalComment.CommentId);
             Assert.AreEqual(originalTimestampId, originalComment.TimestampId);
             Assert.IsEmpty(originalComment.ReplyToId);
 
             var replyTime = originalTime.AddMinutes(30);
             var replyTimestamp = replyTime.ToString("O");
+            var replyCommentId = originalCommentId + "/" + replyTimestamp.Replace('.', '-').Replace(':', '-');
             var replyTimestampId = $"{replyTimestamp}/{originalTimestamp}";
             var replyComment = new ArticleComment()
             {
@@ -87,7 +90,8 @@ namespace Tests
             };
 
             Assert.AreEqual(replyTime, replyComment.PublishDate);
-            Assert.AreEqual($"{originalTimestamp}/{replyTimestamp}", replyComment.CommentId);
+            Assert.AreEqual(replyTimestamp, replyComment.TimestampString);
+            Assert.AreEqual(replyCommentId, replyComment.CommentId);
             Assert.AreEqual(replyTimestampId, replyComment.TimestampId);
             Assert.AreEqual(originalComment.CommentId, replyComment.ReplyToId);
         }
