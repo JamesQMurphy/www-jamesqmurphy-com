@@ -58,7 +58,7 @@ namespace JamesQMurphy.Blog
             var listToReturn = new SortedSet<ArticleComment>();
             var currentComment = new ArticleComment();
 
-            void _addIfRelevant()
+            void _addIfMatchesCriteria()
             {
                 if(currentComment.ArticleSlug == articleSlug)
                 {
@@ -77,7 +77,7 @@ namespace JamesQMurphy.Blog
                 {
                     if (lineRead.StartsWith(COMMENT_SEPARATOR))
                     {
-                        _addIfRelevant();
+                        _addIfMatchesCriteria();
                         currentComment = new ArticleComment();
                         readingContent = false;
                     }
@@ -100,7 +100,7 @@ namespace JamesQMurphy.Blog
                     lineRead = await reader.ReadLineAsync();
                 }
             }
-            _addIfRelevant();
+            _addIfMatchesCriteria();
             if (latest)
             {
                 return listToReturn.Reverse().Take(pageSize);

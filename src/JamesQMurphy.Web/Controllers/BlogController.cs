@@ -66,12 +66,14 @@ namespace JamesQMurphy.Web.Controllers
             var thisUserId = CurrentUserId;
 
             return new JsonResult(comments.Select(c => new BlogArticleComment {
-                ArticleSlug = c.ArticleSlug,
-                AuthorName = c.AuthorName,
-                AuthorImageUrl = "/images/unknownPersonPlaceholder.png",
-                Timestamp = c.TimestampId,
-                IsMine = (c.AuthorId == thisUserId),
-                HtmlContent = htmlRenderer.RenderHtml(c.Content)
+                commentId = c.CommentId,
+                articleSlug = c.ArticleSlug,
+                authorName = c.AuthorName,
+                authorImageUrl = "/images/unknownPersonPlaceholder.png",
+                timestamp = c.TimestampId,
+                isMine = (c.AuthorId == thisUserId),
+                htmlContent = htmlRenderer.RenderHtml(c.Content),
+                replyToId = c.ReplyToId
             }));
         }
     }

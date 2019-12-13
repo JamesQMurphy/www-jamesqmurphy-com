@@ -7,11 +7,13 @@ namespace JamesQMurphy.Web.Models.BlogViewModels
 {
     public class BlogArticleComment
     {
-        public string ArticleSlug { get; set; }
-        public string AuthorName { get; set; }
-        public string AuthorImageUrl { get; set; }
-        public string Timestamp { get; set; }
-        public bool IsMine { get; set; }
-        public string HtmlContent { get; set; }
+        public string commentId { get; set; }
+        public string articleSlug { get; set; }
+        public string authorName { get; set; }
+        public string authorImageUrl { get; set; }
+        public string timestamp { get; set; }
+        public bool isMine { get; set; }
+        public string htmlContent { get; set; }
+        public string replyToId { get; set; }
     }
 }
