@@ -93,7 +93,7 @@ namespace Tests
         }
 
         [Test]
-        void CompareToNull()
+        public void CompareToNull()
         {
             Assert.AreEqual(0, new ArticleComment().CompareTo(new ArticleComment()));
         }
