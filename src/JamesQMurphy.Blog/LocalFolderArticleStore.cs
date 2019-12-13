@@ -62,7 +62,7 @@ namespace JamesQMurphy.Blog
             {
                 if(currentComment.ArticleSlug == articleSlug)
                 {
-                    if (string.IsNullOrWhiteSpace(sinceTimestamp) || currentComment.TimestampId.CompareTo(sinceTimestamp) > 0)
+                    if (string.IsNullOrWhiteSpace(sinceTimestamp) || currentComment.TimestampString.CompareTo(sinceTimestamp) > 0)
                     {
                         listToReturn.Add(currentComment);
                     }

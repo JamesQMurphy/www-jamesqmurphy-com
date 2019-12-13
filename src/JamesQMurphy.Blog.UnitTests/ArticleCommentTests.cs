@@ -65,7 +65,7 @@ namespace Tests
         [Test]
         public void TimestampParsing()
         {
-            var originalTime = new System.DateTime(2019, 10, 15, 8, 30, 0);
+            var originalTime = new System.DateTime(2019, 10, 15, 8, 30, 0).ToUniversalTime();
             var originalTimestamp = originalTime.ToString("O");
             var originalTimestampId = originalTimestamp;
             var originalComment = new ArticleComment()

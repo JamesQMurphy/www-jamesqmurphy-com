@@ -3,10 +3,10 @@
 });
 
 function getLatestComments() {
-    $.getJSON(document.URL + '/comments?sinceTimestamp=' + getLatestComments.lastCommentRetrieved, function (commentsArray) {
+    $.getJSON(document.URL + '/comments?sinceTimestamp=' + getLatestComments.lastTimestampRetrieved, function (commentsArray) {
         if (commentsArray.length > 0) {
             insertCommentsIntoDOM(commentsArray);
-            getLatestComments.lastCommentRetrieved = commentsArray[commentsArray.length - 1].timestamp;
+            getLatestComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
             setTimeout(getLatestComments, 15000);
         }
         else {
@@ -15,12 +15,12 @@ function getLatestComments() {
     });
 }
 
-getLatestComments.lastCommentRetrieved = '';
+getLatestComments.lastTimestampRetrieved = '';
 
 function insertCommentsIntoDOM(commentsArray) {
     $.each(commentsArray, function (index, blogArticleComment) {
         $("#commentsSection").append(
-            '<div class="jqm-comment media my-3" id="' + blogArticleComment.commentId + '">' +
+            '<div class="jqm-comment media my-3" id="' + blogArticleComment.commentId + '" data-timestamp="' + blogArticleComment.timestamp +'">' +
                 '<div class="jqm-comment-user-icon">' +
                     '<img class="img-fluid" src="' + blogArticleComment.authorImageUrl + '">' +
                 '</div>' +

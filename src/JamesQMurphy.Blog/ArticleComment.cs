@@ -22,7 +22,8 @@ namespace JamesQMurphy.Blog
         public DateTime PublishDate => _articleCommentTimestampId.TimeStamp;
         public string CommentId => _articleCommentTimestampId.CommentId;
         public string ReplyToId => _articleCommentTimestampId.ReplyToId;
-        public int CompareTo(ArticleComment other) => _articleCommentTimestampId.CompareTo(other._articleCommentTimestampId);
+        public string TimestampString => _articleCommentTimestampId.TimeStampString;
+        public int CompareTo(ArticleComment other) => TimestampId.CompareTo(other.TimestampId);
         public override int GetHashCode() => CommentId.GetHashCode();
     }
 }

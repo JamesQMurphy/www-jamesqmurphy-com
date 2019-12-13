@@ -70,7 +70,7 @@ namespace JamesQMurphy.Web.Controllers
                 articleSlug = c.ArticleSlug,
                 authorName = c.AuthorName,
                 authorImageUrl = "/images/unknownPersonPlaceholder.png",
-                timestamp = c.TimestampId,
+                timestamp = c.PublishDate.ToString("O"),
                 isMine = (c.AuthorId == thisUserId),
                 htmlContent = htmlRenderer.RenderHtml(c.Content),
                 replyToId = c.ReplyToId

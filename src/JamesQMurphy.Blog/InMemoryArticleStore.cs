@@ -36,7 +36,7 @@ namespace JamesQMurphy.Blog
 
         public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
-            var comments = _GetCommentsDictionaryForArticle(articleSlug).Where(ac => ac.TimestampId.CompareTo(sinceTimestamp ?? "") > 0);
+            var comments = _GetCommentsDictionaryForArticle(articleSlug).Where(ac => ac.TimestampString.CompareTo(sinceTimestamp ?? "") > 0);
             return Task.FromResult(latest ? comments.Reverse().Take(pageSize) : comments.Take(pageSize));
         }
 

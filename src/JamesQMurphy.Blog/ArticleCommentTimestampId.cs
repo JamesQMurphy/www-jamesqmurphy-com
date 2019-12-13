@@ -50,7 +50,7 @@ namespace JamesQMurphy.Blog
             {
                 if (_components.Count > 0)
                 {
-                    return DateTime.Parse(_components[0]);
+                    return DateTime.Parse(_components[0]).ToUniversalTime();
                 }
                 else
                 {
