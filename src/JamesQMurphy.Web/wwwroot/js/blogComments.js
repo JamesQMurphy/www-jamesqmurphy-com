@@ -35,7 +35,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
         if (parentId.length === 0) {
             parentId = "commentsSection";
         }
-        var insertBeforeElement = $("#" + parentId + " .media[id][data-timestamp]").filter(function () {
+        var insertBeforeElement = $("#" + parentId + " [id][data-timestamp]").filter(function () {
             return ($(this).data('timestamp') > blogArticleComment.timestamp)
                 && ($(this).attr('id').startsWith(blogArticleComment.replyToId + '/'));
         }).first();
@@ -60,7 +60,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
 };
 
 BlogComments.HtmlForMoreBlock = function (id, viewText) {
-    return '<div class="media my-3" id="' + id + '/more" data-timestamp="more">' +
+    return '<div class="media my-3" id="' + id + '/more" data-timestamp="z">' +
         '<span id="' + id + '/view">' + viewText + '</span>&nbsp;</div>';
 };
 
