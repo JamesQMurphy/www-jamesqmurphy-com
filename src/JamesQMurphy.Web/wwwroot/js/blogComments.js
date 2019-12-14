@@ -60,7 +60,7 @@ BlogComments.HtmlForMoreBlock = function (id, viewText) {
         '<span id="' + id + '/view">' + viewText + '</span>&nbsp;</div>';
 };
 
-
+// Polyfill for String.startsWith
 if (!String.prototype.startsWith) {
     Object.defineProperty(String.prototype, 'startsWith', {
         value: function (search, rawPos) {
