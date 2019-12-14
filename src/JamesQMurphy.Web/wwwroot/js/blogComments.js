@@ -1,10 +1,12 @@
-﻿$(function () {
-    var commentsSection = $("#commentsSection");
+﻿const COMMENTS_SECTION_ID = "commentsSection";
+
+$(function () {
+    var commentsSection = $("#" + COMMENTS_SECTION_ID);
+    commentsSection.append(BlogComments.HtmlForMoreBlock('', 'SHOW MORE COMMENTS'));
 
     var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
     mutationObserver.observe(commentsSection.get(0), { attributes: false, childList: true, characterData: false });
 
-    commentsSection.append(BlogComments.HtmlForMoreBlock('', 'SHOW MORE COMMENTS'));
     BlogComments.FetchLatestComments();
 });
 
@@ -31,10 +33,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
     $.each(commentsArray, function (_index, blogArticleComment) {
 
         // Figure out where to insert the new comment
-        var parentId = blogArticleComment.replyToId;
-        if (parentId.length === 0) {
-            parentId = "commentsSection";
-        }
+        var parentId = blogArticleComment.replyToId || COMMENTS_SECTION_ID;
         var insertBeforeElement = $("#" + parentId + " [id][data-timestamp]").filter(function () {
             return ($(this).data('timestamp') > blogArticleComment.timestamp)
                 && ($(this).attr('id').startsWith(blogArticleComment.replyToId + '/'));
@@ -61,15 +60,30 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
 
 BlogComments.HtmlForMoreBlock = function (id, viewText) {
     return '<div class="media my-3" id="' + id + '/more" data-timestamp="z">' +
-        '<span id="' + id + '/view">' + viewText + '</span>&nbsp;</div>';
+        '<span class="jqm-viewMoreControl">' + viewText + '</span>&nbsp;</div>';
 };
 
 BlogComments.OnDOMChange = function (mutations) {
     $.each(mutations, function (_index, mutationRecord) {
-        console.log("Mutation target: " + mutationRecord.target.getAttribute('id'));
+        var commentId = mutationRecord.target.parentNode.getAttribute('id') || COMMENTS_SECTION_ID;
+        if (commentId === COMMENTS_SECTION_ID) {
+            console.log('New comment');
+        }
+        else {
+            console.log('New reply to comment ' + commentId);
+        }
         $(mutationRecord.addedNodes).each(function (_index, addedNode) {
             console.log("Added node: " + addedNode.getAttribute('id'));
         });
+
+        var showMoreControls = $("#" + commentId + " .jqm-viewMoreControl");
+        var hiddenComments = $(mutationRecord.target).children('.jqm-comment:hidden');
+        if (hiddenComments.length > 0) {
+            showMoreControls.show();
+        }
+        else {
+            showMoreControls.hide();
+        }
     });
 };
 
