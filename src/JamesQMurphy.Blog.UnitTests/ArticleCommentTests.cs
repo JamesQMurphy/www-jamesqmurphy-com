@@ -82,8 +82,8 @@ namespace Tests
 
             var replyTime = originalTime.AddMinutes(30);
             var replyTimestamp = replyTime.ToString("O");
-            var replyCommentId = originalCommentId + "/" + replyTimestamp.Replace('.', '-').Replace(':', '-');
-            var replyTimestampId = $"{replyTimestamp}/{originalTimestamp}";
+            var replyCommentId = originalCommentId + "_" + replyTimestamp.Replace('.', '-').Replace(':', '-');
+            var replyTimestampId = $"{replyTimestamp}_{originalTimestamp}";
             var replyComment = new ArticleComment()
             {
                 TimestampId = replyTimestampId

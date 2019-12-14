@@ -6,7 +6,7 @@ namespace JamesQMurphy.Blog
 {
     public class ArticleCommentTimestampId : IComparable<ArticleCommentTimestampId>
     {
-        private const char SEPARATOR = '/';
+        private const char SEPARATOR = '_';
         private readonly List<string> _components = new List<string>();
 
         public ArticleCommentTimestampId(string timestampId)

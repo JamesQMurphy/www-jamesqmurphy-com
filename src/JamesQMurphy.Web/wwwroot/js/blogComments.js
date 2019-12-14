@@ -1,13 +1,17 @@
-﻿const COMMENTS_SECTION_ID = "commentsSection";
+﻿const COMMENTS_SECTION_ID = "commentsRoot";
 
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
-    commentsSection.append(BlogComments.HtmlForMoreBlock('', 'SHOW MORE COMMENTS'));
+    commentsSection.append(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS'));
 
     var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
     mutationObserver.observe(commentsSection.get(0), { attributes: false, childList: true, characterData: false });
 
     BlogComments.FetchLatestComments();
+    setTimeout(function () {
+        $(".jqm-comment").show();
+        BlogComments.RefreshShowMoreControls(COMMENTS_SECTION_ID);
+    }, 1000);
 });
 
 function BlogComments() { }
@@ -36,7 +40,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
         var parentId = blogArticleComment.replyToId || COMMENTS_SECTION_ID;
         var insertBeforeElement = $("#" + parentId + " [id][data-timestamp]").filter(function () {
             return ($(this).data('timestamp') > blogArticleComment.timestamp)
-                && ($(this).attr('id').startsWith(blogArticleComment.replyToId + '/'));
+                && ($(this).attr('id').startsWith(parentId + '/'));
         }).first();
 
         // Insert it
@@ -49,7 +53,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
                 blogArticleComment.htmlContent +
                 BlogComments.HtmlForMoreBlock(blogArticleComment.commentId, 'VIEW REPLIES') +
             '</div>' + 
-            '</div>').insertBefore(insertBeforeElement);
+            '</div>').hide().insertBefore(insertBeforeElement);
 
         // Set up mutation observer under new node's media-body
         var newNodeMediaBody = $(newNode).children('.media-body').get(0);
@@ -58,9 +62,24 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
     });
 };
 
+BlogComments.RefreshShowMoreControls = function (commentId) {
+    var showMoreDiv = $("#" + commentId + "\\/more");
+    var showMoreControls = $(showMoreDiv).children(".jqm-viewMoreControl");
+    console.log("showMoreControls id: " + showMoreControls.get(0).getAttribute('id'));
+    var hiddenComments = $(showMoreDiv).siblings('.jqm-comment:hidden');
+    if (hiddenComments.length > 0) {
+        showMoreControls.show();
+    }
+    else {
+        showMoreControls.hide();
+    }
+
+};
+
+
 BlogComments.HtmlForMoreBlock = function (id, viewText) {
     return '<div class="media my-3" id="' + id + '/more" data-timestamp="z">' +
-        '<span class="jqm-viewMoreControl">' + viewText + '</span>&nbsp;</div>';
+        '<span class="jqm-viewMoreControl" id="' + id + '/show">' + viewText + '</span>&nbsp;</div>';
 };
 
 BlogComments.OnDOMChange = function (mutations) {
@@ -72,18 +91,11 @@ BlogComments.OnDOMChange = function (mutations) {
         else {
             console.log('New reply to comment ' + commentId);
         }
+        BlogComments.RefreshShowMoreControls(commentId);
         $(mutationRecord.addedNodes).each(function (_index, addedNode) {
             console.log("Added node: " + addedNode.getAttribute('id'));
+            BlogComments.RefreshShowMoreControls(addedNode.getAttribute('id'));
         });
-
-        var showMoreControls = $("#" + commentId + " .jqm-viewMoreControl");
-        var hiddenComments = $(mutationRecord.target).children('.jqm-comment:hidden');
-        if (hiddenComments.length > 0) {
-            showMoreControls.show();
-        }
-        else {
-            showMoreControls.hide();
-        }
     });
 };
 
