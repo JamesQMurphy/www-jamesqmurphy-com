@@ -41,7 +41,12 @@ article {
 .jqm-comment-user-icon {
     width: 3rem;
     height: 3rem;
-} 
+}
+
+.jqm-viewMoreControl {
+    color: $link-color;
+    cursor: pointer;
+}
 
 // Override Bootstrap elements
 

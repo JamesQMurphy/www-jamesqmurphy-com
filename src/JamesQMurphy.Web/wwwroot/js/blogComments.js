@@ -1,12 +1,15 @@
 ﻿const COMMENTS_SECTION_ID = "commentsRoot";
+const VIEW_MORE_CONTROL_SUFFIX = "_viewMoreCtl";
 
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
     commentsSection.append(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS'));
+    BlogComments.BindClickViewMoreControl(COMMENTS_SECTION_ID);
 
     var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
     mutationObserver.observe(commentsSection.get(0), { attributes: false, childList: true, characterData: false });
 
+    // Preload and show a bunch up-front
     BlogComments.FetchLatestComments();
     setTimeout(function () {
         $(".jqm-comment").show();
@@ -32,6 +35,15 @@ BlogComments.FetchLatestComments = function () {
     });
 };
 
+BlogComments.GetChildComments = function (commentId) {
+    if (commentId === COMMENTS_SECTION_ID) {
+        return $("#" + COMMENTS_SECTION_ID).children(".jqm-comment");
+    }
+    else {
+        return $("#" + commentId + " > .jqm-comment-body").children(".jqm-comment");
+    }
+};
+
 BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
     console.log("inside BlogComments.InsertCommentsIntoDOM, commentsArray.length = " + commentsArray.length);
     $.each(commentsArray, function (_index, blogArticleComment) {
@@ -48,7 +60,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
             '<div class="jqm-comment-user-icon">' +
                 '<img class="img-fluid" src="' + blogArticleComment.authorImageUrl + '">' +
             '</div>' +
-            '<div class="jqm-comment media-body px-3">' +
+            '<div class="jqm-comment-body media-body px-3">' +
                 '<b>' + blogArticleComment.authorName + '</b> ' + (blogArticleComment.isMine ? '(you)' : '') + '<br/>' +
                 blogArticleComment.htmlContent +
                 BlogComments.HtmlForMoreBlock(blogArticleComment.commentId, 'VIEW REPLIES') +
@@ -65,7 +77,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
 BlogComments.RefreshShowMoreControls = function (commentId) {
     var showMoreDiv = $("#" + commentId + "\\/more");
     var showMoreControls = $(showMoreDiv).children(".jqm-viewMoreControl");
-    console.log("showMoreControls id: " + showMoreControls.get(0).getAttribute('id'));
+    //console.log("showMoreControls id: " + showMoreControls.get(0).getAttribute('id'));
     var hiddenComments = $(showMoreDiv).siblings('.jqm-comment:hidden');
     if (hiddenComments.length > 0) {
         showMoreControls.show();
@@ -76,26 +88,40 @@ BlogComments.RefreshShowMoreControls = function (commentId) {
 
 };
 
-
 BlogComments.HtmlForMoreBlock = function (id, viewText) {
     return '<div class="media my-3" id="' + id + '/more" data-timestamp="z">' +
-        '<span class="jqm-viewMoreControl" id="' + id + '/show">' + viewText + '</span>&nbsp;</div>';
+        '<span class="jqm-viewMoreControl" id="' + id + VIEW_MORE_CONTROL_SUFFIX + '">' + viewText + '</span>&nbsp;</div>';
+};
+
+BlogComments.ViewMoreClick = function (event) {
+    console.log("clicked: " + event.target.id);
+    var commentId = event.target.id.replace(VIEW_MORE_CONTROL_SUFFIX, '');
+    BlogComments.GetChildComments(commentId).show();
+    BlogComments.RefreshShowMoreControls(commentId);
+};
+
+BlogComments.BindClickViewMoreControl = function (commentId) {
+    // Can't simply use $().click()
+    // See https://makeitspendit.com/fix-jquery-click-event-not-working-with-dynamically-added-elements/
+    $('body').on('click', "#" + commentId + VIEW_MORE_CONTROL_SUFFIX, BlogComments.ViewMoreClick);
 };
 
 BlogComments.OnDOMChange = function (mutations) {
     $.each(mutations, function (_index, mutationRecord) {
-        var commentId = mutationRecord.target.parentNode.getAttribute('id') || COMMENTS_SECTION_ID;
-        if (commentId === COMMENTS_SECTION_ID) {
-            console.log('New comment');
+        var parentCommentId = mutationRecord.target.parentNode.getAttribute('id') || COMMENTS_SECTION_ID;
+        if (parentCommentId === COMMENTS_SECTION_ID) {
+            console.log('New comment(s)');
         }
         else {
-            console.log('New reply to comment ' + commentId);
+            console.log('New replies to comment ' + parentCommentId);
         }
-        BlogComments.RefreshShowMoreControls(commentId);
         $(mutationRecord.addedNodes).each(function (_index, addedNode) {
-            console.log("Added node: " + addedNode.getAttribute('id'));
-            BlogComments.RefreshShowMoreControls(addedNode.getAttribute('id'));
+            var commentId = addedNode.getAttribute('id');
+            console.log("New comment id: " + commentId);
+            BlogComments.RefreshShowMoreControls(commentId);
+            BlogComments.BindClickViewMoreControl(commentId);
         });
+        BlogComments.RefreshShowMoreControls(parentCommentId);
     });
 };
 
