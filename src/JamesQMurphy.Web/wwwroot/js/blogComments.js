@@ -1,20 +1,22 @@
 ﻿const COMMENTS_SECTION_ID = "commentsRoot";
-const VIEW_MORE_CONTROL_SUFFIX = "_viewMoreCtl";
+const VIEW_MORE_CTL_SUFFIX = "_viewMoreCtl";
 
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
-    commentsSection.append(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS'));
-    BlogComments.BindClickViewMoreControl(COMMENTS_SECTION_ID);
+    commentsSection.append($(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS')));
+    BlogComments.ViewMoreCtl_BindClick(COMMENTS_SECTION_ID);
 
     var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
     mutationObserver.observe(commentsSection.get(0), { attributes: false, childList: true, characterData: false });
 
-    // Preload and show a bunch up-front
+    // Preload a bunch of comments up-front
     BlogComments.FetchLatestComments();
+
+    // Show the top-level comments
     setTimeout(function () {
-        $(".jqm-comment").show();
-        BlogComments.RefreshShowMoreControls(COMMENTS_SECTION_ID);
-    }, 1000);
+        BlogComments.GetChildCommentElements(COMMENTS_SECTION_ID).show();
+        BlogComments.ViewMoreCtl_Refresh(COMMENTS_SECTION_ID);
+    }, 500);
 });
 
 function BlogComments() { }
@@ -35,7 +37,7 @@ BlogComments.FetchLatestComments = function () {
     });
 };
 
-BlogComments.GetChildComments = function (commentId) {
+BlogComments.GetChildCommentElements = function (commentId) {
     if (commentId === COMMENTS_SECTION_ID) {
         return $("#" + COMMENTS_SECTION_ID).children(".jqm-comment");
     }
@@ -45,7 +47,6 @@ BlogComments.GetChildComments = function (commentId) {
 };
 
 BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
-    console.log("inside BlogComments.InsertCommentsIntoDOM, commentsArray.length = " + commentsArray.length);
     $.each(commentsArray, function (_index, blogArticleComment) {
 
         // Figure out where to insert the new comment
@@ -67,6 +68,9 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
             '</div>' + 
             '</div>').hide().insertBefore(insertBeforeElement);
 
+        // Bind click event to control
+        BlogComments.ViewMoreCtl_BindClick(blogArticleComment.commentId);
+
         // Set up mutation observer under new node's media-body
         var newNodeMediaBody = $(newNode).children('.media-body').get(0);
         var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
@@ -74,55 +78,53 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
     });
 };
 
-BlogComments.RefreshShowMoreControls = function (commentId) {
-    var showMoreDiv = $("#" + commentId + "\\/more");
-    var showMoreControls = $(showMoreDiv).children(".jqm-viewMoreControl");
-    //console.log("showMoreControls id: " + showMoreControls.get(0).getAttribute('id'));
-    var hiddenComments = $(showMoreDiv).siblings('.jqm-comment:hidden');
-    if (hiddenComments.length > 0) {
-        showMoreControls.show();
-    }
-    else {
-        showMoreControls.hide();
-    }
-
-};
-
 BlogComments.HtmlForMoreBlock = function (id, viewText) {
     return '<div class="media my-3" id="' + id + '/more" data-timestamp="z">' +
-        '<span class="jqm-viewMoreControl" id="' + id + VIEW_MORE_CONTROL_SUFFIX + '">' + viewText + '</span>&nbsp;</div>';
+        BlogComments.ViewMoreCtl_GenerateHtml(id, viewText) +
+        '&nbsp;</div>';
 };
 
-BlogComments.ViewMoreClick = function (event) {
-    console.log("clicked: " + event.target.id);
-    var commentId = event.target.id.replace(VIEW_MORE_CONTROL_SUFFIX, '');
-    BlogComments.GetChildComments(commentId).show();
-    BlogComments.RefreshShowMoreControls(commentId);
+
+BlogComments.ViewMoreCtl_GenerateHtml = function (id, innerText) {
+    return '<span class="jqm-viewMoreControl" id="' + id + VIEW_MORE_CTL_SUFFIX + '" style="display:none">' + innerText + '</span>';
 };
 
-BlogComments.BindClickViewMoreControl = function (commentId) {
+BlogComments.ViewMoreCtl_Refresh = function (commentId) {
+    var childComments = BlogComments.GetChildCommentElements(commentId);
+    var hiddenCount = childComments.filter(":hidden").length;
+   //var visibleCount = childComments.length - hiddenCount;
+    if (hiddenCount > 0) {
+        $("#" + commentId + VIEW_MORE_CTL_SUFFIX).show();
+    }
+    else {
+        $("#" + commentId + VIEW_MORE_CTL_SUFFIX).hide();
+    }
+};
+
+BlogComments.ViewMoreCtl_OnClick = function (event) {
+    var commentId = event.target.id.replace(VIEW_MORE_CTL_SUFFIX, '');
+    BlogComments.GetChildCommentElements(commentId).show();
+    BlogComments.ViewMoreCtl_Refresh(commentId);
+};
+
+BlogComments.ViewMoreCtl_BindClick = function (commentId) {
     // Can't simply use $().click()
     // See https://makeitspendit.com/fix-jquery-click-event-not-working-with-dynamically-added-elements/
-    $('body').on('click', "#" + commentId + VIEW_MORE_CONTROL_SUFFIX, BlogComments.ViewMoreClick);
+    $('body').on('click', "#" + commentId + VIEW_MORE_CTL_SUFFIX, BlogComments.ViewMoreCtl_OnClick);
 };
 
 BlogComments.OnDOMChange = function (mutations) {
+    var insertions = 0;
     $.each(mutations, function (_index, mutationRecord) {
         var parentCommentId = mutationRecord.target.parentNode.getAttribute('id') || COMMENTS_SECTION_ID;
-        if (parentCommentId === COMMENTS_SECTION_ID) {
-            console.log('New comment(s)');
-        }
-        else {
-            console.log('New replies to comment ' + parentCommentId);
-        }
         $(mutationRecord.addedNodes).each(function (_index, addedNode) {
             var commentId = addedNode.getAttribute('id');
-            console.log("New comment id: " + commentId);
-            BlogComments.RefreshShowMoreControls(commentId);
-            BlogComments.BindClickViewMoreControl(commentId);
+            BlogComments.ViewMoreCtl_Refresh(commentId);
+            insertions++;
         });
-        BlogComments.RefreshShowMoreControls(parentCommentId);
+        BlogComments.ViewMoreCtl_Refresh(parentCommentId);
     });
+    console.log(insertions + " comment(s) inserted into DOM");
 };
 
 // Polyfill for String.startsWith
