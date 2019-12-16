@@ -1,19 +1,31 @@
 ﻿<partial name="_Article" />
-<h6>Comments will go here</h6>
+<h5>Comments</h5>
 <div class="container" id="commentsRoot"></div>
-<div class="container-fluid">
-    <form>
-        <div class="row mb-3">
-            <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
-        </div>
-        <div class="row">
-            <input type="button" class="btn btn-primary" value="Comment" />
-        </div>
-    </form>
-</div>
-@section Scripts {
-    <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
-    <script>mermaid.initialize({ startOnLoad: true });</script>
+<div class="container-fluid" id="addComment">
+    @if ((bool)ViewData["isLoggedIn"])
+    {
+        <form>
+            <label class="row pt-3 pb-1 border-top" for="userComment">
+                <b>Add a public comment...</b>
+            </label>
+            <div class="row mb-3">
+                <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
+            </div>
+            <div class="row">
+                <input type="button" class="btn btn-primary" value="Comment" />
+            </div>
+        </form>
+    }
+    else
+    {
+        <p>You must <a asp-controller="account" asp-action="login" asp-route-returnurl="@ViewData["returnUrl"]">log in</a> to comment</p>
+    }
 
-    <script src="~/js/blogComments.js" asp-append-version="true"></script>
-}
+</div>
+
+    @section Scripts {
+        <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
+        <script>mermaid.initialize({ startOnLoad: true });</script>
+
+        <script src="~/js/blogComments.js" asp-append-version="true"></script>
+    }

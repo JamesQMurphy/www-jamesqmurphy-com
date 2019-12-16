@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using JamesQMurphy.Blog;
+using JamesQMurphy.Web.Models.BlogViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Extensions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using JamesQMurphy.Blog;
-using JamesQMurphy.Web.Models.BlogViewModels;
 
 namespace JamesQMurphy.Web.Controllers
 {
@@ -42,6 +42,8 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> details(string year, string month, string slug)
         {
             var article = await articleStore.GetArticleAsync($"{year}/{month}/{slug}");
+            ViewData["isLoggedIn"] = this.IsLoggedIn;
+            ViewData["returnUrl"] = $"{HttpContext?.Request?.Path}#addComment";
             if (article != null)
             {
                 if (String.IsNullOrWhiteSpace(article.Description))

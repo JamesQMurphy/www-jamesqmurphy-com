@@ -25,7 +25,7 @@ function BlogComments() { }
 BlogComments.lastTimestampRetrieved = '';
 
 BlogComments.FetchLatestComments = function () {
-    $.getJSON(document.URL + '/comments?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
+    $.getJSON(window.location.href.split('#')[0] + '/comments?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
         if (commentsArray.length > 0) {
             BlogComments.InsertCommentsIntoDOM(commentsArray);
             BlogComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
