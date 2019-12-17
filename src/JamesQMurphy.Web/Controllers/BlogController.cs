@@ -78,5 +78,20 @@ namespace JamesQMurphy.Web.Controllers
                 replyToId = c.ReplyToId
             }));
         }
+
+        [HttpPost]
+        [ActionName("comments")]
+        public async Task<IActionResult> commentsPost(string year, string month, string slug, string content, string replyTo = "")
+        {
+            if (IsLoggedIn)
+            {
+                var retVal = await articleStore.AddComment($"{year}/{month}/{slug}", content, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
+                return Ok();
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
     }
 }
