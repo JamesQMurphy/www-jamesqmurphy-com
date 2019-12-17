@@ -81,16 +81,17 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [ActionName("comments")]
-        public async Task<IActionResult> commentsPost(string year, string month, string slug, string content, string replyTo = "")
+        //[Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> commentsPost(string year, string month, string slug, string userComment, string replyTo = "")
         {
-            if (IsLoggedIn)
+            var retVal = await articleStore.AddComment($"{year}/{month}/{slug}", userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
+            if (retVal)
             {
-                var retVal = await articleStore.AddComment($"{year}/{month}/{slug}", content, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
                 return Ok();
             }
             else
             {
-                return Unauthorized();
+                return BadRequest();
             }
         }
     }

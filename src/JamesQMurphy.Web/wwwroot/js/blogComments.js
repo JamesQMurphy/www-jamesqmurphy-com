@@ -3,11 +3,20 @@ const VIEW_MORE_CTL_SUFFIX = "_viewMoreCtl";
 
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
+    BlogComments.commentsUrl = window.location.href.split('#')[0] + '/comments';
+
+    // Create the "View More Comments" control
     commentsSection.append($(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS')));
     BlogComments.ViewMoreCtl_BindClick(COMMENTS_SECTION_ID);
 
+    // Wire up the OnDOM change event
     var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
     mutationObserver.observe(commentsSection.get(0), { attributes: false, childList: true, characterData: false });
+
+    // Wire up click event for comment submission
+    $("#submitUserComment").click(function () {
+        BlogComments.SubmitComments($("#userComment").val(), COMMENTS_SECTION_ID);
+    });
 
     // Preload a bunch of comments up-front
     BlogComments.FetchLatestComments();
@@ -23,9 +32,10 @@ function BlogComments() { }
 
 
 BlogComments.lastTimestampRetrieved = '';
+BlogComments.commentsUrl = '';
 
 BlogComments.FetchLatestComments = function () {
-    $.getJSON(window.location.href.split('#')[0] + '/comments?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
+    $.getJSON(BlogComments.commentsUrl + '?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
         if (commentsArray.length > 0) {
             BlogComments.InsertCommentsIntoDOM(commentsArray);
             BlogComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
@@ -34,6 +44,14 @@ BlogComments.FetchLatestComments = function () {
         else {
             setTimeout(BlogComments.FetchLatestComments, 6000);
         }
+    });
+};
+
+BlogComments.SubmitComments = function (comment, replyToCommentId) {
+    console.log('Submitting comment for ' + replyToCommentId);
+    $.post(BlogComments.commentsUrl, {
+        userComment: comment,
+        replyTo: replyToCommentId === COMMENTS_SECTION_ID ? "" : replyToCommentId
     });
 };
 
