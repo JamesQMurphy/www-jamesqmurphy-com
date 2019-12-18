@@ -48,7 +48,6 @@ BlogComments.FetchLatestComments = function () {
 };
 
 BlogComments.SubmitComments = function (comment, replyToCommentId) {
-    console.log('Submitting comment for ' + replyToCommentId);
     var data = addAntiForgeryToken({
         userComment: comment,
         sinceTimestamp: BlogComments.lastTimestampRetrieved,
@@ -59,6 +58,11 @@ BlogComments.SubmitComments = function (comment, replyToCommentId) {
             $('form').trigger('reset');
             BlogComments.InsertCommentsIntoDOM(moreComments);
             BlogComments.lastTimestampRetrieved = moreComments[moreComments.length - 1].timestamp;
+
+            // Show the last comment retrieved
+            BlogComments.GetChildCommentElements(replyToCommentId).last().show();
+            BlogComments.ViewMoreCtl_Refresh(replyToCommentId);
+
         })
         .fail(function () { console.log('TODO: this failed'); });
 };
