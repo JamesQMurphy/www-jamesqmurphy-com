@@ -82,12 +82,12 @@ namespace JamesQMurphy.Web.Controllers
         [HttpPost]
         [ActionName("comments")]
         //[Microsoft.AspNetCore.Authorization.Authorize]
-        public async Task<IActionResult> commentsPost(string year, string month, string slug, string userComment, string replyTo = "")
+        public async Task<IActionResult> commentsPost(string year, string month, string slug, string userComment, string sinceTimestamp = "", string replyTo = "")
         {
             var retVal = await articleStore.AddComment($"{year}/{month}/{slug}", userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
             if (retVal)
             {
-                return Ok();
+                return await this.comments(year, month, slug, sinceTimestamp);
             }
             else
             {

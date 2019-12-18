@@ -39,7 +39,7 @@ BlogComments.FetchLatestComments = function () {
         if (commentsArray.length > 0) {
             BlogComments.InsertCommentsIntoDOM(commentsArray);
             BlogComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
-            setTimeout(BlogComments.FetchLatestComments, 6000);
+            setTimeout(BlogComments.FetchLatestComments, 2000);
         }
         else {
             setTimeout(BlogComments.FetchLatestComments, 6000);
@@ -49,10 +49,18 @@ BlogComments.FetchLatestComments = function () {
 
 BlogComments.SubmitComments = function (comment, replyToCommentId) {
     console.log('Submitting comment for ' + replyToCommentId);
-    $.post(BlogComments.commentsUrl, {
+    var data = addAntiForgeryToken({
         userComment: comment,
+        sinceTimestamp: BlogComments.lastTimestampRetrieved,
         replyTo: replyToCommentId === COMMENTS_SECTION_ID ? "" : replyToCommentId
     });
+    $.post(BlogComments.commentsUrl, data)
+        .done(function (moreComments) {
+            $('form').trigger('reset');
+            BlogComments.InsertCommentsIntoDOM(moreComments);
+            BlogComments.lastTimestampRetrieved = moreComments[moreComments.length - 1].timestamp;
+        })
+        .fail(function () { console.log('TODO: this failed'); });
 };
 
 BlogComments.GetChildCommentElements = function (commentId) {
