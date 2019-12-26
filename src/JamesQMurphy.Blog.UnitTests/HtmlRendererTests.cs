@@ -109,6 +109,18 @@ namespace Tests
             AssertEquivalentHtml(expected, actual);
         }
 
+        [Test]
+        public void ScriptTagsUnsafeOnly()
+        {
+            var markdown = "<script>alert('Pwned');</script>";
+            var expectedUnsafe = @"<script>alert('Pwned');</script>";
+            var actualUnsafe = renderer.RenderHtml(markdown);
+            AssertEquivalentHtml(expectedUnsafe, actualUnsafe);
+
+            var expectedSafe = @"<p>&lt;script&gt;alert('Pwned');&lt;/script&gt;</p>";
+            var actualSafe = renderer.RenderHtmlSafe(markdown);
+            AssertEquivalentHtml(expectedSafe, actualSafe);
+        }
 
     }
 }

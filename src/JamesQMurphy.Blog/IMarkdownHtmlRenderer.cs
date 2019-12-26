@@ -7,5 +7,6 @@ namespace JamesQMurphy.Blog
     public interface IMarkdownHtmlRenderer
     {
         string RenderHtml(string markdown);
+        string RenderHtmlSafe(string markdown);
     }
 }

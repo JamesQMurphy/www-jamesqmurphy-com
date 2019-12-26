@@ -7,15 +7,24 @@ namespace JamesQMurphy.Blog
 {
     public class DefaultMarkdownHtmlRenderer : IMarkdownHtmlRenderer
     {
-        private readonly Markdig.MarkdownPipeline pipeline;
+        private readonly Markdig.MarkdownPipeline pipelineUnsafe;
+        private readonly Markdig.MarkdownPipeline pipelineSafe;
         private readonly string imageBasePath;
 
         public DefaultMarkdownHtmlRenderer(string ImageBasePath = "")
         {
-            var pipelineBuilder = new Markdig.MarkdownPipelineBuilder();
-            Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilder);
-            Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilder);
-            pipeline = pipelineBuilder.Build();
+            var pipelineBuilderUnsafe = new Markdig.MarkdownPipelineBuilder();
+            Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilderUnsafe);
+            Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilderUnsafe);
+            pipelineUnsafe = pipelineBuilderUnsafe.Build();
+
+            var pipelineBuilderSafe = new Markdig.MarkdownPipelineBuilder();
+            Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilderSafe);
+            Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilderSafe);
+            Markdig.MarkdownExtensions.DisableHtml(pipelineBuilderSafe);
+            Markdig.MarkdownExtensions.DisableHeadings(pipelineBuilderSafe);
+            pipelineSafe = pipelineBuilderSafe.Build();
+
             if (ImageBasePath == null)
             {
                 imageBasePath = "";
@@ -40,9 +49,23 @@ namespace JamesQMurphy.Blog
             var writer = new StringWriter();
             var renderer = new Markdig.Renderers.HtmlRenderer(writer);
             renderer.ObjectWriteBefore += Renderer_ObjectWriteBefore;
-            pipeline.Setup(renderer);
+            pipelineUnsafe.Setup(renderer);
 
-            var document = Markdig.Markdown.Parse(markdown, pipeline);
+            var document = Markdig.Markdown.Parse(markdown, pipelineUnsafe);
+            renderer.Render(document);
+            writer.Flush();
+            return writer.ToString();
+        }
+
+        public string RenderHtmlSafe(string markdown)
+        {
+            if (markdown == null) throw new ArgumentNullException("markdown");
+
+            var writer = new StringWriter();
+            var renderer = new Markdig.Renderers.HtmlRenderer(writer);
+            pipelineSafe.Setup(renderer);
+
+            var document = Markdig.Markdown.Parse(markdown, pipelineSafe);
             renderer.Render(document);
             writer.Flush();
             return writer.ToString();
