@@ -150,9 +150,20 @@ namespace JamesQMurphy.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks(Configuration["WarmUrl"]);
-                endpoints.MapControllerRoute("blogIndex", "blog/{year?}/{month?}", new { controller = "blog", action = "index" });
-                endpoints.MapControllerRoute("blogDetails", "blog/{year}/{month}/{slug}", new { controller = "blog", action = "details" });
-                endpoints.MapControllerRoute("default", "{controller=home}/{action=index}/{id?}");
+
+                endpoints.MapControllerRoute(
+                    name: "blogIndex",
+                    pattern: "blog/{year?}/{month?}",
+                    defaults: new { controller = "blog", action = "index" });
+
+                endpoints.MapControllerRoute(
+                    name: "blogDetails",
+                    pattern: "blog/{year}/{month}/{slug}",
+                    defaults: new { controller = "blog", action = "details" });
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=home}/{action=index}/{id?}");
             });
         }
     }
