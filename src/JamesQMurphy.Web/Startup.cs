@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 
@@ -85,12 +86,9 @@ namespace JamesQMurphy.Web
                 options.LoginPath = "/account/login";
             });
 
-
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            // The "new" way to do AddMvc()
+            services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+            services.AddRazorPages();
 
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
             services.AddArticleStoreServices(Configuration);
@@ -115,9 +113,9 @@ namespace JamesQMurphy.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment())    // comes from Microsoft.Extensions.Hosting namespace (https://stackoverflow.com/a/58072031/1001100)
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -128,15 +126,10 @@ namespace JamesQMurphy.Web
                 app.UseHsts();
             }
 
-            app.UseHealthChecks(Configuration["WarmUrl"]);
-            app.UseAuthentication();
-            app.UseHttpsRedirection();
             if (Configuration["UseStaticFiles"].ToLowerInvariant() == "true")
             {
                 app.UseStaticFiles();
             }
-            app.UseCookiePolicy();
-
             // If using a LocalFolder article store, map ImageBasePath to the article store path so that the images load
             if ((Configuration["ArticleStore:Service"] == "LocalFolder") && (Configuration["ImageBasePath"] != "/"))
             {
@@ -147,21 +140,18 @@ namespace JamesQMurphy.Web
                 });
             }
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseHttpsRedirection();
+            app.UseCookiePolicy();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "blogIndex",
-                    template: "blog/{year?}/{month?}",
-                    defaults: new { controller = "blog", action = "index" });
-
-                routes.MapRoute(
-                    name: "blogDetails",
-                    template: "blog/{year}/{month}/{slug}",
-                    defaults: new { controller = "blog", action = "details" });
-
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=home}/{action=index}/{id?}");
+                endpoints.MapHealthChecks(Configuration["WarmUrl"]);
+                endpoints.MapControllerRoute("blogIndex", "blog/{year?}/{month?}", new { controller = "blog", action = "index" });
+                endpoints.MapControllerRoute("blogDetails", "blog/{year}/{month}/slug", new { controller = "blog", action = "details" });
+                endpoints.MapControllerRoute("default", "{controller=home}/{action=index}/{id?}");
             });
         }
     }
