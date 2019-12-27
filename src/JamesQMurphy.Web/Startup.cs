@@ -151,7 +151,7 @@ namespace JamesQMurphy.Web
             {
                 endpoints.MapHealthChecks(Configuration["WarmUrl"]);
                 endpoints.MapControllerRoute("blogIndex", "blog/{year?}/{month?}", new { controller = "blog", action = "index" });
-                endpoints.MapControllerRoute("blogDetails", "blog/{year}/{month}/slug", new { controller = "blog", action = "details" });
+                endpoints.MapControllerRoute("blogDetails", "blog/{year}/{month}/{slug}", new { controller = "blog", action = "details" });
                 endpoints.MapControllerRoute("default", "{controller=home}/{action=index}/{id?}");
             });
         }
