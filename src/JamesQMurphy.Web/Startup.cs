@@ -72,6 +72,7 @@ namespace JamesQMurphy.Web
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
             });
+            services.AddSingleton<ApplicationUserConfirmation>();
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
                 .AddUserStore<ApplicationUserStore>()
