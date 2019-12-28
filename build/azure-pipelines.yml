@@ -11,7 +11,7 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 3
-  versionPatch: 9
+  versionPatch: 10
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.processLogsPackageName: JamesQMurphy.ProcessCloudWatchLogs.$(Build.BuildNumber).zip
@@ -23,6 +23,13 @@ variables:
   JQM.gitTagName: v$(Build.BuildNumber)
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core sdk'
+  inputs:
+    packageType: sdk
+    version: 3.1.100
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
 - checkout: self
   clean: true
   persistCredentials: true

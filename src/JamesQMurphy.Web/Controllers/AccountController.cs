@@ -53,7 +53,7 @@ namespace JamesQMurphy.Web.Controllers
             if (ModelState.IsValid)
             {
                 // If email is not verified, fail the login
-                var user = await _userManager.FindByEmailAsync(_userManager.NormalizeKey(model.Email));
+                var user = await _userManager.FindByEmailAsync(model.Email);
                 if ((user != null) && user.EmailConfirmed)
                 {
                     // This doesn't count login failures towards account lockout

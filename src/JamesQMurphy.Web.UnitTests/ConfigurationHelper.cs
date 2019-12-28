@@ -39,6 +39,7 @@ namespace JamesQMurphy.Web.UnitTests
             serviceCollection.AddSingleton<ILogger<UserManager<ApplicationUser>>>(NullLogger<UserManager<ApplicationUser>>.Instance);
             serviceCollection.AddSingleton<ILogger<RoleManager<ApplicationRole>>>(NullLogger<RoleManager<ApplicationRole>>.Instance);
             serviceCollection.AddSingleton<ILogger<SignInManager<ApplicationUser>>>(NullLogger<SignInManager<ApplicationUser>>.Instance);
+            serviceCollection.AddSingleton<ILogger<DataProtectorTokenProvider<ApplicationUser>>>(NullLogger<DataProtectorTokenProvider<ApplicationUser>>.Instance);
 
             serviceCollection.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
