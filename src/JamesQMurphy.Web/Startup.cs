@@ -80,6 +80,14 @@ namespace JamesQMurphy.Web
                 .AddPasswordValidator<ApplicationPasswordValidator<ApplicationUser>>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
+            services.AddAuthentication()
+                .AddTwitter(options =>
+                {
+                    options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
+                    options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    options.CallbackPath = "/account/login-twitter";
+                });
+
             services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddHealthChecks();
             services.ConfigureApplicationCookie(options =>
