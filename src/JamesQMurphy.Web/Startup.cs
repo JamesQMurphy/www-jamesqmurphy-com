@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 
@@ -71,6 +72,7 @@ namespace JamesQMurphy.Web
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
             });
+            services.AddSingleton<ApplicationUserConfirmation>();
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
                 .AddUserStore<ApplicationUserStore>()
@@ -85,12 +87,9 @@ namespace JamesQMurphy.Web
                 options.LoginPath = "/account/login";
             });
 
-
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            // The "new" way to do AddMvc()
+            services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+            services.AddRazorPages();
 
             services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
             services.AddArticleStoreServices(Configuration);
@@ -115,7 +114,7 @@ namespace JamesQMurphy.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -123,20 +122,15 @@ namespace JamesQMurphy.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/home/error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
-            app.UseHealthChecks(Configuration["WarmUrl"]);
-            app.UseAuthentication();
-            app.UseHttpsRedirection();
             if (Configuration["UseStaticFiles"].ToLowerInvariant() == "true")
             {
                 app.UseStaticFiles();
             }
-            app.UseCookiePolicy();
-
             // If using a LocalFolder article store, map ImageBasePath to the article store path so that the images load
             if ((Configuration["ArticleStore:Service"] == "LocalFolder") && (Configuration["ImageBasePath"] != "/"))
             {
@@ -147,26 +141,34 @@ namespace JamesQMurphy.Web
                 });
             }
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseHttpsRedirection();
+            app.UseCookiePolicy();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapHealthChecks(Configuration["WarmUrl"]);
+
+                endpoints.MapControllerRoute(
                     name: "blogIndex",
-                    template: "blog/{year?}/{month?}",
+                    pattern: "blog/{year?}/{month?}",
                     defaults: new { controller = "blog", action = "index" });
 
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "blogDetails",
-                    template: "blog/{year}/{month}/{slug}",
+                    pattern: "blog/{year}/{month}/{slug}",
                     defaults: new { controller = "blog", action = "details" });
 
-                routes.MapRoute(
-                    name: "blogDetails",
-                    template: "blog/{year}/{month}/{slug}/comments",
-                    defaults: new { controller = "Blog", action = "Comments" });
+                endpoints.MapControllerRoute(
+                    name: "blogDetailsComments",
+                    pattern: "blog/{year}/{month}/{slug}/comments",
+                    defaults: new { controller = "blog", action = "comments" });
 
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=home}/{action=index}/{id?}");
+                    pattern: "{controller=home}/{action=index}/{id?}");
             });
         }
     }
