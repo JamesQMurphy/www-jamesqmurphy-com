@@ -1,0 +1,28 @@
+﻿    <div class="container p-0">
+        <h1>Claims</h1>
+        <p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th>Issuer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(System.Security.Claims.Claim claim in User.Claims)
+                    {
+                        <tr>
+                            <td>@claim.Type</td>
+                            <td>@claim.Value</td>
+                            <td>@claim.Issuer</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </p>
+        <vc:log-out-button return-url="" />
+    </div>
+
+
+

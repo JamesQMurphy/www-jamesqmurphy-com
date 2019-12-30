@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
+    [Authorize]
     public class accountController : JqmControllerBase
     {
         private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
@@ -325,6 +326,12 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult resetpasswordconfirmation()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Password Changed";
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult myclaims()
+        {
             return View();
         }
 
