@@ -327,5 +327,53 @@ namespace JamesQMurphy.Web.Controllers
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Password Changed";
             return View();
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult externallogin(string provider, string returnUrl = null)
+        {
+            // Request a redirect to the external login provider.
+            var redirectUrl = Url.Action(nameof(externallogincallback), "account", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> externallogincallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                _logger.LogInformation($"Error from external provider: {remoteError}");
+                return RedirectToAction(nameof(login));
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction(nameof(login));
+            }
+
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
+                return RedirectToLocal(returnUrl);
+            }
+            //if (result.IsLockedOut)
+            //{
+            //    return RedirectToAction(nameof(Lockout));
+            //}
+            //else
+            //{
+            //    // If the user does not have an account, then ask the user to create an account.
+            //    ViewData["ReturnUrl"] = returnUrl;
+            //    ViewData["LoginProvider"] = info.LoginProvider;
+            //    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            //    return View("ExternalLogin", new ExternalLoginViewModel { Email = email });
+            //}
+            return RedirectToLocal(returnUrl);
+
+        }
     }
 }
