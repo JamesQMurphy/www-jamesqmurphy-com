@@ -344,7 +344,7 @@ namespace JamesQMurphy.Web.Controllers
         {
             if (remoteError != null)
             {
-                _logger.LogInformation($"Error from external provider: {remoteError}");
+                _logger.LogError($"Error from external provider: {remoteError}");
                 return RedirectToAction(nameof(login));
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
