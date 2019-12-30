@@ -367,18 +367,15 @@ namespace JamesQMurphy.Web.Controllers
                 _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
                 return RedirectToLocal(returnUrl);
             }
-            //if (result.IsLockedOut)
-            //{
-            //    return RedirectToAction(nameof(Lockout));
-            //}
-            //else
-            //{
-            //    // If the user does not have an account, then ask the user to create an account.
-            //    ViewData["ReturnUrl"] = returnUrl;
-            //    ViewData["LoginProvider"] = info.LoginProvider;
-            //    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            //    return View("ExternalLogin", new ExternalLoginViewModel { Email = email });
-            //}
+            if (result.IsLockedOut)
+            {
+                // TODO: handle locked out
+                return RedirectToAction(nameof(login));
+            }
+            else
+            {
+                // TODO: create user
+            }
             return RedirectToLocal(returnUrl);
 
         }
