@@ -89,5 +89,8 @@ namespace JamesQMurphy.Web.UnitTests
         {
             Assert.IsTrue((new ApplicationUser()).ApplicationUserRecords.First().IsDirty);
         }
+
+        // TODO: PasswordHash saved in both email and username fields
+        // TODO: New constructor on user records with dict<string,string> and dict<string,bool> to solve dirty problem
     }
 }
