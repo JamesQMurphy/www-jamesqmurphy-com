@@ -24,6 +24,7 @@ namespace JamesQMurphy.Auth
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId)
             });
             user.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
+            user.EmailConfirmed = true;
             foreach (var rec in user.ApplicationUserRecords)
             {
                 _ = SaveAsync(rec);
@@ -35,7 +36,9 @@ namespace JamesQMurphy.Auth
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", "ADMIN@LOCAL", adminUserId),
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "TheAdministrator", "THEADMINISTRATOR", adminUserId)
             });
-            adminUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
+            adminUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(adminUser, "abcde");
+            adminUser.EmailConfirmed = true;
+            adminUser.IsAdministrator = true;
             foreach (var rec in adminUser.ApplicationUserRecords)
             {
                 _ = SaveAsync(rec);

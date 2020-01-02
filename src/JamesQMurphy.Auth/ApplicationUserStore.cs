@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -90,15 +91,18 @@ namespace JamesQMurphy.Auth
         }
         public async Task<ApplicationUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new ApplicationUser(await _storage.FindByIdAsync(userId, cancellationToken));
+            var records = await _storage.FindByIdAsync(userId, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
         }
         public async Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new ApplicationUser(await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken));
+            var records = await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
         }
         public async Task<ApplicationUser> FindByUserName(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new ApplicationUser(await _storage.FindByUserNameAsync(userName, cancellationToken));
+            var records = await _storage.FindByUserNameAsync(userName, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
         }
 
         #endregion
