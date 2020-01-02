@@ -163,7 +163,7 @@ namespace JamesQMurphy.Auth.Aws
 
             return new ApplicationUser()
             {
-                UserId = attributeMap[USER_ID].S,
+                //UserId = attributeMap[USER_ID].S,
                 NormalizedEmail = attributeMap[NORMALIZED_EMAIL].S,
                 Email = attributeMap[EMAIL].S,
                 NormalizedUserName = attributeMap[NORMALIZED_USERNAME].S,
@@ -189,6 +189,36 @@ namespace JamesQMurphy.Auth.Aws
                 [LAST_UPDATED] = user.LastUpdated.ToString("O"),
                 [IS_ADMINISTRATOR] = new DynamoDBBool(user.IsAdministrator)
             };
+        }
+
+        public Task<ApplicationUserRecord> SaveAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApplicationUserRecord> DeleteAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<ApplicationUserRecord>> IApplicationUserStorage.FindByIdAsync(string userId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<ApplicationUserRecord>> IApplicationUserStorage.FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<ApplicationUserRecord>> IApplicationUserStorage.FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ApplicationUserRecord>> GetAllUserRecordsAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

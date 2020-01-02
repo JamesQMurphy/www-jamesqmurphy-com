@@ -66,27 +66,39 @@ namespace JamesQMurphy.Auth
 
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.CreateAsync(user, cancellationToken);
+            foreach(var rec in user.ApplicationUserRecords)
+            {
+                _ = await _storage.SaveAsync(rec, cancellationToken);
+            }
+            return IdentityResult.Success;
         }
         public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.UpdateAsync(user, cancellationToken);
+            foreach (var rec in user.ApplicationUserRecords)
+            {
+                _ = await _storage.SaveAsync(rec, cancellationToken);
+            }
+            return IdentityResult.Success;
         }
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.DeleteAsync(user, cancellationToken);
+            foreach (var rec in user.ApplicationUserRecords)
+            {
+                _ = await _storage.DeleteAsync(rec, cancellationToken);
+            }
+            return IdentityResult.Success;
         }
         public async Task<ApplicationUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByIdAsync(userId, cancellationToken);
+            return new ApplicationUser(await _storage.FindByIdAsync(userId, cancellationToken));
         }
         public async Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken);
+            return new ApplicationUser(await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken));
         }
         public async Task<ApplicationUser> FindByUserName(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByUserNameAsync(userName, cancellationToken);
+            return new ApplicationUser(await _storage.FindByUserNameAsync(userName, cancellationToken));
         }
 
         #endregion

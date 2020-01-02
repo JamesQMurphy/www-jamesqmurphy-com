@@ -10,91 +10,107 @@ namespace JamesQMurphy.Auth
 {
     public class InMemoryApplicationUserStorage : IApplicationUserStorage
     {
-        private readonly Dictionary<string, ApplicationUser> _dictUsers = new Dictionary<string, ApplicationUser>();
+        //private readonly Dictionary<string, ApplicationUser> _dictUsers = new Dictionary<string, ApplicationUser>();
+        private readonly Dictionary<(string,string), ApplicationUserRecord> _dictByProviderAndNormalizedKey = new Dictionary<(string,string), ApplicationUserRecord>();
+        private readonly Dictionary<string, Dictionary<string, ApplicationUserRecord>> _dictByUserIdAndProvider = new Dictionary<string, Dictionary<string, ApplicationUserRecord>>();
+
 
         public InMemoryApplicationUserStorage()
         {
-            var user = new ApplicationUser()
-            {
-                UserId = "+++User+++",
-                Email = "user@local",
-                EmailConfirmed = true,
-                NormalizedEmail = "USER@LOCAL",
-                NormalizedUserName = "REGISTEREDUSER",
-                UserName = "RegisteredUser"
-            };
+            var userId = "+++User+++";
+            var user = new ApplicationUser(new[]{
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", "USER@LOCAL", userId),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId)
+            });
             user.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
-            _ = CreateAsync(user, CancellationToken.None).GetAwaiter().GetResult();
-
-            var adminUser = new ApplicationUser()
+            foreach (var rec in user.ApplicationUserRecords)
             {
-                UserId = "x+xAdminx+x",
-                Email = "admin@local",
-                EmailConfirmed = true,
-                NormalizedEmail = "ADMIN@LOCAL",
-                NormalizedUserName = "ADMINISTRATOR",
-                UserName = "Administrator",
-                IsAdministrator = true
-            };
+                _ = SaveAsync(rec);
+            }
+
+            var adminUserId = "x+xAdminx+x";
+            var adminUser = new ApplicationUser(new[]{
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, adminUserId, adminUserId, adminUserId),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", "ADMIN@LOCAL", adminUserId),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "TheAdministrator", "THEADMINISTRATOR", adminUserId)
+            });
             adminUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
-            _ = CreateAsync(adminUser, CancellationToken.None).GetAwaiter().GetResult();
-
-        }
-
-        public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (_dictUsers.ContainsKey(user.UserId))
+            foreach (var rec in adminUser.ApplicationUserRecords)
             {
-                return Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = "Already present" }));
+                _ = SaveAsync(rec);
             }
-            _dictUsers.Add(user.UserId, user);
-            user.LastUpdated = DateTime.UtcNow;
-            return Task.FromResult(IdentityResult.Success);
+
         }
-        public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
+
+        public Task<ApplicationUserRecord> SaveAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _dictUsers[user.UserId] = user;
-            user.LastUpdated = DateTime.UtcNow;
-            return Task.FromResult(IdentityResult.Success);
-        }
-        public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (_dictUsers.Remove(user.UserId))
+            _dictByProviderAndNormalizedKey[(applicationUserRecord.Provider, applicationUserRecord.NormalizedKey)] = applicationUserRecord;
+            if (!_dictByUserIdAndProvider.TryGetValue(applicationUserRecord.UserId, out Dictionary<string, ApplicationUserRecord> dictRec))
             {
-                return Task.FromResult(IdentityResult.Success);
+                dictRec = new Dictionary<string, ApplicationUserRecord>();
+                _dictByUserIdAndProvider.Add(applicationUserRecord.UserId, dictRec);
+            }
+            dictRec[applicationUserRecord.Provider] = applicationUserRecord;
+            return Task.FromResult(applicationUserRecord);
+        }
+
+        public Task<ApplicationUserRecord> DeleteAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (_dictByProviderAndNormalizedKey.ContainsKey((applicationUserRecord.Provider, applicationUserRecord.NormalizedKey)))
+            {
+                _dictByProviderAndNormalizedKey.Remove((applicationUserRecord.Provider, applicationUserRecord.NormalizedKey));
+            }
+            if (_dictByUserIdAndProvider.TryGetValue(applicationUserRecord.UserId, out Dictionary<string, ApplicationUserRecord> dictRec))
+            {
+                if (dictRec.ContainsKey(applicationUserRecord.Provider))
+                {
+                    dictRec.Remove(applicationUserRecord.Provider);
+                }
+            }
+            return Task.FromResult(applicationUserRecord);
+        }
+
+
+        public Task<IEnumerable<ApplicationUserRecord>> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (_dictByUserIdAndProvider.TryGetValue(userId, out Dictionary<string, ApplicationUserRecord> dictRec))
+            {
+                return Task.FromResult(dictRec.Values.AsEnumerable());
             }
             else
             {
-                return Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = "User not found" }));
+                return Task.FromResult(Enumerable.Empty<ApplicationUserRecord>());
             }
         }
-        public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+
+        public Task<IEnumerable<ApplicationUserRecord>> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_dictUsers.ContainsKey(userId))
+            if (_dictByProviderAndNormalizedKey.ContainsKey((ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress)))
             {
-                return Task.FromResult(_dictUsers[userId]);
+                return FindByIdAsync(_dictByProviderAndNormalizedKey[(ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress)].UserId, cancellationToken);
             }
             else
             {
-                return Task.FromResult((ApplicationUser)null);
+                return Task.FromResult(Enumerable.Empty<ApplicationUserRecord>());
             }
         }
 
-        public Task<ApplicationUser> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<ApplicationUserRecord>> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var user = _dictUsers.Values.Where(u => u.NormalizedEmail == normalizedEmailAddress).FirstOrDefault();
-            return Task.FromResult(user);
+            if (_dictByProviderAndNormalizedKey.ContainsKey((ApplicationUserRecord.RECORD_TYPE_USERNAME, normalizedUserName)))
+            {
+                return FindByIdAsync(_dictByProviderAndNormalizedKey[(ApplicationUserRecord.RECORD_TYPE_USERNAME, normalizedUserName)].UserId, cancellationToken);
+            }
+            else
+            {
+                return Task.FromResult(Enumerable.Empty<ApplicationUserRecord>());
+            }
         }
 
-        public Task<ApplicationUser> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<ApplicationUserRecord>> GetAllUserRecordsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var user = _dictUsers.Values.Where(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
-            return Task.FromResult(user);
-        }
-
-        public Task<IEnumerable<ApplicationUser>> GetAllUsersAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return Task.FromResult(_dictUsers.Values.AsEnumerable());
+            return Task.FromResult(_dictByProviderAndNormalizedKey.Values.AsEnumerable());
         }
     }
 }

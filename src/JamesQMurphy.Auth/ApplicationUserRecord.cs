@@ -6,6 +6,10 @@ namespace JamesQMurphy.Auth
 {
     public class ApplicationUserRecord
     {
+        public const string RECORD_TYPE_ID = "ID";
+        public const string RECORD_TYPE_EMAIL = "ByEmail";
+        public const string RECORD_TYPE_USERNAME = "ByUsername";
+
         public string Provider { get; set; }
         public string Key { get; set; }
         public string NormalizedKey { get; set; }

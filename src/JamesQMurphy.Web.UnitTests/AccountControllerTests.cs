@@ -502,8 +502,8 @@ namespace JamesQMurphy.Web.UnitTests
                 EmailConfirmed = emailConfirmed
             };
             user.PasswordHash = serviceProvider.GetService<IPasswordHasher<ApplicationUser>>().HashPassword(user, password);
-            var storage = serviceProvider.GetService<IApplicationUserStorage>();
-            storage.CreateAsync(user).GetAwaiter().GetResult();
+            var store = serviceProvider.GetService<IUserStore<ApplicationUser>>();
+            store.CreateAsync(user, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
             return user;
         }
 
