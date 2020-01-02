@@ -17,11 +17,12 @@ namespace JamesQMurphy.Auth
 
         public InMemoryApplicationUserStorage()
         {
+            var lastUpdated = DateTime.UtcNow;
             var userId = "+++User+++";
             var user = new ApplicationUser(new[]{
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", "USER@LOCAL", userId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", "USER@LOCAL", userId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId, lastUpdated)
             });
             user.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
             user.EmailConfirmed = true;
@@ -32,9 +33,9 @@ namespace JamesQMurphy.Auth
 
             var adminUserId = "x+xAdminx+x";
             var adminUser = new ApplicationUser(new[]{
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, adminUserId, adminUserId, adminUserId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", "ADMIN@LOCAL", adminUserId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "TheAdministrator", "THEADMINISTRATOR", adminUserId)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, adminUserId, adminUserId, adminUserId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", "ADMIN@LOCAL", adminUserId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "TheAdministrator", "THEADMINISTRATOR", adminUserId, lastUpdated)
             });
             adminUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(adminUser, "abcde");
             adminUser.EmailConfirmed = true;

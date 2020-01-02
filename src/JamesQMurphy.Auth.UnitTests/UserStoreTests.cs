@@ -1,5 +1,6 @@
 ﻿using JamesQMurphy.Auth;
 using NUnit.Framework;
+using System;
 using System.Linq;
 using System.Threading;
 
@@ -49,10 +50,11 @@ namespace JamesQMurphy.Web.UnitTests
         public void FindById_FromRecords()
         {
             var userId = "someRandomString";
+            var lastUpdated = DateTime.UtcNow;
             var records = new[]{
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", "USER@LOCAL", userId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", "USER@LOCAL", userId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId, lastUpdated)
             };
             foreach (var rec in records)
             {
@@ -68,10 +70,11 @@ namespace JamesQMurphy.Web.UnitTests
         {
             var userId = "someRandomString";
             var email = "someemail@local";
+            var lastUpdated = DateTime.UtcNow;
             var records = new[]{
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, email, email, userId),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, email, email, userId, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId, lastUpdated)
             };
             foreach (var rec in records)
             {

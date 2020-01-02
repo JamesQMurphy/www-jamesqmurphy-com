@@ -11,7 +11,7 @@ namespace JamesQMurphy.Auth
         {
             // Create a single ApplicationUserRecord to represent the ID
             var miniGuid = NewMiniGuid();
-            records.Add(ApplicationUserRecord.RECORD_TYPE_ID, new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid, miniGuid));
+            records.Add(ApplicationUserRecord.RECORD_TYPE_ID, new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid));
         }
 
         public ApplicationUser(IEnumerable<ApplicationUserRecord> applicationUserRecords)
@@ -29,12 +29,7 @@ namespace JamesQMurphy.Auth
         public string Email
         {
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.Key ?? "";
-            set
-            {
-                var rec = GetOrCreateUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, value);
-                rec.Key = value;
-                rec.NormalizedKey = value;
-            }
+            set => CreateUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, value);
         }
 
         public string NormalizedEmail
@@ -42,7 +37,7 @@ namespace JamesQMurphy.Auth
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.NormalizedKey ?? "";
             set
             {
-                var rec = GetOrCreateUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, value);
+                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
                 rec.NormalizedKey = value;
             }
         }
@@ -50,12 +45,7 @@ namespace JamesQMurphy.Auth
         public string UserName
         {
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_USERNAME)?.Key ?? "";
-            set
-            {
-                var rec = GetOrCreateUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, value);
-                rec.Key = value;
-                rec.NormalizedKey = value;
-            }
+            set => CreateUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_USERNAME, value);
         }
 
         public string NormalizedUserName
@@ -63,7 +53,7 @@ namespace JamesQMurphy.Auth
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_USERNAME)?.NormalizedKey ?? "";
             set
             {
-                var rec = GetOrCreateUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, value);
+                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_USERNAME, nameof(UserName));
                 rec.NormalizedKey = value;
             }
         }
@@ -84,17 +74,17 @@ namespace JamesQMurphy.Auth
 
         public string PasswordHash
         {
-            get
-            {
-                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
-                return rec.StringAttributes.ContainsKey("PasswordHash") ? rec.StringAttributes["PasswordHash"] : "";
-            }
-            set
-            {
-                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
-                rec.StringAttributes["PasswordHash"] = value;
-            }
+            get => GetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, "PasswordHash");
+            set => SetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, "PasswordHash", nameof(Email), value);
         }
+
+        public bool IsAdministrator
+        {
+            get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, "IsAdministrator");
+            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, "IsAdministrator", nameof(UserId), value);
+        }
+
+        public DateTime LastUpdated { get; set; } = DateTime.MinValue;
 
 
         private ApplicationUserRecord GetUserRecordOrNull(string recordType)
@@ -105,14 +95,17 @@ namespace JamesQMurphy.Auth
                 return null;
         }
 
-        private ApplicationUserRecord GetOrCreateUserRecord(string recordType, string defaultValue)
+        private void CreateUserRecordOrThrow(string recordType, string value)
         {
-            if (!records.TryGetValue(recordType, out ApplicationUserRecord rec))
+            if (records.ContainsKey(recordType))
             {
-                rec = new ApplicationUserRecord(recordType, defaultValue, defaultValue, this.UserId);
+                throw new Exception($"Cannot create recordType {recordType} more than once");
+            }
+            else
+            {
+                var rec = new ApplicationUserRecord(recordType, value, this.UserId);
                 records.Add(recordType, rec);
             }
-            return rec;
         }
 
         private ApplicationUserRecord GetUserRecordOrThrow(string recordType, string requiredProperty)
@@ -123,13 +116,37 @@ namespace JamesQMurphy.Auth
                 throw new KeyNotFoundException($"No record type {recordType}; must set property {requiredProperty} first");
         }
 
-        public bool IsAdministrator
+        public string GetStringAttribute(string recordType, string attributeName)
         {
-            get => records[ApplicationUserRecord.RECORD_TYPE_ID].BoolAttributes.ContainsKey("IsAdministrator") ? records[ApplicationUserRecord.RECORD_TYPE_ID].BoolAttributes["IsAdministrator"] : false;
-            set => records[ApplicationUserRecord.RECORD_TYPE_ID].BoolAttributes["IsAdministrator"] = value;
+            if (records.ContainsKey(recordType))
+            {
+                if (records[recordType].StringAttributes.ContainsKey(attributeName))
+                {
+                    return records[recordType].StringAttributes[attributeName];
+                }
+            }
+            return string.Empty;
+        }
+        public void SetStringAttribute(string recordType, string attributeName, string requiredProperty, string value)
+        {
+            GetUserRecordOrThrow(recordType, requiredProperty).StringAttributes[attributeName] = value;
         }
 
-        public DateTime LastUpdated { get; set; } = DateTime.MinValue;
+        public bool GetBoolAttribute(string recordType, string attributeName)
+        {
+            if (records.ContainsKey(recordType))
+            {
+                if (records[recordType].BoolAttributes.ContainsKey(attributeName))
+                {
+                    return records[recordType].BoolAttributes[attributeName];
+                }
+            }
+            return default;
+        }
+        public void SetBoolAttribute(string recordType, string attributeName, string requiredProperty, bool value)
+        {
+            GetUserRecordOrThrow(recordType, requiredProperty).BoolAttributes[attributeName] = value;
+        }
 
         private static string NewMiniGuid()
         {
