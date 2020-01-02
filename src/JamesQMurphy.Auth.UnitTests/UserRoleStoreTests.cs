@@ -15,8 +15,8 @@ namespace JamesQMurphy.Web.UnitTests
         public void Setup()
         {
             _inMemoryApplicationUserStorage = new InMemoryApplicationUserStorage();
-            var users = _inMemoryApplicationUserStorage.GetAllUsersAsync().GetAwaiter().GetResult().ToList();
-            foreach (var user in users)
+            var userRecords = _inMemoryApplicationUserStorage.GetAllUserRecordsAsync().GetAwaiter().GetResult().ToList();
+            foreach (var user in userRecords)
             {
                 _inMemoryApplicationUserStorage.DeleteAsync(user);
             }
