@@ -88,9 +88,6 @@ namespace JamesQMurphy.Auth
             set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR, nameof(UserId), value);
         }
 
-        public DateTime LastUpdated { get; set; } = DateTime.MinValue;
-
-
         private ApplicationUserRecord GetUserRecordOrNull(string recordType)
         {
             if (records.ContainsKey(recordType))
