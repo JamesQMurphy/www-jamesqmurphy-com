@@ -90,7 +90,33 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.IsTrue((new ApplicationUser()).ApplicationUserRecords.First().IsDirty);
         }
 
+        [Test]
+        public void LoadedObjectNotDirty()
+        {
+            var userId = "someUserId";
+            var lastUpdated = DateTime.UtcNow;
+            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated);
+            idRecord.BoolAttributes["IsAdministrator"] = true;
+            var user = new ApplicationUser(new[] { idRecord });
+
+            Assert.IsTrue(user.IsAdministrator);
+            Assert.IsFalse(idRecord.IsDirty);
+        }
+
+        [Test]
+        public void ModifiedObjectDirty()
+        {
+            var userId = "someUserId";
+            var lastUpdated = DateTime.UtcNow;
+            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated);
+            var user = new ApplicationUser(new[] { idRecord });
+            user.IsAdministrator = true;
+
+            Assert.IsTrue(user.IsAdministrator);
+            Assert.IsTrue(idRecord.IsDirty);
+
+        }
+
         // TODO: PasswordHash saved in both email and username fields
-        // TODO: New constructor on user records with dict<string,string> and dict<string,bool> to solve dirty problem
     }
 }
