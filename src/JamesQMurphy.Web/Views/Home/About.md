@@ -36,12 +36,14 @@ The website is hosted on AWS, and takes advantage of several AWS services:
 
 ![Diagram of JamesQMurphy.com website using AWS Services like API Gateway, Lambda Functions, S3 Storage, CloudWatch Logs, SQS, SES, and DynamoDb](JamesQMurphy-AWS-Diagram.png){.mx-auto .d-block}
 
-At its center, the website is ASP.NET Core 2.2 MVC application, hosted inside an
+At its center, the website is an ASP.NET Core 3.1[^netcore31] MVC application, hosted inside an
 [AWS Lambda Function](https://aws.amazon.com/lambda/) and
 exposed to the outside world via [AWS API Gateway](https://aws.amazon.com/api-gateway/).  Requests for
 static content, such as images, style sheets, and JavaScript files, are forwarded to [AWS S3](https://aws.amazon.com/s3/).
 The site uses [AWS DynamoDB](https://aws.amazon.com/dynamodb/) for data storage.  Sending email is
 accomplished using [AWS SES](https://aws.amazon.com/ses/) protected behind an [AWS SQS Queue](https://aws.amazon.com/sqs/).
+
+[^netcore31]: The site is ASP.NET Core 3.1 as of December 27, 2019.  The diagram, which is on my *other* computer, is now slightly out-of-date since it still says ASP.NET Core 2.1.  I'll update it when I get a chance.
 
 # About Me
 

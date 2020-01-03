@@ -497,9 +497,9 @@ namespace JamesQMurphy.Web.UnitTests
             var user = new ApplicationUser()
             {
                 Email = emailAddress,
-                NormalizedEmail = normalizer.Normalize(emailAddress),
+                NormalizedEmail = normalizer.NormalizeEmail(emailAddress),
                 UserName = userName,
-                NormalizedUserName = normalizer.Normalize(userName),
+                NormalizedUserName = normalizer.NormalizeName(userName),
                 EmailConfirmed = emailConfirmed
             };
             user.PasswordHash = serviceProvider.GetService<IPasswordHasher<ApplicationUser>>().HashPassword(user, password);
