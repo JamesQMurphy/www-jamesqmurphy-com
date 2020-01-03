@@ -53,8 +53,8 @@ namespace JamesQMurphy.Web.UnitTests
             var lastUpdated = DateTime.UtcNow;
             var records = new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", "USER@LOCAL", userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId, lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local",  userId, "USER@LOCAL",lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", userId, "ORDINARYUSER", lastUpdated)
             };
             foreach (var rec in records)
             {
@@ -73,8 +73,8 @@ namespace JamesQMurphy.Web.UnitTests
             var lastUpdated = DateTime.UtcNow;
             var records = new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, email, email, userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId, lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, email, userId, email, lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", userId, "ORDINARYUSER", lastUpdated)
             };
             foreach (var rec in records)
             {

@@ -21,8 +21,8 @@ namespace JamesQMurphy.Auth
             var userId = "+++User+++";
             var user = new ApplicationUser(new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", "USER@LOCAL", userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", "ORDINARYUSER", userId, lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", userId, "USER@LOCAL", lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", userId, "ORDINARYUSER", lastUpdated)
             });
             user.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
             user.EmailConfirmed = true;
@@ -34,8 +34,8 @@ namespace JamesQMurphy.Auth
             var adminUserId = "x+xAdminx+x";
             var adminUser = new ApplicationUser(new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, adminUserId, adminUserId, adminUserId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", "ADMIN@LOCAL", adminUserId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "TheAdministrator", "THEADMINISTRATOR", adminUserId, lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", adminUserId, "ADMIN@LOCAL", lastUpdated),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "TheAdministrator", adminUserId, "THEADMINISTRATOR", lastUpdated)
             });
             adminUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(adminUser, "abcde");
             adminUser.EmailConfirmed = true;

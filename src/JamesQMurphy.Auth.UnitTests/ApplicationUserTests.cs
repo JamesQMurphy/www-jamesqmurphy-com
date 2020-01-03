@@ -95,8 +95,10 @@ namespace JamesQMurphy.Web.UnitTests
         {
             var userId = "someUserId";
             var lastUpdated = DateTime.UtcNow;
-            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated);
-            idRecord.BoolAttributes["IsAdministrator"] = true;
+            var stringAttributes = new Dictionary<string, string>();
+            var boolAttributes = new Dictionary<string, bool>();
+            boolAttributes[ApplicationUser.FIELD_ISADMINISTRATOR] = true;
+            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated, stringAttributes, boolAttributes);
             var user = new ApplicationUser(new[] { idRecord });
 
             Assert.IsTrue(user.IsAdministrator);
@@ -117,6 +119,5 @@ namespace JamesQMurphy.Web.UnitTests
 
         }
 
-        // TODO: PasswordHash saved in both email and username fields
     }
 }

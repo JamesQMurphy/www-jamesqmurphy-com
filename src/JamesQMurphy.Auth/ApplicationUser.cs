@@ -5,6 +5,10 @@ namespace JamesQMurphy.Auth
 {
     public class ApplicationUser
     {
+        public const string FIELD_PASSWORDHASH = "passwordHash";
+        public const string FIELD_EMAILCONFIRMED = "emailConfirmed";
+        public const string FIELD_ISADMINISTRATOR = "isAdministrator";
+
         private readonly Dictionary<string, ApplicationUserRecord> records = new Dictionary<string, ApplicationUserRecord>();
 
         public ApplicationUser()
@@ -63,25 +67,25 @@ namespace JamesQMurphy.Auth
             get
             {
                 var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
-                return rec.BoolAttributes.ContainsKey("EmailConfirmed") ? rec.BoolAttributes["EmailConfirmed"] : false;
+                return rec.BoolAttributes.ContainsKey(FIELD_EMAILCONFIRMED) ? rec.BoolAttributes[FIELD_EMAILCONFIRMED] : false;
             }
             set
             {
                 var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
-                rec.BoolAttributes["EmailConfirmed"] = value;
+                rec.SetBoolAttribute(FIELD_EMAILCONFIRMED, value);
             }
         }
 
         public string PasswordHash
         {
-            get => GetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, "PasswordHash");
-            set => SetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, "PasswordHash", nameof(Email), value);
+            get => GetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_PASSWORDHASH);
+            set => SetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_PASSWORDHASH, nameof(Email), value);
         }
 
         public bool IsAdministrator
         {
-            get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, "IsAdministrator");
-            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, "IsAdministrator", nameof(UserId), value);
+            get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR);
+            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR, nameof(UserId), value);
         }
 
         public DateTime LastUpdated { get; set; } = DateTime.MinValue;
@@ -129,7 +133,7 @@ namespace JamesQMurphy.Auth
         }
         public void SetStringAttribute(string recordType, string attributeName, string requiredProperty, string value)
         {
-            GetUserRecordOrThrow(recordType, requiredProperty).StringAttributes[attributeName] = value;
+            GetUserRecordOrThrow(recordType, requiredProperty).SetStringAttribute(attributeName, value);
         }
 
         public bool GetBoolAttribute(string recordType, string attributeName)
@@ -145,7 +149,7 @@ namespace JamesQMurphy.Auth
         }
         public void SetBoolAttribute(string recordType, string attributeName, string requiredProperty, bool value)
         {
-            GetUserRecordOrThrow(recordType, requiredProperty).BoolAttributes[attributeName] = value;
+            GetUserRecordOrThrow(recordType, requiredProperty).SetBoolAttribute(attributeName, value);
         }
 
         private static string NewMiniGuid()

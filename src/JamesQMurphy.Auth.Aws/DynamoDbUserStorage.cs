@@ -276,9 +276,11 @@ namespace JamesQMurphy.Auth.Aws
             var record = new ApplicationUserRecord(
                     provider,
                     key,
-                    normalizedKey,
                     userId,
-                    lastUpdated
+                    normalizedKey,
+                    lastUpdated,
+                    stringAttributes,
+                    boolAttributes
                 );
 
             return record;
