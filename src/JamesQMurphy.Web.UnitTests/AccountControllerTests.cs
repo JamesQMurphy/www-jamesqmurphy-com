@@ -141,7 +141,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             // Assert that user was created
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             Assert.AreEqual(username, user.UserName);
@@ -180,7 +180,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             // Assert that password was updated
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
@@ -218,7 +218,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             // Assert that password was updated
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
@@ -257,7 +257,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             // Assert that password was NOT updated
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
@@ -295,7 +295,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             // Assert that password was NOT updated
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
@@ -329,7 +329,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             // Assert that password was NOT updated
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
@@ -363,7 +363,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             // Assert that password was NOT updated
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
@@ -402,7 +402,7 @@ namespace JamesQMurphy.Web.UnitTests
             AddExistingUser(_serviceProvider, email, password, username, true);
 
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
 
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
@@ -443,7 +443,7 @@ namespace JamesQMurphy.Web.UnitTests
             AddExistingUser(_serviceProvider, email, password, username, true);
 
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().Normalize(username);
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
             var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
 
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
