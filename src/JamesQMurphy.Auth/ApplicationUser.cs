@@ -15,7 +15,10 @@ namespace JamesQMurphy.Auth
         {
             // Create a single ApplicationUserRecord to represent the ID
             var miniGuid = NewMiniGuid();
-            records.Add(ApplicationUserRecord.RECORD_TYPE_ID, new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid));
+            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid);
+            idRecord.NormalizedKey = miniGuid;
+            records.Add(ApplicationUserRecord.RECORD_TYPE_ID, idRecord);
+
         }
 
         public ApplicationUser(IEnumerable<ApplicationUserRecord> applicationUserRecords)
