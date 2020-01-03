@@ -28,6 +28,19 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
+        public void NormalizedKeyForIdNotNull()
+        {
+            var user = new ApplicationUser();
+            Assert.AreEqual(
+                user.UserId,
+                user.ApplicationUserRecords
+                    .Where(rec => rec.Provider == ApplicationUserRecord.RECORD_TYPE_ID)
+                    .First()
+                    .NormalizedKey
+                    );
+        }
+
+        [Test]
         public void CanSetEmailAddress()
         {
             var emailAddress = "test@local";
