@@ -21,8 +21,11 @@ namespace JamesQMurphy.Auth
             get => _normalizedKey;
             set
             {
-                _normalizedKey = value;
-                SetDirty();
+                if (_normalizedKey != value)
+                {
+                    _normalizedKey = value;
+                    SetDirty();
+                }
             }
         }
 
@@ -74,11 +77,25 @@ namespace JamesQMurphy.Auth
 
         public void SetStringAttribute(string attribute, string value)
         {
+            if (_stringDictBuilder.TryGetValue(attribute, out string currentValue))
+            {
+                if (value == currentValue)
+                {
+                    return;
+                }
+            }
             SetDirty();
             _stringDictBuilder[attribute] = value;
         }
         public void SetBoolAttribute(string attribute, bool value)
         {
+            if (_boolDictBuilder.TryGetValue(attribute, out bool currentValue))
+            {
+                if (value == currentValue)
+                {
+                    return;
+                }
+            }
             SetDirty();
             _boolDictBuilder[attribute] = value;
         }

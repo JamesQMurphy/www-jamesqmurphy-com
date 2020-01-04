@@ -178,7 +178,90 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(applicationUserRecord.NormalizedKey, cleanApplicationUserRecord.NormalizedKey);
             Assert.AreEqual(applicationUserRecord.BoolAttributes[boolAttribute], cleanApplicationUserRecord.BoolAttributes[boolAttribute]);
             Assert.AreEqual(applicationUserRecord.StringAttributes[stringAttribute], cleanApplicationUserRecord.StringAttributes[stringAttribute]);
+        }
 
+        [Test]
+        public void SettingSameValueDoesntMakeDirty()
+        {
+            var provider = "someProvider";
+            var key = "someKey";
+            var normalizedKey = "someKey normalized";
+            var userId = "someUserId";
+            var lastUpdated = DateTime.UtcNow;
+            var boolAttribute = "someFalseAttribute";
+            var stringAttribute = "someStringAttribute";
+            var stringAttributeValue = "some value for string attribute";
+            var applicationUserRecord = new ApplicationUserRecord(
+                provider,
+                key,
+                userId,
+                normalizedKey,
+                lastUpdated,
+                new Dictionary<string, string> { { stringAttribute, stringAttributeValue } },
+                new Dictionary<string, bool> { { boolAttribute, false } }
+                );
+
+            Assert.IsFalse(applicationUserRecord.IsDirty);
+
+            applicationUserRecord.NormalizedKey = normalizedKey;
+            applicationUserRecord.SetBoolAttribute(boolAttribute, false);
+            applicationUserRecord.SetStringAttribute(stringAttribute, stringAttributeValue);
+            Assert.IsFalse(applicationUserRecord.IsDirty);
+            Assert.AreEqual(lastUpdated, applicationUserRecord.LastUpdated);
+        }
+
+        [Test]
+        public void SettingDifferentValueDoesMakeDirty()
+        {
+            var provider = "someProvider";
+            var key = "someKey";
+            var normalizedKey = "someKey normalized";
+            var userId = "someUserId";
+            var lastUpdated = DateTime.UtcNow;
+            var boolAttribute = "someFalseAttribute";
+            var stringAttribute = "someStringAttribute";
+            var stringAttributeValue = "some value for string attribute";
+            var applicationUserRecord = new ApplicationUserRecord(
+                provider,
+                key,
+                userId,
+                normalizedKey,
+                lastUpdated,
+                new Dictionary<string, string> { { stringAttribute, stringAttributeValue } },
+                new Dictionary<string, bool> { { boolAttribute, false } }
+                );
+
+            Assert.IsFalse(applicationUserRecord.IsDirty);
+
+            applicationUserRecord.NormalizedKey = normalizedKey + "x";
+            Assert.IsTrue(applicationUserRecord.IsDirty);
+        }
+
+        [Test]
+        public void SettingDifferentAttributeDoesMakeDirty()
+        {
+            var provider = "someProvider";
+            var key = "someKey";
+            var normalizedKey = "someKey normalized";
+            var userId = "someUserId";
+            var lastUpdated = DateTime.UtcNow;
+            var boolAttribute = "someFalseAttribute";
+            var stringAttribute = "someStringAttribute";
+            var stringAttributeValue = "some value for string attribute";
+            var applicationUserRecord = new ApplicationUserRecord(
+                provider,
+                key,
+                userId,
+                normalizedKey,
+                lastUpdated,
+                new Dictionary<string, string> { { stringAttribute, stringAttributeValue } },
+                new Dictionary<string, bool> { { boolAttribute, false } }
+                );
+
+            Assert.IsFalse(applicationUserRecord.IsDirty);
+
+            applicationUserRecord.SetStringAttribute(stringAttribute, stringAttributeValue + "x");
+            Assert.IsTrue(applicationUserRecord.IsDirty);
         }
 
     }
