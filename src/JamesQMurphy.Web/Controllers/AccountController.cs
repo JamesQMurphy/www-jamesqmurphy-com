@@ -395,7 +395,7 @@ namespace JamesQMurphy.Web.Controllers
                 {
                     var props = new AuthenticationProperties();
                     props.StoreTokens(info.AuthenticationTokens);
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _signInManager.SignInAsync(user, props, info.LoginProvider);
                     return RedirectToLocal("/account/myclaims");
                 }
             }
