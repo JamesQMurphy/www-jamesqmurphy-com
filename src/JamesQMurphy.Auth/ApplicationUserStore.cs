@@ -67,17 +67,15 @@ namespace JamesQMurphy.Auth
 
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            foreach(var rec in user.ApplicationUserRecords)
-            {
-                _ = await _storage.SaveAsync(rec, cancellationToken);
-            }
-            return IdentityResult.Success;
+            return await UpdateAsync(user, cancellationToken);
         }
         public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            foreach (var rec in user.ApplicationUserRecords)
+            var dirtyRecords = user.ApplicationUserRecords.Where(r => r.IsDirty).ToList();
+            foreach (var rec in dirtyRecords)
             {
-                _ = await _storage.SaveAsync(rec, cancellationToken);
+                var updatedRecord = await _storage.SaveAsync(rec, cancellationToken);
+                user.AddOrReplaceUserRecord(updatedRecord);
             }
             return IdentityResult.Success;
         }

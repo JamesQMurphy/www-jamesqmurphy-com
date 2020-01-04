@@ -10,10 +10,8 @@ namespace JamesQMurphy.Auth
 {
     public class InMemoryApplicationUserStorage : IApplicationUserStorage
     {
-        //private readonly Dictionary<string, ApplicationUser> _dictUsers = new Dictionary<string, ApplicationUser>();
         private readonly Dictionary<(string,string), ApplicationUserRecord> _dictByProviderAndNormalizedKey = new Dictionary<(string,string), ApplicationUserRecord>();
         private readonly Dictionary<string, Dictionary<string, ApplicationUserRecord>> _dictByUserIdAndProvider = new Dictionary<string, Dictionary<string, ApplicationUserRecord>>();
-
 
         public InMemoryApplicationUserStorage()
         {
@@ -55,8 +53,9 @@ namespace JamesQMurphy.Auth
                 dictRec = new Dictionary<string, ApplicationUserRecord>();
                 _dictByUserIdAndProvider.Add(applicationUserRecord.UserId, dictRec);
             }
-            dictRec[applicationUserRecord.Provider] = applicationUserRecord;
-            return Task.FromResult(applicationUserRecord);
+            var savedRecord = ApplicationUserRecord.CreateCleanRecord(applicationUserRecord, DateTime.UtcNow);
+            dictRec[applicationUserRecord.Provider] = savedRecord;
+            return Task.FromResult(savedRecord);
         }
 
         public Task<ApplicationUserRecord> DeleteAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default(CancellationToken))

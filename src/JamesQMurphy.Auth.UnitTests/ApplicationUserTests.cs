@@ -16,7 +16,7 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
-        public void CanCreate()
+        public void CanCreateAndReadFields()
         {
             var user = new ApplicationUser();
 
@@ -55,17 +55,22 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
-        public void CannotSetNormalizedEmailAddress()
+        public void CannotSetNormalizedEmailAddressUntilEmailAddressSet()
         {
             var emailAddress = "test@local";
+            var emailAddressNormalized = "NORMALIZED";
             var user = new ApplicationUser();
 
             Assert.Throws(Is.TypeOf<KeyNotFoundException>(),
                 delegate
                 {
-                   user.NormalizedEmail = emailAddress.ToUpperInvariant();
+                   user.NormalizedEmail = emailAddressNormalized;
                 }
                 );
+
+            user.Email = emailAddress;
+            user.NormalizedEmail = emailAddressNormalized;
+            Assert.AreEqual(emailAddressNormalized, user.NormalizedEmail);
         }
 
         [Test]
@@ -129,6 +134,50 @@ namespace JamesQMurphy.Web.UnitTests
 
             Assert.IsTrue(user.IsAdministrator);
             Assert.IsTrue(idRecord.IsDirty);
+        }
+
+        [Test]
+        public void CanUpdateApplicationUserRecord()
+        {
+            var oldEmail = "old@local";
+            var newEmail = "new@local";
+
+            var user = new ApplicationUser
+            {
+                Email = oldEmail
+            };
+            Assert.AreEqual(oldEmail, user.Email);
+
+            user.AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, newEmail, user.UserId));
+            Assert.AreEqual(newEmail, user.Email);
+        }
+
+        [Test]
+        public void CanCreateCleanVersionOfApplicationUserRecord()
+        {
+            var provider = "someProvider";
+            var key = "someKey";
+            var normalizedKey = "someKey normalized";
+            var userId = "someUserId";
+            var boolAttribute = "someFalseAttribute";
+            var stringAttribute = "someStringAttribute";
+            var stringAttributeValue = "some value for string attribute";
+
+            var applicationUserRecord = new ApplicationUserRecord(provider, key, userId);
+            applicationUserRecord.NormalizedKey = normalizedKey;
+            applicationUserRecord.SetBoolAttribute(boolAttribute, false);
+            applicationUserRecord.SetStringAttribute(stringAttribute, stringAttributeValue);
+            Assert.IsTrue(applicationUserRecord.IsDirty);
+
+            var lastUpdated = DateTime.UtcNow;
+            var cleanApplicationUserRecord = ApplicationUserRecord.CreateCleanRecord(applicationUserRecord, lastUpdated);
+            Assert.IsFalse(cleanApplicationUserRecord.IsDirty);
+            Assert.AreEqual(lastUpdated, cleanApplicationUserRecord.LastUpdated);
+            Assert.AreEqual(applicationUserRecord.Provider, cleanApplicationUserRecord.Provider);
+            Assert.AreEqual(applicationUserRecord.Key, cleanApplicationUserRecord.Key);
+            Assert.AreEqual(applicationUserRecord.NormalizedKey, cleanApplicationUserRecord.NormalizedKey);
+            Assert.AreEqual(applicationUserRecord.BoolAttributes[boolAttribute], cleanApplicationUserRecord.BoolAttributes[boolAttribute]);
+            Assert.AreEqual(applicationUserRecord.StringAttributes[stringAttribute], cleanApplicationUserRecord.StringAttributes[stringAttribute]);
 
         }
 

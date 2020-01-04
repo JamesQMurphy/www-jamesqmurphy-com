@@ -18,7 +18,6 @@ namespace JamesQMurphy.Auth
             var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid);
             idRecord.NormalizedKey = miniGuid;
             records.Add(ApplicationUserRecord.RECORD_TYPE_ID, idRecord);
-
         }
 
         public ApplicationUser(IEnumerable<ApplicationUserRecord> applicationUserRecords)
@@ -29,7 +28,7 @@ namespace JamesQMurphy.Auth
             }
         }
 
-        public ICollection<ApplicationUserRecord> ApplicationUserRecords => records.Values;
+        public IReadOnlyCollection<ApplicationUserRecord> ApplicationUserRecords => records.Values;
 
         public string UserId => records[ApplicationUserRecord.RECORD_TYPE_ID].Key;
 
@@ -89,6 +88,11 @@ namespace JamesQMurphy.Auth
         {
             get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR);
             set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR, nameof(UserId), value);
+        }
+
+        public void AddOrReplaceUserRecord(ApplicationUserRecord applicationUserRecord)
+        {
+            records[applicationUserRecord.Provider] = applicationUserRecord;
         }
 
         private ApplicationUserRecord GetUserRecordOrNull(string recordType)

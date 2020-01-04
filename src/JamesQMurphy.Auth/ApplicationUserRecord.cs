@@ -83,5 +83,17 @@ namespace JamesQMurphy.Auth
             _boolDictBuilder[attribute] = value;
         }
 
+        public static ApplicationUserRecord CreateCleanRecord(ApplicationUserRecord applicationUserRecord, DateTime lastUpdated)
+        {
+            return new ApplicationUserRecord(
+                applicationUserRecord.Provider,
+                applicationUserRecord.Key,
+                applicationUserRecord.UserId,
+                applicationUserRecord.NormalizedKey,
+                lastUpdated,
+                applicationUserRecord.StringAttributes,
+                applicationUserRecord.BoolAttributes
+            );
+        }
     }
 }
