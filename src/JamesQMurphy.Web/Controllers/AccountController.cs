@@ -34,6 +34,12 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [HttpGet]
+        public IActionResult accessdenied()
+        {
+            return Unauthorized();
+        }
+
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> login(string returnUrl = null)
         {

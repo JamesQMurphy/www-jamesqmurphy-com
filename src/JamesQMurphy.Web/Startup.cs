@@ -93,6 +93,7 @@ namespace JamesQMurphy.Web
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/account/login";
+                options.AccessDeniedPath = "/account/accessdenied";
             });
 
             // The "new" way to do AddMvc()
