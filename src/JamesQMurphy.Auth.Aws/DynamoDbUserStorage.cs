@@ -72,12 +72,12 @@ namespace JamesQMurphy.Auth.Aws
 
         public async Task<IEnumerable<ApplicationUserRecord>> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
         {
-            return await _findByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress, cancellationToken);
+            return await FindByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress, cancellationToken);
         }
 
         public async Task<IEnumerable<ApplicationUserRecord>> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            return await _findByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_USERNAME, normalizedUserName, cancellationToken);
+            return await FindByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_USERNAME, normalizedUserName, cancellationToken);
         }
 
         public async Task<IEnumerable<ApplicationUserRecord>> GetAllUserRecordsAsync(CancellationToken cancellationToken = default)
@@ -92,7 +92,7 @@ namespace JamesQMurphy.Auth.Aws
             return result.Items.Select(item => ToApplicationUserRecord(item));
         }
 
-        private async Task<IEnumerable<ApplicationUserRecord>> _findByProviderAndKeyAsync(string provider, string providerKey, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ApplicationUserRecord>> FindByProviderAndKeyAsync(string provider, string providerKey, CancellationToken cancellationToken)
         {
             var queryRequest = new QueryRequest
             {

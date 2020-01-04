@@ -12,6 +12,7 @@ namespace JamesQMurphy.Auth
         IUserStore<ApplicationUser>,
         IUserPasswordStore<ApplicationUser>,
         IUserEmailStore<ApplicationUser>,
+        IUserLoginStore<ApplicationUser>,
         IUserRoleStore<ApplicationUser>
     {
         private readonly IApplicationUserStorage _storage;
@@ -278,6 +279,32 @@ namespace JamesQMurphy.Auth
         }
 
         public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region IUserLoginStore<ApplicationUser> implementation
+        public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login, CancellationToken cancellationToken)
+        {
+            var newApplicationUserRecord = new ApplicationUserRecord(login.LoginProvider, login.ProviderKey, user.UserId);
+            newApplicationUserRecord.SetStringAttribute("providerDisplayName", login.ProviderDisplayName);
+            user.AddOrReplaceUserRecord(newApplicationUserRecord);
+            return Task.CompletedTask;
+        }
+
+        public async Task<ApplicationUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            var records = await _storage.FindByProviderAndKeyAsync(loginProvider, providerKey, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
+        }
+
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

@@ -380,7 +380,12 @@ namespace JamesQMurphy.Web.Controllers
             }
             else
             {
-                // TODO: create user
+                var user = new ApplicationUser();
+                var userResult = await _userManager.AddLoginAsync(user, info);
+                if (userResult.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                }
             }
             return RedirectToLocal(returnUrl);
 

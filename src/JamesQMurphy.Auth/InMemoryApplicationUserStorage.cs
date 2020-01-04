@@ -111,9 +111,21 @@ namespace JamesQMurphy.Auth
             }
         }
 
+        public Task<IEnumerable<ApplicationUserRecord>> FindByProviderAndKeyAsync(string provider, string providerKey, CancellationToken cancellationToken = default)
+        {
+            if (_dictByProviderAndNormalizedKey.ContainsKey((provider, providerKey)))
+            {
+                return FindByIdAsync(_dictByProviderAndNormalizedKey[(provider, providerKey)].UserId, cancellationToken);
+            }
+            else
+            {
+                return Task.FromResult(Enumerable.Empty<ApplicationUserRecord>());
+            }
+        }
         public Task<IEnumerable<ApplicationUserRecord>> GetAllUserRecordsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(_dictByProviderAndNormalizedKey.Values.AsEnumerable());
         }
+
     }
 }
