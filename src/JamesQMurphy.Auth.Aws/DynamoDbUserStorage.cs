@@ -40,13 +40,14 @@ namespace JamesQMurphy.Auth.Aws
         public async Task<ApplicationUserRecord> SaveAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default)
         {
             var document = FromApplicationUserRecord(applicationUserRecord);
-            var documentReturned = await _table.PutItemAsync(document, cancellationToken);
-            return ToApplicationUserRecord(documentReturned.ToAttributeMap());
+            _ = await _table.PutItemAsync(document, cancellationToken);
+            return ToApplicationUserRecord(document.ToAttributeMap());
         }
 
         public async Task<ApplicationUserRecord> DeleteAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default)
         {
-            var document = await _table.DeleteItemAsync(FromApplicationUserRecord(applicationUserRecord), cancellationToken);
+            var document = FromApplicationUserRecord(applicationUserRecord);
+            _ = await _table.DeleteItemAsync(document, cancellationToken);
             return ToApplicationUserRecord(document.ToAttributeMap());
         }
 
