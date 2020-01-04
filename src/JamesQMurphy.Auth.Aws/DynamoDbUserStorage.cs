@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +25,14 @@ namespace JamesQMurphy.Auth.Aws
         private const string KEY = "key";
 
         private readonly IAmazonDynamoDB _dynamoDbClient;
+        private readonly ILogger _logger;
         private readonly Table _table;
         private readonly Options _options;
 
-        public DynamoDbUserStorage(IAmazonDynamoDB dynamoDbClient, Options settings)
+        public DynamoDbUserStorage(IAmazonDynamoDB dynamoDbClient, ILogger<DynamoDbUserStorage> logger, Options settings)
         {
             _dynamoDbClient = dynamoDbClient;
+            _logger = logger;
             _table = Table.LoadTable(dynamoDbClient, settings.DynamoDbTableName);
             _options = settings;
         }
@@ -117,7 +120,7 @@ namespace JamesQMurphy.Auth.Aws
 
         }
 
-        private static ApplicationUserRecord ToApplicationUserRecord(Dictionary<string, AttributeValue> attributeMap)
+        private ApplicationUserRecord ToApplicationUserRecord(Dictionary<string, AttributeValue> attributeMap)
         {
             string provider = string.Empty;
             string key = string.Empty;
@@ -129,6 +132,7 @@ namespace JamesQMurphy.Auth.Aws
 
             foreach (var attr in attributeMap.Keys)
             {
+                _logger.LogDebug("Reading {0}", attr);
                 switch(attr)
                 {
                     case PROVIDER:
@@ -163,6 +167,8 @@ namespace JamesQMurphy.Auth.Aws
                         break;
                 }
             }
+
+            _logger.LogDebug("Creating ApplicationUserRecord: provider={0} key={1} userId={2} normalizedKey={3} lastUpdated={4}", provider, key, userId, normalizedKey, lastUpdated);
 
             var record = new ApplicationUserRecord(
                     provider,
