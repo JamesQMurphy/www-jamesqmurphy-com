@@ -15,14 +15,14 @@ namespace JamesQMurphy.Auth.Aws
         public class Options
         {
             public string DynamoDbTableName { get; set; }
-            public string ProviderIndex { get; set; }
+            public string UserIdIndexName { get; set; }
         }
 
-        private const string USER_ID = "userId";
-        private const string LAST_UPDATED = "lastUpdated";
         private const string PROVIDER = "provider";
         private const string NORMALIZED_KEY = "normalizedKey";
         private const string KEY = "key";
+        private const string USER_ID = "userId";
+        private const string LAST_UPDATED = "lastUpdated";
 
         private readonly IAmazonDynamoDB _dynamoDbClient;
         private readonly ILogger _logger;
@@ -56,6 +56,7 @@ namespace JamesQMurphy.Auth.Aws
             var queryRequest = new QueryRequest
             {
                 TableName = _options.DynamoDbTableName,
+                IndexName = _options.UserIdIndexName,
                 Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{USER_ID} = :v_userId",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -96,8 +97,7 @@ namespace JamesQMurphy.Auth.Aws
             var queryRequest = new QueryRequest
             {
                 TableName = _options.DynamoDbTableName,
-                IndexName = _options.ProviderIndex,
-                Select = Select.ALL_PROJECTED_ATTRIBUTES,
+                Select = Select.ALL_ATTRIBUTES,
                 KeyConditionExpression = $"{PROVIDER} = :v_provider and {NORMALIZED_KEY} = :v_normalizedKey",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
@@ -115,9 +115,14 @@ namespace JamesQMurphy.Auth.Aws
             }
             if (result.Count == 1)
             {
-                return await FindByIdAsync(result.Items[0][USER_ID].S, cancellationToken);
+                var userId = result.Items[0].ContainsKey(USER_ID) ? result.Items[0][USER_ID].S : "";
+                if (String.IsNullOrWhiteSpace(userId))
+                {
+                    throw new Exception($"Item with {PROVIDER}={provider} and {NORMALIZED_KEY}={providerKey} did not have a value for {USER_ID}");
+                }
+                return await FindByIdAsync(userId, cancellationToken);
             }
-            throw new Exception($"Found {result.Count} items with provider={provider} and providerKey={providerKey}");
+            throw new Exception($"Found {result.Count} items with {PROVIDER}={provider} and {NORMALIZED_KEY}={providerKey}");
 
         }
 
