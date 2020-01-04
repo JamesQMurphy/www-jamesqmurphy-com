@@ -336,6 +336,7 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult myclaims()
         {
             return View();
@@ -371,7 +372,7 @@ namespace JamesQMurphy.Web.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
-                return RedirectToLocal(returnUrl);
+                return RedirectToLocal("/home/about");
             }
             if (result.IsLockedOut)
             {
@@ -385,6 +386,7 @@ namespace JamesQMurphy.Web.Controllers
                 if (userResult.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToLocal("/account/myclaims");
                 }
             }
             return RedirectToLocal(returnUrl);
