@@ -371,7 +371,15 @@ namespace JamesQMurphy.Web.Controllers
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
+                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                var props = new AuthenticationProperties();
+                props.StoreTokens(info.AuthenticationTokens);
+
+                await _signInManager.SignInAsync(user, props, info.LoginProvider);
+
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
+                    info.Principal.Identity.Name, info.LoginProvider);
+
                 return RedirectToLocal("/home/about");
             }
             if (result.IsLockedOut)
@@ -385,6 +393,8 @@ namespace JamesQMurphy.Web.Controllers
                 var userResult = await _userManager.AddLoginAsync(user, info);
                 if (userResult.Succeeded)
                 {
+                    var props = new AuthenticationProperties();
+                    props.StoreTokens(info.AuthenticationTokens);
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToLocal("/account/myclaims");
                 }
