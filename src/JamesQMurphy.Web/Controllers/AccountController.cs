@@ -366,11 +366,17 @@ namespace JamesQMurphy.Web.Controllers
             {
                 return RedirectToAction(nameof(login));
             }
+            _logger.LogInformation($"Callback from LoginProvider={info.LoginProvider} ProviderKey={info.ProviderKey} ProviderDisplayName={info.ProviderDisplayName}");
+            foreach(var claim in info.Principal.Claims)
+            {
+                _logger.LogDebug($"Claim: Type={claim.Type} Value={claim.Value} Issuer={claim.Issuer}");
+            }
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
+                _logger.LogInformation("Login succeeded; user already has login");
                 //var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
                 //var props = new AuthenticationProperties();
                 //props.StoreTokens(info.AuthenticationTokens);
@@ -389,6 +395,7 @@ namespace JamesQMurphy.Web.Controllers
             }
             else
             {
+                _logger.LogInformation("Creating new login for user");
                 var user = new ApplicationUser();
                 var userResult = await _userManager.AddLoginAsync(user, info);
                 if (userResult.Succeeded)
@@ -400,6 +407,7 @@ namespace JamesQMurphy.Web.Controllers
                 }
                 else
                 {
+                    _logger.LogDebug($"Login failed; AddLoginAsync returned {userResult}");
                     return RedirectToLocal("/home/privacy");
                 }
             }
