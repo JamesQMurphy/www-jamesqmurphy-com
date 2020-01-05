@@ -398,6 +398,10 @@ namespace JamesQMurphy.Web.Controllers
                     await _signInManager.SignInAsync(user, props, info.LoginProvider);
                     return RedirectToLocal("/account/myclaims");
                 }
+                else
+                {
+                    return RedirectToLocal("/home/privacy");
+                }
             }
             return RedirectToLocal(returnUrl);
 
