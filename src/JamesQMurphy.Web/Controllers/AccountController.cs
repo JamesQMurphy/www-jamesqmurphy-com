@@ -371,14 +371,14 @@ namespace JamesQMurphy.Web.Controllers
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-                var props = new AuthenticationProperties();
-                props.StoreTokens(info.AuthenticationTokens);
+                //var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                //var props = new AuthenticationProperties();
+                //props.StoreTokens(info.AuthenticationTokens);
 
-                await _signInManager.SignInAsync(user, props, info.LoginProvider);
+                //await _signInManager.SignInAsync(user, props, info.LoginProvider);
 
-                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
-                    info.Principal.Identity.Name, info.LoginProvider);
+                //_logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
+                //    info.Principal.Identity.Name, info.LoginProvider);
 
                 return RedirectToLocal("/home/about");
             }
