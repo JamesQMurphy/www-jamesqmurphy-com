@@ -351,6 +351,7 @@ Resources:
           UserStore__UserIdIndexName: "userId-index"
           Email__Service: SQS
           Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
+          UseLambdaLogging: "true"
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
