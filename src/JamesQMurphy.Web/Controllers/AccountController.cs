@@ -107,7 +107,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> register(RegisterViewModel model)
+        public async Task<IActionResult> register(RegisterWithEmailViewModel model)
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
@@ -377,20 +377,13 @@ namespace JamesQMurphy.Web.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation("Login succeeded; user already has login");
-                //var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-                //var props = new AuthenticationProperties();
-                //props.StoreTokens(info.AuthenticationTokens);
+                // TODO: fetch image
 
-                //await _signInManager.SignInAsync(user, props, info.LoginProvider);
-
-                //_logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
-                //    info.Principal.Identity.Name, info.LoginProvider);
-
-                return RedirectToLocal("/home/about");
+                return RedirectToLocal(returnUrl);
             }
             if (result.IsLockedOut)
             {
-                // TODO: handle locked out
+                // TODO: handle locked out case
                 return RedirectToAction(nameof(login));
             }
             else
@@ -403,7 +396,6 @@ namespace JamesQMurphy.Web.Controllers
                     var props = new AuthenticationProperties();
                     props.StoreTokens(info.AuthenticationTokens);
                     await _signInManager.SignInAsync(user, props, info.LoginProvider);
-                    return RedirectToLocal("/account/myclaims");
                 }
                 else
                 {
