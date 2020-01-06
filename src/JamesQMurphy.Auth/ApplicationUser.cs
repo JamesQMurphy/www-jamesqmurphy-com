@@ -17,11 +17,7 @@ namespace JamesQMurphy.Auth
         {
             // Create a single ApplicationUserRecord to represent the ID
             var miniGuid = NewMiniGuid();
-            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid)
-            {
-                NormalizedKey = miniGuid
-            };
-            AddOrReplaceUserRecord(idRecord);
+            AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid));
         }
 
         public ApplicationUser(IEnumerable<ApplicationUserRecord> applicationUserRecords)
