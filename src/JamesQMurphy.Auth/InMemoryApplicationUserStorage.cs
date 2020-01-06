@@ -19,9 +19,10 @@ namespace JamesQMurphy.Auth
             var userId = "+++User+++";
             var user = new ApplicationUser(new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", userId, "USER@LOCAL", lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "OrdinaryUser", userId, "ORDINARYUSER", lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", userId, "USER@LOCAL", lastUpdated)
             });
+            user.UserName = "OrdinaryUser";
+            user.NormalizedUserName = "ORDINARYUSER";
             user.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(user, "abcde");
             user.EmailConfirmed = true;
             foreach (var rec in user.ApplicationUserRecords)
@@ -32,9 +33,10 @@ namespace JamesQMurphy.Auth
             var adminUserId = "x+xAdminx+x";
             var adminUser = new ApplicationUser(new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, adminUserId, adminUserId, adminUserId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", adminUserId, "ADMIN@LOCAL", lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_USERNAME, "TheAdministrator", adminUserId, "THEADMINISTRATOR", lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", adminUserId, "ADMIN@LOCAL", lastUpdated)
             });
+            adminUser.UserName = "TheAdministrator";
+            adminUser.NormalizedUserName = "THEADMINISTRATOR";
             adminUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(adminUser, "abcde");
             adminUser.EmailConfirmed = true;
             adminUser.IsAdministrator = true;
@@ -42,7 +44,6 @@ namespace JamesQMurphy.Auth
             {
                 _ = SaveAsync(rec);
             }
-
         }
 
         public Task<ApplicationUserRecord> SaveAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default(CancellationToken))
@@ -101,9 +102,10 @@ namespace JamesQMurphy.Auth
 
         public Task<IEnumerable<ApplicationUserRecord>> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_dictByProviderAndNormalizedKey.ContainsKey((ApplicationUserRecord.RECORD_TYPE_USERNAME, normalizedUserName)))
+            var userNameRecord = _dictByProviderAndNormalizedKey.Values.Where(rec => rec.Provider == ApplicationUserRecord.RECORD_TYPE_ID && rec.StringAttributes[ApplicationUser.FIELD_NORMALIZEDUSERNAME] == normalizedUserName).FirstOrDefault();
+            if (userNameRecord != null)
             {
-                return FindByIdAsync(_dictByProviderAndNormalizedKey[(ApplicationUserRecord.RECORD_TYPE_USERNAME, normalizedUserName)].UserId, cancellationToken);
+                return FindByIdAsync(userNameRecord.UserId, cancellationToken);
             }
             else
             {

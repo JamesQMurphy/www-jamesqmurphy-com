@@ -51,7 +51,7 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.IsEmpty(user.UserName);
             Assert.IsEmpty(user.NormalizedUserName);
             Assert.AreEqual(emailAddress, user.Email);
-            Assert.IsEmpty(user.NormalizedEmail);
+            Assert.AreEqual(emailAddress, user.NormalizedEmail);
         }
 
         [Test]
@@ -262,6 +262,26 @@ namespace JamesQMurphy.Web.UnitTests
 
             applicationUserRecord.SetStringAttribute(stringAttribute, stringAttributeValue + "x");
             Assert.IsTrue(applicationUserRecord.IsDirty);
+        }
+
+        [Test]
+        public void CantInsertRecordsWithDifferentUserIds()
+        {
+            var user = new ApplicationUser();
+            Assert.Throws(Is.TypeOf<InvalidOperationException>(),
+                delegate
+                {
+                    user.AddOrReplaceUserRecord(new ApplicationUserRecord("provider", "key", user.UserId + "x"));
+                }
+                );
+        }
+
+        [Test]
+        public void NormalizedKeyDefaultsToKey()
+        {
+            var key = "key";
+            var rec = new ApplicationUserRecord("provider", "key", "userId");
+            Assert.AreEqual(key, rec.NormalizedKey);
         }
 
     }

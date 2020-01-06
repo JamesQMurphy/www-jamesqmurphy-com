@@ -9,7 +9,6 @@ namespace JamesQMurphy.Auth
     {
         public const string RECORD_TYPE_ID = "ID";
         public const string RECORD_TYPE_EMAIL = "ByEmail";
-        public const string RECORD_TYPE_USERNAME = "ByUsername";
 
         public string Provider { get; }
         public string Key { get; }
@@ -43,7 +42,7 @@ namespace JamesQMurphy.Auth
             Provider = provider;
             Key = key;
             UserId = userId;
-            _normalizedKey = "";
+            _normalizedKey = key;
             LastUpdated = DateTime.MinValue;
             _stringDictBuilder = ImmutableDictionary.CreateBuilder<string, string>();
             _boolDictBuilder = ImmutableDictionary.CreateBuilder<string, bool>();
