@@ -20,6 +20,8 @@ namespace JamesQMurphy.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailGenerator _emailGenerator;
 
+        private readonly string USER_ALREADY_TAKEN_MESSAGE = "That UserName is already taken.  Please choose another.";
+
         public accountController
         (
             ApplicationSignInManager<ApplicationUser> signInManager,
@@ -151,7 +153,7 @@ namespace JamesQMurphy.Web.Controllers
                 {
                     if (userFromUserName != null)
                     {
-                        result = IdentityResult.Failed(new IdentityError { Description = "That UserName is already taken.  Please choose another." });
+                        result = IdentityResult.Failed(new IdentityError { Description = USER_ALREADY_TAKEN_MESSAGE });
                     }
                     else
                     {
@@ -364,13 +366,17 @@ namespace JamesQMurphy.Web.Controllers
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
                 return RedirectToAction(nameof(login));
             }
+
             _logger.LogInformation($"Callback from LoginProvider={info.LoginProvider} ProviderKey={info.ProviderKey} ProviderDisplayName={info.ProviderDisplayName}");
             foreach(var claim in info.Principal.Claims)
             {
                 _logger.LogDebug($"Claim: Type={claim.Type} Value={claim.Value} Issuer={claim.Issuer}");
             }
+
+            // TODO: handle the case where user already logged in and they just want to link external account
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
@@ -384,11 +390,12 @@ namespace JamesQMurphy.Web.Controllers
             if (result.IsLockedOut)
             {
                 // TODO: handle locked out case
+                _logger.LogInformation("User is locked out");
                 return RedirectToAction(nameof(login));
             }
             else
             {
-                _logger.LogInformation("Creating new login for user");
+                _logger.LogInformation("Need to create login for user; redirecting");
                 var user = new ApplicationUser();
                 var userResult = await _userManager.AddLoginAsync(user, info);
                 if (userResult.Succeeded)
@@ -407,11 +414,91 @@ namespace JamesQMurphy.Web.Controllers
 
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> registerexternal(string returnUrl = null)
+        {
+            if (IsLoggedIn)
+            {
+                return RedirectToAction(nameof(register));
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(register));
+            }
+
+            var proposedUserName = info?.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+
+            var userFromProposedUsername = string.IsNullOrWhiteSpace(proposedUserName) ? null : await _userManager.FindByNameAsync(proposedUserName);
+            var model = new RegisterUsernameViewModel
+            {
+                UserName = proposedUserName
+            };
+
+            if (userFromProposedUsername != null)
+            {
+                ModelState.AddModelError(String.Empty, USER_ALREADY_TAKEN_MESSAGE);
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
+            return View(model);
+        }
+
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> externalloginconfirmation(string returnUrl = null)
+        public async Task<IActionResult> registerexternal(RegisterUsernameViewModel model, string returnUrl = null)
         {
-            throw new NotImplementedException();
+            if (IsLoggedIn)
+            {
+                return RedirectToAction(nameof(register));
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(register));
+            }
+
+            IdentityResult result = null;
+            if (ModelState.IsValid)
+            {
+                // Check if username has been taken
+                var userFromProposedUsername = _userManager.FindByNameAsync(model.UserName);
+                if (userFromProposedUsername != null)
+                {
+                    result = IdentityResult.Failed(new IdentityError { Description = USER_ALREADY_TAKEN_MESSAGE });
+                }
+                else
+                {
+                    // Create the new user (without a password) and add the external login
+                    var newUser = new ApplicationUser { UserName = model.UserName };
+                    result = await _userManager.CreateAsync(newUser);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddLoginAsync(newUser, info);
+                    }
+                }
+            }
+
+            if (result.Succeeded)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(String.Empty, error.Description);
+                }
+            }
+
+            // If we got this far, something failed; redisplay form
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
+            return View(model);
         }
 
     }
