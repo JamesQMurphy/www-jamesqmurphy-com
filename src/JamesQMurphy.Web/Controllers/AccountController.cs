@@ -406,5 +406,13 @@ namespace JamesQMurphy.Web.Controllers
             return RedirectToLocal(returnUrl);
 
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> externalloginconfirmation(string returnUrl = null)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
