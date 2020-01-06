@@ -28,6 +28,20 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
+        public void CanCreateFromRecords()
+        {
+            var userId = "someUserId";
+            var records = new ApplicationUserRecord[]
+            {
+                new ApplicationUserRecord("provider1", "key1", userId),
+                new ApplicationUserRecord("provider2", "key2", userId),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId)
+            };
+            var user = new ApplicationUser(records);
+            Assert.AreEqual(userId, user.UserId);
+        }
+
+        [Test]
         public void NormalizedKeyForIdNotNull()
         {
             var user = new ApplicationUser();
