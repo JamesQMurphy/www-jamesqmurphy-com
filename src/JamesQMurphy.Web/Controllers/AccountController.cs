@@ -415,7 +415,7 @@ namespace JamesQMurphy.Web.Controllers
                 return RedirectToAction(nameof(register));
             }
 
-            var proposedUserName = info?.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+            var proposedUserName = info?.Principal?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
 
             var userFromProposedUsername = string.IsNullOrWhiteSpace(proposedUserName) ? null : await _userManager.FindByNameAsync(proposedUserName);
             var model = new RegisterUsernameViewModel
@@ -437,6 +437,10 @@ namespace JamesQMurphy.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> registerexternal(RegisterUsernameViewModel model, string returnUrl = null)
         {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
             if (IsLoggedIn)
             {
                 return RedirectToAction(nameof(register));
@@ -452,14 +456,17 @@ namespace JamesQMurphy.Web.Controllers
             if (ModelState.IsValid)
             {
                 // Check if username has been taken
+                _logger.LogDebug($"Model valid; calling FindByNameAsyc({model.UserName})");
                 var userFromProposedUsername = _userManager.FindByNameAsync(model.UserName);
                 if (userFromProposedUsername != null)
                 {
+                    _logger.LogDebug($"Username {model.UserName} already exists; redisplay form");
                     result = IdentityResult.Failed(new IdentityError { Description = USER_ALREADY_TAKEN_MESSAGE });
                 }
                 else
                 {
                     // Create the new user (without a password) and add the external login
+                    _logger.LogDebug($"Creating username {model.UserName}");
                     var newUser = new ApplicationUser { UserName = model.UserName };
                     result = await _userManager.CreateAsync(newUser);
                     if (result.Succeeded)
