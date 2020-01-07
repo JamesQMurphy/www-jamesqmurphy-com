@@ -21,7 +21,7 @@ namespace JamesQMurphy.Auth.Aws
 
         private const string PROVIDER = "provider";
         private const string NORMALIZED_KEY = "normalizedKey";
-        private const string NORMALIZED_USERNAME = "normalizedUserName";
+        private const string NORMALIZED_USERNAME = "normalizedUsername";
         private const string KEY = "key";
         private const string USER_ID = "userId";
         private const string LAST_UPDATED = "lastUpdated";
