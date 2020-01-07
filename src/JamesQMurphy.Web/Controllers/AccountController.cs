@@ -471,6 +471,7 @@ namespace JamesQMurphy.Web.Controllers
                     result = await _userManager.CreateAsync(newUser);
                     if (result.Succeeded)
                     {
+                        _logger.LogDebug($"User created; adding login for external provider {info.LoginProvider}({info.ProviderDisplayName})");
                         result = await _userManager.AddLoginAsync(newUser, info);
                     }
                 }
@@ -478,7 +479,18 @@ namespace JamesQMurphy.Web.Controllers
 
             if (result.Succeeded)
             {
-                return RedirectToLocal(returnUrl);
+                // Actually log in as the user
+                var signInresult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                if (signInresult.Succeeded)
+                {
+                    _logger.LogDebug("Login succeeded; newly created login");
+                    return RedirectToLocal(returnUrl);
+                }
+                else
+                {
+                    _logger.LogWarning($"Login failed for new user {info.LoginProvider} {info.ProviderKey}");
+                    return RedirectToAction(nameof(login));
+                }
             }
             else
             {
