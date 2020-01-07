@@ -452,7 +452,7 @@ namespace JamesQMurphy.Web.Controllers
                 return RedirectToAction(nameof(register));
             }
 
-            IdentityResult result = null;
+            IdentityResult result = IdentityResult.Failed();
             if (ModelState.IsValid)
             {
                 // Check if username has been taken
