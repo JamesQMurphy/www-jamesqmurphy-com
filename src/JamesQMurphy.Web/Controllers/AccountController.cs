@@ -457,7 +457,7 @@ namespace JamesQMurphy.Web.Controllers
             {
                 // Check if username has been taken
                 _logger.LogDebug($"Model valid; calling FindByNameAsyc({model.UserName})");
-                var userFromProposedUsername = _userManager.FindByNameAsync(model.UserName);
+                var userFromProposedUsername = await _userManager.FindByNameAsync(model.UserName);
                 if (userFromProposedUsername != null)
                 {
                     _logger.LogDebug($"Username {model.UserName} already exists; redisplay form");
