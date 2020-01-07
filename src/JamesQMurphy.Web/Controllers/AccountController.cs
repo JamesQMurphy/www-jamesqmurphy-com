@@ -396,22 +396,8 @@ namespace JamesQMurphy.Web.Controllers
             else
             {
                 _logger.LogInformation("Need to create login for user; redirecting");
-                var user = new ApplicationUser();
-                var userResult = await _userManager.AddLoginAsync(user, info);
-                if (userResult.Succeeded)
-                {
-                    var props = new AuthenticationProperties();
-                    props.StoreTokens(info.AuthenticationTokens);
-                    await _signInManager.SignInAsync(user, props, info.LoginProvider);
-                }
-                else
-                {
-                    _logger.LogDebug($"Login failed; AddLoginAsync returned {userResult}");
-                    return RedirectToLocal("/home/privacy");
-                }
+                return RedirectToAction(nameof(registerexternal));
             }
-            return RedirectToLocal(returnUrl);
-
         }
 
         [HttpGet]
