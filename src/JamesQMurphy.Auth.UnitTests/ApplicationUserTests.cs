@@ -81,6 +81,22 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
+        public void CanSetEmailAddressTwice()
+        {
+            var emailAddress = "test@local";
+            var emailAddress2 = "test2@local";
+            var user = new ApplicationUser();
+            user.Email = emailAddress;
+            user.Email = emailAddress2;
+
+            Assert.IsNotNull(user.UserId);
+            Assert.IsEmpty(user.UserName);
+            Assert.IsEmpty(user.NormalizedUserName);
+            Assert.AreEqual(emailAddress2, user.Email);
+            Assert.AreEqual(emailAddress2, user.NormalizedEmail);
+        }
+
+        [Test]
         public void CannotSetNormalizedEmailAddressUntilEmailAddressSet()
         {
             var emailAddress = "test@local";
@@ -97,6 +113,16 @@ namespace JamesQMurphy.Web.UnitTests
             user.Email = emailAddress;
             user.NormalizedEmail = emailAddressNormalized;
             Assert.AreEqual(emailAddressNormalized, user.NormalizedEmail);
+        }
+
+        [Test]
+        public void CanSetNormalizedEmailAddressEmpty()
+        {
+            var user = new ApplicationUser();
+            user.NormalizedEmail = string.Empty;
+            Assert.IsEmpty(user.Email);
+            Assert.IsEmpty(user.NormalizedEmail);
+            Assert.AreEqual(1, user.ApplicationUserRecords.Count);
         }
 
         [Test]

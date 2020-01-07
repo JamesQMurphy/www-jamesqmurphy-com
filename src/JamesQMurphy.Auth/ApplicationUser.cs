@@ -46,13 +46,25 @@ namespace JamesQMurphy.Auth
         public string Email
         {
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.Key ?? "";
-            set => CreateUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, value);
+            set
+            {
+                if (Email != value)
+                {
+                    AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, value, UserId));
+                }
+            }
         }
 
         public string NormalizedEmail
         {
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.NormalizedKey ?? "";
-            set => GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email)).NormalizedKey = value;
+            set
+            {
+                if (NormalizedEmail != value)
+                {
+                    GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email)).NormalizedKey = value;
+                }
+            }
         }
 
         public string UserName
@@ -103,19 +115,6 @@ namespace JamesQMurphy.Auth
                 return records[recordType];
             else
                 return null;
-        }
-
-        private void CreateUserRecordOrThrow(string recordType, string value)
-        {
-            if (records.ContainsKey(recordType))
-            {
-                throw new Exception($"Cannot create recordType {recordType} more than once");
-            }
-            else
-            {
-                var rec = new ApplicationUserRecord(recordType, value, this.UserId);
-                records.Add(recordType, rec);
-            }
         }
 
         private ApplicationUserRecord GetUserRecordOrThrow(string recordType, string requiredProperty)
