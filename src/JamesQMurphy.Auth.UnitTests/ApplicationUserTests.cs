@@ -42,6 +42,18 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
+        public void ZeroRecordsStillHasId()
+        {
+            var user = new ApplicationUser(Enumerable.Empty<ApplicationUserRecord>());
+
+            Assert.IsNotNull(user.UserId);
+            Assert.IsEmpty(user.UserName);
+            Assert.IsEmpty(user.NormalizedUserName);
+            Assert.IsEmpty(user.Email);
+            Assert.IsEmpty(user.NormalizedEmail);
+        }
+
+        [Test]
         public void NormalizedKeyForIdNotNull()
         {
             var user = new ApplicationUser();

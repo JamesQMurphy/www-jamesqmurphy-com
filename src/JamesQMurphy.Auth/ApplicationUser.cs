@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace JamesQMurphy.Auth
 {
@@ -24,13 +25,23 @@ namespace JamesQMurphy.Auth
         {
             foreach(var record in applicationUserRecords)
             {
+                if ((records.Count == 0) && (record.Provider != ApplicationUserRecord.RECORD_TYPE_ID))
+                {
+                    AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, record.UserId, record.UserId));
+                }
                 AddOrReplaceUserRecord(record);
+            }
+            if (records.Count == 0)
+            {
+                // Create a single ApplicationUserRecord to represent the ID
+                var miniGuid = NewMiniGuid();
+                AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid));
             }
         }
 
         public IReadOnlyCollection<ApplicationUserRecord> ApplicationUserRecords => records.Values;
 
-        public string UserId => records[ApplicationUserRecord.RECORD_TYPE_ID].Key;
+        public string UserId => records.Values.First().UserId;
 
         public string Email
         {
