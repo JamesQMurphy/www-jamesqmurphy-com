@@ -21,6 +21,7 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult index()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Get In Touch";
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View();
         }
 
@@ -28,6 +29,7 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> index(IndexViewModel model)
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Get In Touch";
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             if (ModelState.IsValid)
             {
                 await _emailGenerator.GenerateEmailAsync(_webSiteOptions.CommentsEmail, EmailType.Comments, new string[] { CurrentUserId, model.Comments});
@@ -40,6 +42,7 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult commentsConfirmation()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Thanks For Getting In Touch";
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View();
         }
     }
