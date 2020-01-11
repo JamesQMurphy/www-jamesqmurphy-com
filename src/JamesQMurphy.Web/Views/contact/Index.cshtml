@@ -1,0 +1,28 @@
+﻿@model IndexViewModel
+
+<h1 class="display-4">@ViewData[Constants.VIEWDATA_PAGETITLE]</h1>
+<p>
+    Have a question about the site?  Need something addressed?  Want to sample some cold-brew?  Let me know!
+    Enter your comments below and I'll get back to you.  Make sure you leave <i>some</i> way for me to get
+    in touch with you (email address, Twitter name, telephone number, etc.).  If you prefer, you can contact me
+    via Twitter or Github using the icons below.
+</p>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Comments"></label>
+        <textarea asp-for="Comments" class="form-control" rows="10"></textarea>
+        <span asp-validation-for="Comments" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+</form>
+<p class="mt-3">
+    You can also reach me on these sites:
+</p>
+<div class="container mt-3">
+    <a href="@webSiteOptions.TwitterLink"><img src="~/images/Twitter_Social_Icon_Circle_Color.png" aria-label="@webSiteOptions.TwitterAccount on Twitter" style="width:32px;height:32px;border:0;margin-right:10px"></a>
+    <a href="@webSiteOptions.GithubLink"><img src="~/images/GitHub-Mark-32px.png" aria-label="@webSiteOptions.GithubAccount on GitHub" style="width:32px;height:32px;border:0;"></a>
+</div>
+

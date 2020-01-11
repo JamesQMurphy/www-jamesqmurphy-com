@@ -60,6 +60,10 @@ Parameters:
     Description: URL for CloudWatch to call to keep Lambda function warm
     Default: '/warm'
 
+  CommentsEmailParameter:
+    Type: String
+    Description: Email for comments
+
   CertificateArnParameter:
     Type: String
     Description: Certificate ARN.  Leave blank if not mapping to a custom URL.
@@ -340,6 +344,7 @@ Resources:
       Environment:
         Variables:
           AppName: !Sub '${AppNameParameter}-${StageParameter}'
+          CommentsEmail: !Ref CommentsEmailParameter
           ImageBasePath: /blogimages
           DataProtection: AWS
           UseStaticFiles: "false"
@@ -491,6 +496,18 @@ Resources:
         RestApiIdParameter: !Ref TheGatewayRestAPI
         ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
         ApiResourceNameParameter: admin
+        LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
+
+
+  TheContactRouteResourceStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToLambda.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: contact
         LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
 
 

@@ -1,5 +1,4 @@
-﻿using JamesQMurphy.Auth;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Services
 {
@@ -9,11 +8,12 @@ namespace JamesQMurphy.Web.Services
         EmailVerification,
         EmailAlreadyRegistered,
         PasswordReset,
-        PasswordChanged
+        PasswordChanged,
+        Comments
     }
 
     public interface IEmailGenerator
     {
-        Task GenerateEmailAsync(ApplicationUser user, EmailType emailType, params string[] data);
+        Task GenerateEmailAsync(string emailAddress, EmailType emailType, params string[] data);
     }
 }
