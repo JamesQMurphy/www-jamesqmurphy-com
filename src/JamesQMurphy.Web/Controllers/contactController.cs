@@ -30,7 +30,7 @@ namespace JamesQMurphy.Web.Controllers
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Get In Touch";
             if (ModelState.IsValid)
             {
-                await _emailGenerator.GenerateEmailAsync(_webSiteOptions.CommentsEmail, EmailType.TestEmail, new string[] { CurrentUserId, model.Comments});
+                await _emailGenerator.GenerateEmailAsync(_webSiteOptions.CommentsEmail, EmailType.Comments, new string[] { CurrentUserId, model.Comments});
                 return RedirectToAction(nameof(commentsConfirmation));
             }
             return View();
