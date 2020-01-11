@@ -124,7 +124,7 @@ namespace JamesQMurphy.Web.Controllers
                 // TODO: log this
                 if (userFromEmail?.EmailConfirmed == true)
                 {
-                    await _emailGenerator.GenerateEmailAsync(userFromEmail, EmailType.EmailAlreadyRegistered);
+                    await _emailGenerator.GenerateEmailAsync(userFromEmail.Email, EmailType.EmailAlreadyRegistered);
                 }
 
                 async Task<IdentityResult> resetPasswordAsync(ApplicationUser user)
@@ -186,7 +186,7 @@ namespace JamesQMurphy.Web.Controllers
 
                     // Note that Url is null when we create the controller as part of a unit test
                     var link = Url?.Action(nameof(accountController.confirmemail), "account", new { userFromEmail.UserName, code }, Request.Scheme);
-                    await _emailGenerator.GenerateEmailAsync(userFromEmail, EmailType.EmailVerification, link);
+                    await _emailGenerator.GenerateEmailAsync(userFromEmail.Email, EmailType.EmailVerification, link);
 
                     // Note that we do *not* sign in the user
 
@@ -262,7 +262,7 @@ namespace JamesQMurphy.Web.Controllers
                     var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                     // Note that Url is null when we create the controller as part of a unit test
                     var link = Url?.Action(nameof(accountController.resetpassword), "account", new { user.UserName, code }, Request.Scheme);
-                    await _emailGenerator.GenerateEmailAsync(user, EmailType.PasswordReset, link);
+                    await _emailGenerator.GenerateEmailAsync(user.Email, EmailType.PasswordReset, link);
                 }
 
                 // Even if user doesn't exist, show the confirmation page
@@ -307,7 +307,7 @@ namespace JamesQMurphy.Web.Controllers
                     result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
                     if (result.Succeeded)
                     {
-                        await _emailGenerator.GenerateEmailAsync(user, EmailType.PasswordChanged);
+                        await _emailGenerator.GenerateEmailAsync(user.Email, EmailType.PasswordChanged);
                     }
                 }
                 if (result.Succeeded)
