@@ -8,11 +8,13 @@ namespace Tests
     public class InMemoryArticleStoreTests
     {
         private InMemoryArticleStore Store = new InMemoryArticleStore();
+        private List<Article> _articles = new List<Article>();
 
         [SetUp]
         public void Setup()
         {
-            Store.Articles.AddRange(new Article[]
+            _articles.Clear();
+            _articles.AddRange( new Article[]
             {
                 new Article()
                 {
@@ -56,12 +58,17 @@ namespace Tests
 
 
             });
+            Store = new InMemoryArticleStore();
+            foreach (var a in _articles)
+            {
+                Store.SafeAddArticle(a);
+            }
         }
 
         [Test]
         public void GetSingleArtcle()
         {
-            foreach (Article article in Store.Articles)
+            foreach (Article article in _articles)
             {
                 Assert.AreEqual(article.Metadata, Store.GetArticleAsync(article.Slug).GetAwaiter().GetResult().Metadata);
             }
@@ -89,7 +96,7 @@ namespace Tests
             for (int year = 2015; year < 2025; year++)
             {
                 // Manually get articles and sort them
-                var articlesThisYear = Store.Articles.FindAll(a => a.PublishDate.Year == year).ConvertAll(a => a.Metadata);
+                var articlesThisYear = _articles.FindAll(a => a.PublishDate.Year == year).ConvertAll(a => a.Metadata);
                 articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                 // Get articles thru service.  They should be sorted
@@ -108,7 +115,7 @@ namespace Tests
                 for (int month = 1; month <= 12; month++)
                 {
                     // Manually get articles and sort them
-                    var articlesThisYear = Store.Articles.FindAll(a => (a.PublishDate.Year == year) && (a.PublishDate.Month == month)).ConvertAll(a => a.Metadata);
+                    var articlesThisYear = _articles.FindAll(a => (a.PublishDate.Year == year) && (a.PublishDate.Month == month)).ConvertAll(a => a.Metadata);
                     articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                     // Get articles thru service.  They should be sorted
@@ -124,7 +131,7 @@ namespace Tests
         public void GetAllArticles()
         {
             // Manually get articles and sort them
-            var articlesThisYear = Store.Articles.ConvertAll(a => a.Metadata);
+            var articlesThisYear = _articles.ConvertAll(a => a.Metadata);
             articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
             // Get articles thru service.  They should be sorted
