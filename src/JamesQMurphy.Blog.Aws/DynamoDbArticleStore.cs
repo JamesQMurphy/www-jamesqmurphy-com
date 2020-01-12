@@ -19,7 +19,6 @@ namespace JamesQMurphy.Blog.Aws
         private const string TIMESTAMP = "timestamp";
         private const string TITLE = "title";
         private const string DESCRIPTION = "description";
-        //private const string PUBLISH_DATE = "publishDate";
         private const string CONTENT = "content";
         private const string ARTICLE_TYPE = "articleType";
         private const string ARTICLE_TYPE_PUBLISHED = "published";

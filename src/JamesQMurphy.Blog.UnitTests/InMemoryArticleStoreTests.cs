@@ -141,5 +141,11 @@ namespace Tests
             AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
         }
 
+        [Test]
+        public void NoArticleReturnsNull()
+        {
+            Assert.IsNull(Store.GetArticleAsync("doesn't exist").GetAwaiter().GetResult());
+        }
+
     }
 }
