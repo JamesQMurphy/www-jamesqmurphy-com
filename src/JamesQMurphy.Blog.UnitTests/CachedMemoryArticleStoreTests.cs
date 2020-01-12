@@ -48,13 +48,13 @@ namespace Tests
         }
 
         private TrackableInMemoryArticleStore _trackableInMemoryArticleStore;
-        private CachedArticleStore _cachedArticleStore;
+        private CachedArticleStore<TrackableInMemoryArticleStore> _cachedArticleStore;
 
         [SetUp]
         public void Setup()
         {
             _trackableInMemoryArticleStore = new TrackableInMemoryArticleStore();
-            _cachedArticleStore = new CachedArticleStore(_trackableInMemoryArticleStore);
+            _cachedArticleStore = new CachedArticleStore<TrackableInMemoryArticleStore>(_trackableInMemoryArticleStore);
         }
 
         [Test]

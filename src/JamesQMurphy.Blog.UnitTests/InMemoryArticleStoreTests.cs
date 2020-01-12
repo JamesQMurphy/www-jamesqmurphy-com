@@ -66,7 +66,7 @@ namespace Tests
         }
 
         [Test]
-        public void GetSingleArtcle()
+        public void GetSingleArticle()
         {
             foreach (Article article in _articles)
             {
@@ -97,7 +97,7 @@ namespace Tests
             {
                 // Manually get articles and sort them
                 var articlesThisYear = _articles.FindAll(a => a.PublishDate.Year == year).ConvertAll(a => a.Metadata);
-                articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
+                articlesThisYear.Sort((a1, a2) => (a2.PublishDate.CompareTo(a1.PublishDate)));
 
                 // Get articles thru service.  They should be sorted
                 var returnedArticles = Store.GetArticleMetadatasAsync(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1).AddSeconds(-1)).GetAwaiter().GetResult();
@@ -114,9 +114,9 @@ namespace Tests
             {
                 for (int month = 1; month <= 12; month++)
                 {
-                    // Manually get articles and sort them
+                    // Manually get articles and sort them in decending order
                     var articlesThisYear = _articles.FindAll(a => (a.PublishDate.Year == year) && (a.PublishDate.Month == month)).ConvertAll(a => a.Metadata);
-                    articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
+                    articlesThisYear.Sort((a1, a2) => (a2.PublishDate.CompareTo(a1.PublishDate)));
 
                     // Get articles thru service.  They should be sorted
                     var returnedArticles = Store.GetArticleMetadatasAsync(new DateTime(year, month, 1), new DateTime(year, month, 1).AddMonths(1).AddSeconds(-1)).GetAwaiter().GetResult();
@@ -130,15 +130,15 @@ namespace Tests
         [Test]
         public void GetAllArticles()
         {
-            // Manually get articles and sort them
-            var articlesThisYear = _articles.ConvertAll(a => a.Metadata);
-            articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
+            // Manually get articles and sort them in decending order
+            var allArticleMetadatas = _articles.ConvertAll(a => a.Metadata);
+            allArticleMetadatas.Sort((a1, a2) => (a2.PublishDate.CompareTo(a1.PublishDate)));
 
             // Get articles thru service.  They should be sorted
             var returnedArticles = Store.GetArticleMetadatasAsync(DateTime.MinValue, DateTime.MaxValue).GetAwaiter().GetResult();
             var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
-            AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
+            AssertArticleListsAreEqual(allArticleMetadatas, returnedArticlesList);
         }
 
         [Test]

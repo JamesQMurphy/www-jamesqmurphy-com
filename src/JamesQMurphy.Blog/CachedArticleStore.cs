@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
-    public class CachedArticleStore : IArticleStore
+    public class CachedArticleStore<TBackingStore> : IArticleStore where TBackingStore : IArticleStore
     {
-        private readonly IArticleStore _backingArticleStore;
+        private readonly TBackingStore _backingArticleStore;
         private readonly Dictionary<string, Article> _dictCachedArticles = new Dictionary<string, Article>();
         private readonly SortedList<DateTime, ArticleMetadata> _dictCachedArticleMetadatas = new SortedList<DateTime, ArticleMetadata>();
         private DateTime _cachedStartDate = DateTime.MaxValue;
         private DateTime _cachedEndDate = DateTime.MinValue;
         private List<Article> _lastArticles = new List<Article>();
 
-        public CachedArticleStore(IArticleStore articleStore)
+        public CachedArticleStore(TBackingStore articleStore)
         {
             _backingArticleStore = articleStore;
         }
@@ -42,7 +42,9 @@ namespace JamesQMurphy.Blog
                 (startDate >= _cachedStartDate) &&
                 (endDate <= _cachedEndDate))
             {
-                return _dictCachedArticleMetadatas.Values.Where(m => m.PublishDate >= startDate && m.PublishDate < endDate);
+                return _dictCachedArticleMetadatas.Values
+                    .Where(m => m.PublishDate >= startDate && m.PublishDate < endDate)
+                    .OrderByDescending(m => m.PublishDate);
             }
 
             var metadatas = await _backingArticleStore.GetArticleMetadatasAsync(startDate, endDate);

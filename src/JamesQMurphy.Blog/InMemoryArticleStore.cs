@@ -26,6 +26,7 @@ namespace JamesQMurphy.Blog
         {
             return Task.FromResult(_articlesByDate.Keys
                 .Where(d => d >= startDate && d <= endDate)
+                .OrderByDescending(d => d)
                 .Select(d => _articlesByDate[d].Metadata)
             );
         }
