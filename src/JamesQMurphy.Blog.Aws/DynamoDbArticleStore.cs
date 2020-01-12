@@ -85,7 +85,7 @@ namespace JamesQMurphy.Blog.Aws
             return result.Items.ConvertAll(i => ToArticleMetadata(i));
         }
 
-        public async Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        public async Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -106,7 +106,7 @@ namespace JamesQMurphy.Blog.Aws
                 ScanIndexForward = false,
             };
             var result = await _dbClient.QueryAsync(queryRequest);
-            return result.Items.ConvertAll(i => ToArticleMetadata(i));
+            return result.Items.ConvertAll(i => new Article { Metadata = ToArticleMetadata(i), Content = i[CONTENT].S });
         }
 
 

@@ -32,13 +32,12 @@ namespace JamesQMurphy.Blog
                 );
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        public Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles)
         {
             return Task.FromResult(
                 LoadArticlesFromFiles()
                     .OrderByDescending(a => a.PublishDate)
                     .Take(numberOfArticles)
-                    .Select(a => a.Metadata)
                 );
         }
 

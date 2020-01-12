@@ -23,12 +23,12 @@ namespace JamesQMurphy.Blog
             return Task.FromResult(ienum);
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        public Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles)
         {
             var list = Articles.ConvertAll(a => a.Metadata);
             list.Sort();
             list.Reverse();
-            IEnumerable<ArticleMetadata> ienum = list.GetRange(0, numberOfArticles);
+            IEnumerable<Article> ienum = list.GetRange(0, numberOfArticles).ConvertAll(m => Articles.FindLast(a => a.Slug == m.Slug));
             return Task.FromResult(ienum);
         }
     }
