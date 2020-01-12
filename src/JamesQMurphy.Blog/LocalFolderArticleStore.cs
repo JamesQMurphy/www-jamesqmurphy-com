@@ -22,7 +22,7 @@ namespace JamesQMurphy.Blog
                 .FirstOrDefault());
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
+        public Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate)
         {
             return Task.FromResult(
                 LoadArticlesFromFiles()

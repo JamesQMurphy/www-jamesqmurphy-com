@@ -62,7 +62,7 @@ namespace JamesQMurphy.Blog.Aws
             }
         }
 
-        public async Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate)
         {
             QueryRequest queryRequest = new QueryRequest
             {

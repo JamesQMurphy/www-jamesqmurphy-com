@@ -93,7 +93,7 @@ namespace Tests
                 articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                 // Get articles thru service.  They should be sorted
-                var returnedArticles = Store.GetArticlesAsync(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1).AddSeconds(-1)).GetAwaiter().GetResult();
+                var returnedArticles = Store.GetArticleMetadatasAsync(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1).AddSeconds(-1)).GetAwaiter().GetResult();
                 var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
                 AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
@@ -112,7 +112,7 @@ namespace Tests
                     articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
                     // Get articles thru service.  They should be sorted
-                    var returnedArticles = Store.GetArticlesAsync(new DateTime(year, month, 1), new DateTime(year, month, 1).AddMonths(1).AddSeconds(-1)).GetAwaiter().GetResult();
+                    var returnedArticles = Store.GetArticleMetadatasAsync(new DateTime(year, month, 1), new DateTime(year, month, 1).AddMonths(1).AddSeconds(-1)).GetAwaiter().GetResult();
                     var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
                     AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);
@@ -128,7 +128,7 @@ namespace Tests
             articlesThisYear.Sort((a1, a2) => (a1.PublishDate.CompareTo(a2.PublishDate)));
 
             // Get articles thru service.  They should be sorted
-            var returnedArticles = Store.GetArticlesAsync(DateTime.MinValue, DateTime.MaxValue).GetAwaiter().GetResult();
+            var returnedArticles = Store.GetArticleMetadatasAsync(DateTime.MinValue, DateTime.MaxValue).GetAwaiter().GetResult();
             var returnedArticlesList = new List<ArticleMetadata>(returnedArticles);
 
             AssertArticleListsAreEqual(articlesThisYear, returnedArticlesList);

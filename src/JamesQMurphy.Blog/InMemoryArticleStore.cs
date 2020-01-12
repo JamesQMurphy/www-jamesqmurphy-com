@@ -13,7 +13,7 @@ namespace JamesQMurphy.Blog
             return Task.FromResult(Articles.FindLast(a => a.Slug == slug));
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
+        public Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate)
         {
             var list = Articles.FindAll(a =>
                 (a.PublishDate >= startDate) && (a.PublishDate <= endDate)

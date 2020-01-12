@@ -33,7 +33,7 @@ namespace JamesQMurphy.Web.Controllers
                     endDate = startDate.AddYears(1).AddMilliseconds(-1);
                 }
             }
-            return View(await articleStore.GetArticlesAsync(startDate, endDate));
+            return View(await articleStore.GetArticleMetadatasAsync(startDate, endDate));
         }
 
         public async Task<IActionResult> details(string year, string month, string slug)
