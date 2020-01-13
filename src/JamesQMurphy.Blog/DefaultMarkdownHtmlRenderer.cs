@@ -7,30 +7,23 @@ namespace JamesQMurphy.Blog
 {
     public class DefaultMarkdownHtmlRenderer : IMarkdownHtmlRenderer
     {
-        private readonly Markdig.MarkdownPipeline pipeline;
-        private readonly string imageBasePath;
-
-        public DefaultMarkdownHtmlRenderer(string ImageBasePath = "")
+        public class Options
         {
+            public string LinkBasePath { get; set; }
+            public string BlogImageBasePath { get; set; }
+        }
+
+        private readonly Options _options;
+        private readonly Markdig.MarkdownPipeline pipeline;
+
+        public DefaultMarkdownHtmlRenderer(Options options)
+        {
+            _options = options;
+
             var pipelineBuilder = new Markdig.MarkdownPipelineBuilder();
             Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilder);
             Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilder);
             pipeline = pipelineBuilder.Build();
-            if (ImageBasePath == null)
-            {
-                imageBasePath = "";
-            }
-            else
-            {
-                if (ImageBasePath.EndsWith("/"))
-                {
-                    imageBasePath = ImageBasePath;
-                }
-                else
-                {
-                    imageBasePath = ImageBasePath + "/";
-                }
-            }
         }
 
         public string RenderHtml(string markdown)
@@ -56,5 +49,23 @@ namespace JamesQMurphy.Blog
                 link.Url = $"{imageBasePath}{link.Url}";
             }
         }
+
+        private static string _combine(string link, string part)
+        {
+            if (String.IsNullOrWhiteSpace(link))
+            {
+                return part;
+            }
+            if (link.EndsWith("/") && part.StartsWith("/"))
+            {
+                return link + part.Substring(1);
+            }
+            if (link.EndsWith("/") || part.StartsWith("/"))
+            {
+                return link + part;
+            }
+            return link + "/" + part;
+        }
+
     }
 }
