@@ -66,9 +66,9 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> rss()
         {
             var sb = new StringBuilder("<rss version=\"2.0\"><channel>");
-            sb.AppendFormat("<title>{0}</title><link>{1}</link>", _webSiteOptions.WebSiteTitle, Url.Content("/"));
+            sb.AppendFormat("<title>{0}</title><link>{1}</link>", _webSiteOptions.WebSiteTitle, ToAbsoluteUrl("/"));
             sb.AppendFormat("<description>{0}</description>", "Cold brew is awesome.  So is DevOps.");
-            sb.AppendFormat("<image>{0}</image>", Url.Content("/apple-touch-icon.png"));
+            sb.AppendFormat("<image>{0}</image>", ToAbsoluteUrl("/apple-touch-icon.png"));
             sb.Append("<language>en-us</language>");
 
             foreach(var article in await articleStore.GetLastArticlesAsync(_webSiteOptions.ArticlesInRss))
@@ -80,10 +80,10 @@ namespace JamesQMurphy.Web.Controllers
                     sb.AppendFormat(": {0}", article.Description);
                 }
                 sb.Append("</title>");
-                sb.AppendFormat("<link>{0}</link>", Url.Content($"/blog/{article.Slug}"));
-                sb.AppendFormat("<guid isPermalink=\"false\">{0}</guid>", article.Slug);
+                sb.AppendFormat("<link>{0}</link>", ToAbsoluteUrl($"/blog/{article.Slug}"));
+                sb.AppendFormat("<guid isPermaLink=\"false\">{0}</guid>", article.Slug);
                 sb.AppendFormat("<pubDate>{0}</pubDate>", article.PublishDate.ToString("r"));
-                sb.AppendFormat("<description>{0}</description>", _markdownHtmlRenderer.RenderHtml(article.Content));
+                sb.AppendFormat("<description><![CDATA[{0}]]></description>", _markdownHtmlRenderer.RenderHtml(article.Content));
                 sb.Append("</item>");
             }
             
@@ -91,6 +91,11 @@ namespace JamesQMurphy.Web.Controllers
             sb.AppendFormat("</channel></rss>");
 
             return Content(sb.ToString(), "application/rss+xml");
+        }
+
+        private string ToAbsoluteUrl(string relativeUrl)
+        {
+            return new Uri(new Uri(Request.Scheme + "://" + Request.Host.Value), Url.Content(relativeUrl)).ToString();
         }
     }
 }
