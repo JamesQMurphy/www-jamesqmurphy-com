@@ -65,10 +65,11 @@ namespace JamesQMurphy.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> rss()
         {
-            var sb = new StringBuilder("<rss version=\"2.0\"><channel>");
+            var sb = new StringBuilder("<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\"><channel>");
             sb.AppendFormat("<title>{0}</title><link>{1}</link>", _webSiteOptions.WebSiteTitle, ToAbsoluteUrl("/"));
             sb.AppendFormat("<description>{0}</description>", "Cold brew is awesome.  So is DevOps.");
-            sb.AppendFormat("<image>{0}</image>", ToAbsoluteUrl("/apple-touch-icon.png"));
+            sb.AppendFormat("<atom:link href=\"{0}\" rel=\"self\" type=\"application/rss+xml\" />", ToAbsoluteUrl($"/blog/{nameof(rss)}"));
+            sb.AppendFormat("<image><url>{0}</url><title>{1}</title><link>{2}</link></image>", ToAbsoluteUrl("/apple-touch-icon.png"), _webSiteOptions.WebSiteTitle, ToAbsoluteUrl("/"));
             sb.Append("<language>en-us</language>");
 
             foreach(var article in await articleStore.GetLastArticlesAsync(_webSiteOptions.ArticlesInRss))
