@@ -37,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 case "DynamoDb":
                     collection.ConfigurePoco<DynamoDbArticleStore.Options>(configuration, "ArticleStore");
+                    collection.AddSingleton<DynamoDbArticleStore>();
                     collection.AddSingleton<IArticleStore, CachedArticleStore<DynamoDbArticleStore>>();
                     break;
 
