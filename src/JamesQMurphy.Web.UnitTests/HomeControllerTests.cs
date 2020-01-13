@@ -11,6 +11,7 @@ namespace JamesQMurphy.Web.UnitTests
 {
     public class HomeControllerTests
     {
+        private List<Article> _articles;
         private InMemoryArticleStore _articleStore;
         private Controllers.homeController _controller;
         private const string SITE_NAME = "TEST SITE 820ae666";
@@ -18,8 +19,8 @@ namespace JamesQMurphy.Web.UnitTests
         [SetUp]
         public void Setup()
         {
-            _articleStore = new InMemoryArticleStore();
-            _articleStore.Articles.AddRange(new Article[]
+            _articles = new List<Article>();
+            _articles.AddRange(new Article[]
             {
                 new Article()
                 {
@@ -54,6 +55,12 @@ namespace JamesQMurphy.Web.UnitTests
                 }
             });
 
+            _articleStore = new InMemoryArticleStore();
+            foreach (var article in _articles)
+            {
+                _articleStore.SafeAddArticle(article);
+            }
+
             WebSiteOptions options = new WebSiteOptions()
             {
                 WebSiteTitle = SITE_NAME
@@ -73,8 +80,8 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.IsInstanceOf<HomePageItems>(result.Model);
 
             var model = result.Model as HomePageItems;
-            Assert.AreSame(_articleStore.Articles[1], model.Article1);
-            Assert.AreSame(_articleStore.Articles[2], model.Article2);
+            Assert.AreSame(_articles[1], model.Article1);
+            Assert.AreSame(_articles[2], model.Article2);
         }
 
         [Test]

@@ -32,12 +32,13 @@ namespace Microsoft.Extensions.DependencyInjection
             switch (configuration["ArticleStore:Service"])
             {
                 case "LocalFolder":
-                    collection.AddSingleton<IArticleStore>(new LocalFolderArticleStore(configuration["ArticleStore:Path"]));
+                    collection.AddSingleton<IArticleStore>(new CachedArticleStore<LocalFolderArticleStore>(new LocalFolderArticleStore(configuration["ArticleStore:Path"])));
                     break;
 
                 case "DynamoDb":
                     collection.ConfigurePoco<DynamoDbArticleStore.Options>(configuration, "ArticleStore");
-                    collection.AddSingleton<IArticleStore, DynamoDbArticleStore>();
+                    collection.AddSingleton<DynamoDbArticleStore>();
+                    collection.AddSingleton<IArticleStore, CachedArticleStore<DynamoDbArticleStore>>();
                     break;
 
                 default: //InMemory

@@ -15,7 +15,7 @@ namespace JamesQMurphy.Web.UnitTests
         public void Setup()
         {
             articleStore = new InMemoryArticleStore();
-            controller = new Controllers.blogController(articleStore);
+            controller = new Controllers.blogController(articleStore, new DefaultMarkdownHtmlRenderer(), new WebSiteOptions());
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace JamesQMurphy.Web.UnitTests
                 PublishDate = new DateTime(year, month, 1),
                 Slug = $"{year}/{month}/{slug}"
             };
-            articleStore.Articles.Add(article);
+            articleStore.SafeAddArticle(article);
 
             var result = controller.details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);
@@ -55,7 +55,7 @@ namespace JamesQMurphy.Web.UnitTests
                 Slug = $"{year}/{month}/{slug}",
                 Description = description
             };
-            articleStore.Articles.Add(article);
+            articleStore.SafeAddArticle(article);
 
             var result = controller.details(year.ToString(), month.ToString(), slug).GetAwaiter().GetResult() as ViewResult;
             Assert.AreSame(article.Metadata, result.Model);

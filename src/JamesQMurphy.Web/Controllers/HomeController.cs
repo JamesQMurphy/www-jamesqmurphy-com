@@ -27,9 +27,7 @@ namespace JamesQMurphy.Web.Controllers
             // Need to optimize this
             var lastTwoArticles = await articleStore.GetLastArticlesAsync(2);
             var lastTwoArticlesList = lastTwoArticles.ToList();
-            var article1 = await articleStore.GetArticleAsync(lastTwoArticlesList[0].Slug);
-            var article2 = await articleStore.GetArticleAsync(lastTwoArticlesList[1].Slug);
-            var homePageItems = new HomePageItems(article1, article2);
+            var homePageItems = new HomePageItems(lastTwoArticlesList[0], lastTwoArticlesList[1]);
 
             return View(homePageItems);
         }

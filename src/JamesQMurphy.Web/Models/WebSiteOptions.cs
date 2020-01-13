@@ -13,6 +13,7 @@ namespace JamesQMurphy.Web.Models
         public string TwitterAccount { get; set; } = "JamesQMurphy";
         public string GithubAccount { get; set; } = "JamesQMurphy";
         public string CommentsEmail { get; set; } = "nowhere@local";
+        public int ArticlesInRss { get; set; } = 1;
 
         public string TwitterLink => $"https://twitter.com/{TwitterAccount}?ref_src=twsrc%5Etfw";
         public string GithubLink => $"https://github.com/{GithubAccount}";
