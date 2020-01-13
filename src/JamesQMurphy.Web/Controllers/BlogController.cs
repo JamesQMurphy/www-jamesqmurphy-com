@@ -1,19 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using JamesQMurphy.Blog;
+using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using JamesQMurphy.Blog;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
     public class blogController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
+        private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
+        private readonly WebSiteOptions _webSiteOptions;
 
-        public blogController(IArticleStore iarticleStore)
+        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions)
         {
             articleStore = iarticleStore;
+            _markdownHtmlRenderer = markdownHtmlRenderer;
+            _webSiteOptions = webSiteOptions;
         }
 
         public async Task<IActionResult> index(string year = null, string month = null)
@@ -56,6 +60,37 @@ namespace JamesQMurphy.Web.Controllers
             {
                 return NotFound();
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> rss()
+        {
+            var sb = new StringBuilder("<rss version=\"2.0\"><channel>");
+            sb.AppendFormat("<title>{0}</title><link>{1}</link>", _webSiteOptions.WebSiteTitle, Url.Content("/"));
+            sb.AppendFormat("<description>{0}</description>", "Cold brew is awesome.  So is DevOps.");
+            sb.AppendFormat("<image>{0}</image>", Url.Content("/apple-touch-icon.png"));
+            sb.Append("<language>en-us</language>");
+
+            foreach(var article in await articleStore.GetLastArticlesAsync(_webSiteOptions.ArticlesInRss))
+            {
+                sb.Append("<item>");
+                sb.AppendFormat("<title>{0}", article.Title);
+                if (!(String.IsNullOrWhiteSpace(article.Description)))
+                {
+                    sb.AppendFormat(": {0}", article.Description);
+                }
+                sb.Append("</title>");
+                sb.AppendFormat("<link>{0}</link>", Url.Content($"/blog/{article.Slug}"));
+                sb.AppendFormat("<guid isPermalink=\"false\">{0}</guid>", article.Slug);
+                sb.AppendFormat("<pubDate>{0}</pubDate>", article.PublishDate.ToString("r"));
+                sb.AppendFormat("<description>{0}</description>", _markdownHtmlRenderer.RenderHtml(article.Content));
+                sb.Append("</item>");
+            }
+            
+
+            sb.AppendFormat("</channel></rss>");
+
+            return Content(sb.ToString(), "application/rss+xml");
         }
     }
 }
