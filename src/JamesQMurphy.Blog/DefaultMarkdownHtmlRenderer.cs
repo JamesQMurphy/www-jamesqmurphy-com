@@ -7,19 +7,11 @@ namespace JamesQMurphy.Blog
 {
     public class DefaultMarkdownHtmlRenderer : IMarkdownHtmlRenderer
     {
-        public class Options
-        {
-            public string LinkBasePath { get; set; }
-            public string BlogImageBasePath { get; set; }
-        }
-
         private readonly Options _options;
         private readonly Markdig.MarkdownPipeline pipeline;
 
-        public DefaultMarkdownHtmlRenderer(Options options)
+        public DefaultMarkdownHtmlRenderer()
         {
-            _options = options;
-
             var pipelineBuilder = new Markdig.MarkdownPipelineBuilder();
             Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilder);
             Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilder);
@@ -50,22 +42,6 @@ namespace JamesQMurphy.Blog
             }
         }
 
-        private static string _combine(string link, string part)
-        {
-            if (String.IsNullOrWhiteSpace(link))
-            {
-                return part;
-            }
-            if (link.EndsWith("/") && part.StartsWith("/"))
-            {
-                return link + part.Substring(1);
-            }
-            if (link.EndsWith("/") || part.StartsWith("/"))
-            {
-                return link + part;
-            }
-            return link + "/" + part;
-        }
 
     }
 }
