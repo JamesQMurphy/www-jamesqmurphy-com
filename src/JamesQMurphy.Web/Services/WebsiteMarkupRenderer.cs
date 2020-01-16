@@ -22,14 +22,22 @@ namespace JamesQMurphy.Web.Services
         {
             if (!linkInline.Url.StartsWith("http"))
             {
-                var baseUri = new Uri(_webSiteOptions.GetSiteUrlFallbackToContext(_httpContextAccessor));
-                if (linkInline.IsImage && (!linkInline.Url.Contains('/')))
+                if (linkInline.IsImage && (!linkInline.Url.Contains('/')) && (!String.IsNullOrWhiteSpace(_webSiteOptions.ImageBasePath)))
                 {
-                    linkInline.Url = new Uri(baseUri, new Uri(new Uri(_webSiteOptions.ImageBasePath), linkInline.Url)).ToString();
+                    if (_webSiteOptions.ImageBasePath.EndsWith('/'))
+                    {
+                        linkInline.Url = $"{_webSiteOptions.ImageBasePath}{linkInline.Url}";
+                    }
+                    else
+                    {
+                        linkInline.Url = $"{_webSiteOptions.ImageBasePath}/{linkInline.Url}";
+                    }
                 }
-                else
+
+                var baseUrl = _webSiteOptions.GetSiteUrlFallbackToContext(_httpContextAccessor);
+                if (!String.IsNullOrWhiteSpace(baseUrl))
                 {
-                    linkInline.Url = new Uri(baseUri, linkInline.Url).ToString();
+                    linkInline.Url = new Uri(new Uri(baseUrl), linkInline.Url).ToString();
                 }
             }
         }

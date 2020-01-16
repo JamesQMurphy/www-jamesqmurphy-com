@@ -7,12 +7,32 @@ namespace Tests
 {
     public class HtmlRendererTests
     {
-        private IMarkdownHtmlRenderer renderer;
+        private class LinkModifyingRenderer : DefaultMarkdownHtmlRenderer
+        {
+            public string ImageBase;
+            public string LinkBase;
+
+            protected override void OnBeforeWriteLinkInline(Markdig.Syntax.Inlines.LinkInline linkInline)
+            {
+                if (linkInline.IsImage)
+                {
+                    linkInline.Url = $"{ImageBase}/{linkInline.Url}";
+                }
+                else
+                {
+                    linkInline.Url = $"{LinkBase}/{linkInline.Url}";
+                }
+            }
+        }
+
+        private IMarkdownHtmlRenderer _defaultRenderer;
+        private LinkModifyingRenderer _linkModifyingRenderer;
 
         [SetUp]
         public void Setup()
         {
-            renderer = new DefaultMarkdownHtmlRenderer();
+            _defaultRenderer = new DefaultMarkdownHtmlRenderer();
+            _linkModifyingRenderer = new LinkModifyingRenderer();
         }
 
         private static void AssertEquivalentHtml(string expected, string actual)
@@ -33,7 +53,7 @@ namespace Tests
         public void TextIsParagraph()
         {
             var text = "some text";
-            AssertEquivalentHtml($"<p>{text}</p>", renderer.RenderHtml(text));
+            AssertEquivalentHtml($"<p>{text}</p>", _defaultRenderer.RenderHtml(text));
         }
 
         [Test]
@@ -42,7 +62,7 @@ namespace Tests
             var text = "Some code;";
             var fenced = $"```\n{text}\n```";
 
-            AssertEquivalentHtml($"<pre><code>{text}\n</code></pre>", renderer.RenderHtml(fenced));
+            AssertEquivalentHtml($"<pre><code>{text}\n</code></pre>", _defaultRenderer.RenderHtml(fenced));
         }
 
         [Test]
@@ -52,7 +72,7 @@ namespace Tests
             var language = "DwimScript";
             var fenced = $"```{language}\n{text}\n```";
 
-            AssertEquivalentHtml($"<pre><code class=\"language-{language}\">{text}\n</code></pre>", renderer.RenderHtml(fenced));
+            AssertEquivalentHtml($"<pre><code class=\"language-{language}\">{text}\n</code></pre>", _defaultRenderer.RenderHtml(fenced));
         }
 
         [Test]
@@ -62,7 +82,7 @@ namespace Tests
             var codeline2 = "Some mode code;";
             var fenced = $"    {codeline1}\n    {codeline2}";
 
-            AssertEquivalentHtml($"<pre><code>{codeline1}\n{codeline2}\n</code></pre>", renderer.RenderHtml(fenced));
+            AssertEquivalentHtml($"<pre><code>{codeline1}\n{codeline2}\n</code></pre>", _defaultRenderer.RenderHtml(fenced));
         }
 
         [Test]
@@ -72,7 +92,7 @@ namespace Tests
             var imgSrc = "/a/b/image.png";
             var markdown = $"![{altText}]({imgSrc})";
 
-            AssertEquivalentHtml($"<p><img src=\"{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", renderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><img src=\"{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", _defaultRenderer.RenderHtml(markdown));
         }
 
         [Test]
@@ -82,21 +102,23 @@ namespace Tests
             var imgSrc = "image.png";
             var baseUrl = "/base";
             var markdown = $"![{altText}]({imgSrc})";
-            var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(/*baseUrl*/);
 
-            AssertEquivalentHtml($"<p><img src=\"{baseUrl}/{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
+            _linkModifyingRenderer.ImageBase = baseUrl;
+            _linkModifyingRenderer.LinkBase = "somethingElse";
+            AssertEquivalentHtml($"<p><img src=\"{baseUrl}/{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", _linkModifyingRenderer.RenderHtml(markdown));
         }
 
         [Test]
-        public void ImagesWithBaseUrl2()
+        public void LinksWithBaseUrl()
         {
-            var altText = "This is alt text";
-            var imgSrc = "image.png";
-            var baseUrl = "/base/";
-            var markdown = $"![{altText}]({imgSrc})";
-            var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(/*baseUrl*/);
+            var linkhref = "page1.htm";
+            var baseUrl = "/base2";
+            var text = "Some link";
+            var markdown = $"[{text}]({linkhref})";
 
-            AssertEquivalentHtml($"<p><img src=\"{baseUrl}{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
+            _linkModifyingRenderer.ImageBase = "somethingElse";
+            _linkModifyingRenderer.LinkBase = baseUrl;
+            AssertEquivalentHtml($"<p><a href=\"{baseUrl}/{linkhref}\">{text}</a></p>", _linkModifyingRenderer.RenderHtml(markdown));
         }
 
         [Test]
@@ -104,7 +126,7 @@ namespace Tests
         {
             var markdown = "Here[^1] is a footnote.\n\n[^1]: Footnote\n\nOther text.";
             var expected = @"<p>Here<a id=""fnref:1"" href=""#fn:1"" class=""footnote-ref""><sup>1</sup></a> is a footnote.</p><p>Other text.</p><div class=""footnotes""><hr /><ol><li id=""fn:1""><p>Footnote<a href = ""#fnref:1"" class=""footnote-back-ref"">&#8617;</a></p></li></ol></div>";
-            var actual = renderer.RenderHtml(markdown);
+            var actual = _defaultRenderer.RenderHtml(markdown);
 
             AssertEquivalentHtml(expected, actual);
         }
