@@ -20,9 +20,9 @@ namespace JamesQMurphy.Web.Services
 
         protected override void OnBeforeWriteLinkInline(LinkInline linkInline)
         {
-            var baseUri = new Uri(_webSiteOptions.GetSiteUrlFallbackToContext(_httpContextAccessor));
             if (!linkInline.Url.StartsWith("http"))
             {
+                var baseUri = new Uri(_webSiteOptions.GetSiteUrlFallbackToContext(_httpContextAccessor));
                 if (linkInline.IsImage && (!linkInline.Url.Contains('/')))
                 {
                     linkInline.Url = new Uri(baseUri, new Uri(new Uri(_webSiteOptions.ImageBasePath), linkInline.Url)).ToString();
