@@ -49,3 +49,22 @@ namespace Microsoft.Extensions.DependencyInjection
         }
     }
 }
+
+namespace JamesQMurphy.Web.Extensions
+{
+    public static class MiscellaneousExtensions
+    {
+        public static string GetSiteUrlFallbackToContext(this Web.Models.WebSiteOptions webSiteOptions, Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+        {
+            if (!String.IsNullOrWhiteSpace(webSiteOptions.SiteUrl))
+            {
+                return webSiteOptions.SiteUrl;
+            }
+            if (httpContextAccessor?.HttpContext?.Request != null)
+            {
+                return $"{httpContextAccessor.HttpContext.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host.Value}";
+            }
+            return String.Empty;
+        }
+    }
+}

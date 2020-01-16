@@ -7,7 +7,6 @@ namespace JamesQMurphy.Blog
 {
     public class DefaultMarkdownHtmlRenderer : IMarkdownHtmlRenderer
     {
-        private readonly Options _options;
         private readonly Markdig.MarkdownPipeline pipeline;
 
         public DefaultMarkdownHtmlRenderer()
@@ -35,13 +34,16 @@ namespace JamesQMurphy.Blog
 
         private void Renderer_ObjectWriteBefore(Markdig.Renderers.IMarkdownRenderer arg1, Markdig.Syntax.MarkdownObject obj)
         {
-            var link = obj as Markdig.Syntax.Inlines.LinkInline;
-            if (link != null && link.IsImage && !(link.Url.StartsWith("/")))
+            var linkInline = obj as Markdig.Syntax.Inlines.LinkInline;
+            if (linkInline != null )
             {
-                link.Url = $"{imageBasePath}{link.Url}";
+                OnBeforeWriteLinkInline(linkInline);
             }
         }
 
+        protected virtual void OnBeforeWriteLinkInline(Markdig.Syntax.Inlines.LinkInline linkInline)
+        {
+        }
 
     }
 }

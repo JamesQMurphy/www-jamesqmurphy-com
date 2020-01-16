@@ -82,7 +82,7 @@ namespace Tests
             var imgSrc = "image.png";
             var baseUrl = "/base";
             var markdown = $"![{altText}]({imgSrc})";
-            var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(baseUrl);
+            var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(/*baseUrl*/);
 
             AssertEquivalentHtml($"<p><img src=\"{baseUrl}/{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
         }
@@ -94,7 +94,7 @@ namespace Tests
             var imgSrc = "image.png";
             var baseUrl = "/base/";
             var markdown = $"![{altText}]({imgSrc})";
-            var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(baseUrl);
+            var rendererWithBaseUrl = new DefaultMarkdownHtmlRenderer(/*baseUrl*/);
 
             AssertEquivalentHtml($"<p><img src=\"{baseUrl}{imgSrc}\" class=\"img-fluid\" alt=\"{altText}\"/>", rendererWithBaseUrl.RenderHtml(markdown));
         }

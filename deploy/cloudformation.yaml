@@ -345,6 +345,7 @@ Resources:
         Variables:
           AppName: !Sub '${AppNameParameter}-${StageParameter}'
           CommentsEmail: !Ref CommentsEmailParameter
+          SiteUrl: !Sub https://${DomainNameParameter}
           ImageBasePath: /blogimages
           DataProtection: AWS
           UseStaticFiles: "false"
