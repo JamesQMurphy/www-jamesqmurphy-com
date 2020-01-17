@@ -92,7 +92,7 @@ namespace JamesQMurphy.Web
             services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddRazorPages();
 
-            services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
+            services.AddTransient<IMarkdownHtmlRenderer, WebsiteMarkupRenderer>();
             services.AddArticleStoreServices(Configuration);
 
             switch (Configuration["Email:Service"])
