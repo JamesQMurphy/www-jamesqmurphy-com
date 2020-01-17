@@ -12,13 +12,11 @@ namespace JamesQMurphy.Web.Controllers
     public class homeController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
-        private readonly WebSiteOptions webSiteOptions;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public homeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions, UserManager<ApplicationUser> userMgr)
+        public homeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions, UserManager<ApplicationUser> userMgr) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
-            this.webSiteOptions = webSiteOptions;
             userManager = userMgr;
         }
 
@@ -42,7 +40,7 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult privacy()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
-            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteOptions.WebSiteTitle);
+            ViewData[Constants.VIEWDATA_MARKDOWN] = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", WebSiteOptions.WebSiteTitle);
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View("Article");
         }

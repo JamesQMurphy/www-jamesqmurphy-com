@@ -34,7 +34,7 @@ namespace JamesQMurphy.Web.Services
                     }
                 }
 
-                var baseUrl = _webSiteOptions.GetSiteUrlFallbackToContext(_httpContextAccessor);
+                var baseUrl = _webSiteOptions.GetSiteUrlFallbackToContext(_httpContextAccessor?.HttpContext);
                 if (!String.IsNullOrWhiteSpace(baseUrl))
                 {
                     linkInline.Url = new Uri(new Uri(baseUrl), linkInline.Url).ToString();

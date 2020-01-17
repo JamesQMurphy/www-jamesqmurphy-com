@@ -11,13 +11,11 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly IArticleStore articleStore;
         private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
-        private readonly WebSiteOptions _webSiteOptions;
 
-        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions)
+        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
             _markdownHtmlRenderer = markdownHtmlRenderer;
-            _webSiteOptions = webSiteOptions;
         }
 
         public async Task<IActionResult> index(string year = null, string month = null)
@@ -66,13 +64,13 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> rss()
         {
             var sb = new StringBuilder("<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\"><channel>");
-            sb.AppendFormat("<title>{0}</title><link>{1}</link>", _webSiteOptions.WebSiteTitle, ToAbsoluteUrl("/"));
+            sb.AppendFormat("<title>{0}</title><link>{1}</link>", WebSiteOptions.WebSiteTitle, ToAbsoluteUrl("/"));
             sb.AppendFormat("<description>{0}</description>", "Cold brew is awesome.  So is DevOps.");
             sb.AppendFormat("<atom:link href=\"{0}\" rel=\"self\" type=\"application/rss+xml\" />", ToAbsoluteUrl($"/blog/{nameof(rss)}"));
-            sb.AppendFormat("<image><url>{0}</url><title>{1}</title><link>{2}</link></image>", ToAbsoluteUrl("/apple-touch-icon.png"), _webSiteOptions.WebSiteTitle, ToAbsoluteUrl("/"));
+            sb.AppendFormat("<image><url>{0}</url><title>{1}</title><link>{2}</link></image>", ToAbsoluteUrl("/apple-touch-icon.png"), WebSiteOptions.WebSiteTitle, ToAbsoluteUrl("/"));
             sb.Append("<language>en-us</language>");
 
-            foreach(var article in await articleStore.GetLastArticlesAsync(_webSiteOptions.ArticlesInRss))
+            foreach(var article in await articleStore.GetLastArticlesAsync(WebSiteOptions.ArticlesInRss))
             {
                 sb.Append("<item>");
                 sb.AppendFormat("<title>{0}", article.Title);
@@ -92,11 +90,6 @@ namespace JamesQMurphy.Web.Controllers
             sb.AppendFormat("</channel></rss>");
 
             return Content(sb.ToString(), "application/rss+xml");
-        }
-
-        private string ToAbsoluteUrl(string relativeUrl)
-        {
-            return new Uri(new Uri(Request.Scheme + "://" + Request.Host.Value), Url.Content(relativeUrl)).ToString();
         }
     }
 }

@@ -54,15 +54,15 @@ namespace JamesQMurphy.Web.Extensions
 {
     public static class MiscellaneousExtensions
     {
-        public static string GetSiteUrlFallbackToContext(this Web.Models.WebSiteOptions webSiteOptions, Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+        public static string GetSiteUrlFallbackToContext(this Web.Models.WebSiteOptions webSiteOptions, Microsoft.AspNetCore.Http.HttpContext httpContext)
         {
             if (!String.IsNullOrWhiteSpace(webSiteOptions.SiteUrl))
             {
                 return webSiteOptions.SiteUrl;
             }
-            if (httpContextAccessor?.HttpContext?.Request != null)
+            if (httpContext?.Request != null)
             {
-                return $"{httpContextAccessor.HttpContext.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host.Value}";
+                return $"{httpContext.Request.Scheme}://{httpContext.Request.Host.Value}";
             }
             return String.Empty;
         }
