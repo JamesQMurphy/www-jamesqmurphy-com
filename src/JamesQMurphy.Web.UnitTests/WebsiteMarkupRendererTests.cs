@@ -36,7 +36,7 @@ namespace JamesQMurphy.Web.UnitTests
                 SiteUrl = baseUrl
             };
             var renderer = new WebsiteMarkupRenderer(webSiteOptions, null);
-            AssertEquivalentHtml($"<p><a href=\"{baseUrl}/{linkhref}\">{text}</a></p>", renderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><a href=\"{baseUrl}/{linkhref}\" rel=\"nofollow\">{text}</a></p>", renderer.RenderHtml(markdown));
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace JamesQMurphy.Web.UnitTests
                 SiteUrl = baseUrl
             };
             var renderer = new WebsiteMarkupRenderer(webSiteOptions, null);
-            AssertEquivalentHtml($"<p><a href=\"{linkhref}\">{text}</a></p>", renderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><a href=\"{linkhref}\" rel=\"nofollow\">{text}</a></p>", renderer.RenderHtml(markdown));
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace JamesQMurphy.Web.UnitTests
                 SiteUrl = baseUrl
             };
             var renderer = new WebsiteMarkupRenderer(webSiteOptions, null);
-            AssertEquivalentHtml($"<p><a href=\"{baseUrl}/{linkhref}\">{text}</a></p>", renderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><a href=\"{baseUrl}/{linkhref}\" rel=\"nofollow\">{text}</a></p>", renderer.RenderHtml(markdown));
         }
 
         [Test]
@@ -87,7 +87,7 @@ namespace JamesQMurphy.Web.UnitTests
                 SiteUrl = baseUrl
             };
             var renderer = new WebsiteMarkupRenderer(webSiteOptions, null);
-            AssertEquivalentHtml($"<p><a href=\"{linkhref}\">{text}</a></p>", renderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><a href=\"{linkhref}\" rel=\"nofollow\">{text}</a></p>", renderer.RenderHtml(markdown));
         }
 
         private static void AssertEquivalentHtml(string expected, string actual)

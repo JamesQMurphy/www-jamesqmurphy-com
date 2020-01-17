@@ -118,7 +118,7 @@ namespace Tests
 
             _linkModifyingRenderer.ImageBase = "somethingElse";
             _linkModifyingRenderer.LinkBase = baseUrl;
-            AssertEquivalentHtml($"<p><a href=\"{baseUrl}/{linkhref}\">{text}</a></p>", _linkModifyingRenderer.RenderHtml(markdown));
+            AssertEquivalentHtml($"<p><a href=\"{baseUrl}/{linkhref}\" rel=\"nofollow\">{text}</a></p>", _linkModifyingRenderer.RenderHtml(markdown));
         }
 
         [Test]
