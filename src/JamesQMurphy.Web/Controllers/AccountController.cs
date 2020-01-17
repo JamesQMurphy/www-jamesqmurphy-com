@@ -1,4 +1,5 @@
 ﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.AccountViewModels;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -23,8 +24,9 @@ namespace JamesQMurphy.Web.Controllers
         (
             ApplicationSignInManager<ApplicationUser> signInManager,
             ILogger<accountController> logger,
-            IEmailGenerator emailGenerator
-        )
+            IEmailGenerator emailGenerator,
+            WebSiteOptions webSiteOptions
+        ) : base(webSiteOptions)
         {
             _signInManager = signInManager;
             _logger = logger;

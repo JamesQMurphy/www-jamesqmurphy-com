@@ -343,6 +343,7 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
+          WebSiteTitle: Cold-Brewed DevOps
           AppName: !Sub '${AppNameParameter}-${StageParameter}'
           CommentsEmail: !Ref CommentsEmailParameter
           SiteUrl: !Sub https://${DomainNameParameter}
