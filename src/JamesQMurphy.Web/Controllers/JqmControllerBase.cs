@@ -22,6 +22,7 @@ namespace JamesQMurphy.Web.Controllers
         public JqmControllerBase(WebSiteOptions webSiteOptions)
         {
             WebSiteOptions = webSiteOptions;
+            AlertMessageCollection = new AlertMessageCollection(TempData);
         }
 
         protected async Task<ApplicationUser> GetApplicationUserAsync(UserManager<ApplicationUser> userManager)

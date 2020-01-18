@@ -1,0 +1,18 @@
+﻿
+@{
+    var alertMessageCollection = new AlertMessageCollection(TempData);
+}
+
+@foreach(var alertMessageType in (AlertMessageTypes[])Enum.GetValues(typeof(AlertMessageTypes)))
+{
+    @foreach(var alertMessage in alertMessageCollection.GetAlertMessages(alertMessageType))
+    {
+    <div class="alert alert-@(alertMessageType.ToString().ToLowerInvariant())" role="alert">
+        @if (!String.IsNullOrWhiteSpace(alertMessage.Title))
+        {
+            <h4 class="alert-heading">@alertMessage.Title</h4>
+        }
+        <p>@alertMessage.Message</p>
+    </div>
+    }
+}
