@@ -63,5 +63,30 @@ namespace Tests
                 }
             }
         }
+
+        [Test]
+        public void NoTitle()
+        {
+            var message = "Something secondary";
+            _alertMessageCollection.AddSecondaryAlert(message);
+
+            foreach (var messageType in (AlertMessageTypes[])Enum.GetValues(typeof(AlertMessageTypes)))
+            {
+                if (messageType == AlertMessageTypes.Secondary)
+                {
+                    Assert.AreEqual(1, _alertMessageCollection.GetCount(messageType));
+                    var messages = _alertMessageCollection.GetAlertMessages(messageType).ToList();
+                    Assert.AreEqual(1, messages.Count);
+                    Assert.AreEqual(message, messages[0].Message);
+                    Assert.IsTrue(String.IsNullOrEmpty(messages[0].Title));
+                }
+                else
+                {
+                    Assert.AreEqual(0, _alertMessageCollection.GetCount(messageType));
+                    Assert.IsEmpty(_alertMessageCollection.GetAlertMessages(messageType));
+                }
+            }
+
+        }
     }
 }

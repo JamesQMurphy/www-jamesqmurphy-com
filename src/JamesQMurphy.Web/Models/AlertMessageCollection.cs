@@ -49,8 +49,8 @@ namespace JamesQMurphy.Web.Models
                 yield return new AlertMessage
                 {
                     AlertMessageType = alertMessageType,
-                    Message = _backingDictionary[_getMessageKey(alertMessageType, i)].ToString(),
-                    Title = _backingDictionary[_getTitleKey(alertMessageType, i)].ToString()
+                    Message = _backingDictionary[_getMessageKey(alertMessageType, i)]?.ToString() ?? "",
+                    Title = _backingDictionary[_getTitleKey(alertMessageType, i)]?.ToString() ?? ""
                 };
             }
         }

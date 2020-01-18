@@ -45,11 +45,11 @@ namespace JamesQMurphy.Web.Controllers
 
                 if (result.Success)
                 {
-                    ViewData["SuccessMsg"] = $"Email sent to {model.Email}\n{result.Details}";
+                    AlertMessageCollection.AddSuccessAlert($"Email sent to {model.Email}\n{result.Details}", "Email Sent!");
                 }
                 else
                 {
-                    ViewData["FailMsg"] = $"Email failure\n{result.Details}";
+                    AlertMessageCollection.AddDangerAlert(result.Details, "Email Failure");
                 }
 
             }

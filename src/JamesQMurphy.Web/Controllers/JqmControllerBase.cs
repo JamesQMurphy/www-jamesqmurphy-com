@@ -11,7 +11,19 @@ namespace JamesQMurphy.Web.Controllers
     public abstract class JqmControllerBase : Controller
     {
         public WebSiteOptions WebSiteOptions { get; private set; }
-        public AlertMessageCollection AlertMessageCollection { get; private set; }
+
+        private AlertMessageCollection _alertMessageCollection = null;
+        public AlertMessageCollection AlertMessageCollection
+        {
+            get
+            {
+                if (_alertMessageCollection == null && TempData != null)
+                {
+                    _alertMessageCollection = new AlertMessageCollection(TempData);
+                }
+                return _alertMessageCollection;
+            }
+        }
 
         private ApplicationUser _applicationUser = null;
 
@@ -22,7 +34,6 @@ namespace JamesQMurphy.Web.Controllers
         public JqmControllerBase(WebSiteOptions webSiteOptions)
         {
             WebSiteOptions = webSiteOptions;
-            AlertMessageCollection = new AlertMessageCollection(TempData);
         }
 
         protected async Task<ApplicationUser> GetApplicationUserAsync(UserManager<ApplicationUser> userManager)
