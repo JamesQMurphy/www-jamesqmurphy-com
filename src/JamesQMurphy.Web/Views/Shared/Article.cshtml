@@ -25,7 +25,7 @@
 <article>
     @if (!String.IsNullOrWhiteSpace(title))
     {
-        <h1 class="display-4">@title</h1>
+        <vc:title-heading title="@title"></vc:title-heading>
     }
     @if (Model != null)
     {
