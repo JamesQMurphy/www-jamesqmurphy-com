@@ -11,6 +11,8 @@ namespace JamesQMurphy.Web.Controllers
     public abstract class JqmControllerBase : Controller
     {
         public WebSiteOptions WebSiteOptions { get; private set; }
+        public AlertMessageCollection AlertMessageCollection { get; private set; }
+
         private ApplicationUser _applicationUser = null;
 
         protected string CurrentUserName => this.User?.Identity?.Name;

@@ -1,6 +1,5 @@
-﻿using System.IO;
+﻿using JamesQMurphy.Web.Models;
 using NUnit.Framework;
-using JamesQMurphy.Blog;
 using System;
 using System.Linq;
 using System.Collections.Generic;
