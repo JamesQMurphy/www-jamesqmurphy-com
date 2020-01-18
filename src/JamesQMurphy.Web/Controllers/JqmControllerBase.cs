@@ -11,6 +11,20 @@ namespace JamesQMurphy.Web.Controllers
     public abstract class JqmControllerBase : Controller
     {
         public WebSiteOptions WebSiteOptions { get; private set; }
+
+        private AlertMessageCollection _alertMessageCollection = null;
+        public AlertMessageCollection AlertMessageCollection
+        {
+            get
+            {
+                if (_alertMessageCollection == null && TempData != null)
+                {
+                    _alertMessageCollection = new AlertMessageCollection(TempData);
+                }
+                return _alertMessageCollection;
+            }
+        }
+
         private ApplicationUser _applicationUser = null;
 
         protected string CurrentUserName => this.User?.Identity?.Name;

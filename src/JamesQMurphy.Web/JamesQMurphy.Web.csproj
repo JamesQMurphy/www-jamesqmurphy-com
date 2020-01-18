@@ -49,6 +49,10 @@
     <ProjectReference Include="..\JamesQMurphy.Email.Aws\JamesQMurphy.Email.Aws.csproj" />
     <ProjectReference Include="..\JamesQMurphy.Email\JamesQMurphy.Email.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Views\Shared\Components\TitleHeading\" />
+  </ItemGroup>
 
 
   <Target Name="NpmInstall" BeforeTargets="Build">
