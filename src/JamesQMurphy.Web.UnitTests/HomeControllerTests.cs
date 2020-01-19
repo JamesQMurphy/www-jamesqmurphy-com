@@ -96,7 +96,7 @@ namespace JamesQMurphy.Web.UnitTests
         {
             var result = _controller.privacy() as ViewResult;
             Assert.IsInstanceOf<ViewResult>(result);
-            string markdownContent = result.ViewData[Constants.VIEWDATA_MARKDOWN].ToString();
+            string markdownContent = (result.Model as Article).Content;
             Assert.IsTrue(markdownContent.Contains(SITE_NAME));
         }
 
