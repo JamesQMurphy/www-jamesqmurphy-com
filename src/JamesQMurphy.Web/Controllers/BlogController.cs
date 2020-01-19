@@ -51,8 +51,7 @@ namespace JamesQMurphy.Web.Controllers
                 {
                     ViewData[Constants.VIEWDATA_PAGETITLE] = $"{article.Title}: {article.Description}";
                 }
-                ViewData[Constants.VIEWDATA_MARKDOWN] = article.Content;
-                return View("Article", article.Metadata);
+                return View(article);
             }
             else
             {
