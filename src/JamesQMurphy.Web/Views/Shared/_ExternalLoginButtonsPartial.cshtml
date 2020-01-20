@@ -1,0 +1,25 @@
+﻿@using System.Linq
+@using Microsoft.AspNetCore.Identity
+@using JamesQMurphy.Auth
+@model JamesQMurphy.Web.Models.AccountViewModels.LoginViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+
+
+    <section>
+        @{
+            var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            if (loginProviders.Count > 0)
+            {
+                <form asp-action="externallogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                    <div>
+                        <p>
+                            @foreach (var provider in loginProviders)
+                            {
+                                <button type="submit" class="btn btn-secondary" name="provider" value="@provider.Name" title="Sign in using your @provider.DisplayName account">Sign in with @provider.DisplayName</button>
+                            }
+                        </p>
+                    </div>
+                </form>
+            }
+        }
+    </section>
