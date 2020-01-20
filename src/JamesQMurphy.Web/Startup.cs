@@ -86,6 +86,12 @@ namespace JamesQMurphy.Web
                     options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
                     options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
                     options.CallbackPath = "/account/login-twitter";
+                })
+                .AddGitHub(options =>
+                {
+                    options.ClientId = Configuration["Authentication:GitHub:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:GitHub:ClientSecret"];
+                    options.CallbackPath = "/account/login-github";
                 });
 
             services.ConfigurePoco<WebSiteOptions>(Configuration);
