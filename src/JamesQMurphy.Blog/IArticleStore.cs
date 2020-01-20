@@ -7,7 +7,7 @@ namespace JamesQMurphy.Blog
     public interface IArticleStore
     {
         Task<Article> GetArticleAsync(string slug);
-        Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate);
-        Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles);
+        Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles);
     }
 }

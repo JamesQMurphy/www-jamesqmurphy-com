@@ -8,29 +8,14 @@ namespace JamesQMurphy.Blog
     public class DefaultMarkdownHtmlRenderer : IMarkdownHtmlRenderer
     {
         private readonly Markdig.MarkdownPipeline pipeline;
-        private readonly string imageBasePath;
 
-        public DefaultMarkdownHtmlRenderer(string ImageBasePath = "")
+        public DefaultMarkdownHtmlRenderer()
         {
             var pipelineBuilder = new Markdig.MarkdownPipelineBuilder();
             Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilder);
+            Markdig.MarkdownExtensions.UseNoFollowLinks(pipelineBuilder);
             Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilder);
             pipeline = pipelineBuilder.Build();
-            if (ImageBasePath == null)
-            {
-                imageBasePath = "";
-            }
-            else
-            {
-                if (ImageBasePath.EndsWith("/"))
-                {
-                    imageBasePath = ImageBasePath;
-                }
-                else
-                {
-                    imageBasePath = ImageBasePath + "/";
-                }
-            }
         }
 
         public string RenderHtml(string markdown)
@@ -50,11 +35,16 @@ namespace JamesQMurphy.Blog
 
         private void Renderer_ObjectWriteBefore(Markdig.Renderers.IMarkdownRenderer arg1, Markdig.Syntax.MarkdownObject obj)
         {
-            var link = obj as Markdig.Syntax.Inlines.LinkInline;
-            if (link != null && link.IsImage && !(link.Url.StartsWith("/")))
+            var linkInline = obj as Markdig.Syntax.Inlines.LinkInline;
+            if (linkInline != null )
             {
-                link.Url = $"{imageBasePath}{link.Url}";
+                OnBeforeWriteLinkInline(linkInline);
             }
         }
+
+        protected virtual void OnBeforeWriteLinkInline(Markdig.Syntax.Inlines.LinkInline linkInline)
+        {
+        }
+
     }
 }

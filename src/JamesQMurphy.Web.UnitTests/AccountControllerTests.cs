@@ -27,7 +27,8 @@ namespace JamesQMurphy.Web.UnitTests
             _controller = new accountController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
                 _serviceProvider.GetService<ILogger<accountController>>(),
-                _emailGenerator);
+                _emailGenerator,
+                new WebSiteOptions());
         }
 
         [Test]

@@ -19,6 +19,7 @@
 
     <link rel="stylesheet" href="~/dist/css/style.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="alternate" type="application/rss+xml" title="@webSiteTitle - RSS" href="/blog/rss" />
 </head>
 <body>
     <header>
@@ -37,6 +38,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="home" asp-action="about">About</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="~/contact">Contact</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -44,6 +48,7 @@
     </header>
     <div class="container">
         <partial name="_CookieConsentPartial" />
+        <partial name="_AlertMessagesPartial" />
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -51,7 +56,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - @webSiteTitle - <a asp-area="" asp-controller="home" asp-action="privacy">Privacy</a>
+            &copy; 2019-2020 @webSiteTitle &nbsp; <a asp-area="" asp-controller="home" asp-action="privacy">Privacy</a>
         </div>
     </footer>
 
