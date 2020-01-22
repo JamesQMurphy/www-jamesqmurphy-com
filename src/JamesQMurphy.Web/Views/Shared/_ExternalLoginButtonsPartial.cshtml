@@ -13,12 +13,12 @@
             {
                 <form asp-action="@nameof(accountController.loginexternal)" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
                     <div>
-                        <p>
-                            @foreach (var provider in loginProviders)
-                            {
-                                <button type="submit" class="btn btn-secondary" name="provider" value="@provider.Name" title="Sign in using your @provider.DisplayName account">Sign in with @provider.DisplayName</button>
-                            }
-                        </p>
+                        @foreach (var provider in loginProviders)
+                        {
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-secondary w-100" name="provider" value="@provider.Name" title="Sign in using your @provider.DisplayName account">Sign in with @provider.DisplayName</button>
+                        </div>
+                        }
                     </div>
                 </form>
             }

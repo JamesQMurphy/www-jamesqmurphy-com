@@ -11,8 +11,14 @@
 }
 
 <vc:title-heading title="@ViewData["Title"]"></vc:title-heading>
+<div class="row mt-3">
+    <div class="col-sm-8 col-md-6 col-lg-5">
+        <partial name="_ExternalLoginButtonsPartial" />
+    </div>
+</div>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-sm-8 col-md-6 col-lg-5">
+        <hr />
         <section>
             <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
                 <div asp-validation-summary="All" class="text-danger"></div>
@@ -22,7 +28,10 @@
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Password"></label>
+                    <div class="d-flex justify-content-between">
+                        <label asp-for="Password"></label>
+                        <a asp-action="ForgotPassword">Forgot your password?</a>
+                    </div>
                     <input asp-for="Password" class="form-control" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
@@ -35,23 +44,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Log in</button>
+                    <button type="submit" class="btn btn-primary w-100">Sign in with Email</button>
                 </div>
                 <div class="form-group">
                     <p>
-                        <a asp-action="ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a>
+                        <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Sign up as a new user</a>
                     </p>
                 </div>
             </form>
         </section>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        <partial name="_ExternalLoginButtonsPartial" />
     </div>
 </div>
 

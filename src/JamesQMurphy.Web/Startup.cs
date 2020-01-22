@@ -110,7 +110,11 @@ namespace JamesQMurphy.Web
 
             // The "new" way to do AddMvc()
             services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-            services.AddRazorPages();
+            var mvcBuilder = services.AddRazorPages();
+#if DEBUG
+            // This lets you edit razor files while the app is running
+            mvcBuilder.AddRazorRuntimeCompilation();
+#endif
 
             services.AddTransient<IMarkdownHtmlRenderer, WebsiteMarkupRenderer>();
             services.AddArticleStoreServices(Configuration);
