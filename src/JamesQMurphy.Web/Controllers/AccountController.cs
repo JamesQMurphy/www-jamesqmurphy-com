@@ -45,6 +45,14 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        public IActionResult myclaims()
+        {
+            return View();
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> login(string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -75,6 +83,7 @@ namespace JamesQMurphy.Web.Controllers
                         _logger.LogInformation("User logged in.");
                         return RedirectToLocal(returnUrl);
                     }
+                    // TODO: cleanup
                     //if (result.RequiresTwoFactor)
                     //{
                     //    return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
@@ -92,6 +101,74 @@ namespace JamesQMurphy.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// This is where the "Sign in with Twitter/GitHub" buttons post.  The method redirects the
+        /// browser to the appropriate provider's OAuth page, passing along the callback URL.
+        /// </summary>
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult loginexternal(string provider, string returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(loginexternalcallback), "account", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+        }
+
+        /// <summary>
+        /// This is where the external providers send the browser after they've authenticated (or *not*
+        /// authenticated) the user.  If they've been authenticated, we log them in if they've already
+        /// registered, or send them to the registration page if they're new.
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <param name="remoteError"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> loginexternalcallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                _logger.LogError($"Error from external provider: {remoteError}");
+                return RedirectToAction(nameof(login));
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(login));
+            }
+
+            _logger.LogInformation($"Callback from LoginProvider={info.LoginProvider} ProviderKey={info.ProviderKey} ProviderDisplayName={info.ProviderDisplayName}");
+            foreach (var claim in info.Principal.Claims)
+            {
+                _logger.LogDebug($"Claim: Type={claim.Type} Value={claim.Value} Issuer={claim.Issuer}");
+            }
+
+            // TODO: handle the case where user already logged in and they just want to link external account
+
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Login succeeded; user already has login");
+                // TODO: fetch image
+
+                return RedirectToLocal(returnUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                // TODO: handle locked out case
+                _logger.LogInformation("User is locked out");
+                return RedirectToAction(nameof(login));
+            }
+            else
+            {
+                _logger.LogInformation("Need to create login for user; redirecting");
+                return RedirectToAction(nameof(registerexternal));
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> logout(string returnUrl = null)
         {
@@ -99,6 +176,7 @@ namespace JamesQMurphy.Web.Controllers
             _logger.LogInformation("User logged out.");
             return RedirectToLocal(returnUrl);
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -207,6 +285,119 @@ namespace JamesQMurphy.Web.Controllers
             }
 
             // If we got this far, something failed; redisplay form
+            return View(model);
+        }
+
+        /// <summary>
+        /// The browser gets redirected here from <ref>loginexternalcallback</ref>, if they've
+        /// been authenticated but they're not registered
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> registerexternal(string returnUrl = null)
+        {
+            if (IsLoggedIn)
+            {
+                return RedirectToAction(nameof(register));
+            }
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(register));
+            }
+
+            var proposedUserName = externalLoginInfo.Principal?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
+
+            var userFromProposedUsername = string.IsNullOrWhiteSpace(proposedUserName) ? null : await _userManager.FindByNameAsync(proposedUserName);
+            var model = new RegisterUsernameViewModel
+            {
+                UserName = proposedUserName
+            };
+
+            if (userFromProposedUsername != null)
+            {
+                ModelState.AddModelError(String.Empty, USER_ALREADY_TAKEN_MESSAGE);
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> registerexternal(RegisterUsernameViewModel model, string returnUrl = null)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            if (IsLoggedIn)
+            {
+                return RedirectToAction(nameof(register));
+            }
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(register));
+            }
+
+            IdentityResult result = IdentityResult.Failed();
+            if (ModelState.IsValid)
+            {
+                // Check if username has been taken
+                // TODO: Should just let CreateAsync return an error, not this if/then stuff
+                _logger.LogDebug($"Model valid; calling FindByNameAsyc({model.UserName})");
+                var userFromProposedUsername = await _userManager.FindByNameAsync(model.UserName);
+                if (userFromProposedUsername != null)
+                {
+                    _logger.LogDebug($"Username {model.UserName} already exists; redisplay form");
+                    result = IdentityResult.Failed(new IdentityError { Description = USER_ALREADY_TAKEN_MESSAGE });
+                }
+                else
+                {
+                    // Create the new user (without a password) and add the external login
+                    _logger.LogDebug($"Creating username {model.UserName}");
+                    var newUser = new ApplicationUser { UserName = model.UserName };
+                    result = await _userManager.CreateAsync(newUser);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogDebug($"User created; adding login for external provider {externalLoginInfo.LoginProvider}({externalLoginInfo.ProviderDisplayName})");
+                        result = await _userManager.AddLoginAsync(newUser, externalLoginInfo);
+                    }
+                }
+            }
+
+            if (result.Succeeded)
+            {
+                // Actually log in as the user
+                var signInresult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                if (signInresult.Succeeded)
+                {
+                    _logger.LogDebug("Login succeeded; newly created login");
+                    return RedirectToLocal(returnUrl);
+                }
+                else
+                {
+                    _logger.LogWarning($"Login failed for new user {externalLoginInfo.LoginProvider} {externalLoginInfo.ProviderKey}");
+                    return RedirectToAction(nameof(login));
+                }
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(String.Empty, error.Description);
+                }
+            }
+
+            // If we got this far, something failed; redisplay form
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View(model);
         }
 
@@ -339,174 +530,7 @@ namespace JamesQMurphy.Web.Controllers
             return View();
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult myclaims()
-        {
-            return View();
-        }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public IActionResult externallogin(string provider, string returnUrl = null)
-        {
-            // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(externallogincallback), "account", new { returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> externallogincallback(string returnUrl = null, string remoteError = null)
-        {
-            if (remoteError != null)
-            {
-                _logger.LogError($"Error from external provider: {remoteError}");
-                return RedirectToAction(nameof(login));
-            }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
-                return RedirectToAction(nameof(login));
-            }
-
-            _logger.LogInformation($"Callback from LoginProvider={info.LoginProvider} ProviderKey={info.ProviderKey} ProviderDisplayName={info.ProviderDisplayName}");
-            foreach(var claim in info.Principal.Claims)
-            {
-                _logger.LogDebug($"Claim: Type={claim.Type} Value={claim.Value} Issuer={claim.Issuer}");
-            }
-
-            // TODO: handle the case where user already logged in and they just want to link external account
-
-            // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-            if (result.Succeeded)
-            {
-                _logger.LogInformation("Login succeeded; user already has login");
-                // TODO: fetch image
-
-                return RedirectToLocal(returnUrl);
-            }
-            if (result.IsLockedOut)
-            {
-                // TODO: handle locked out case
-                _logger.LogInformation("User is locked out");
-                return RedirectToAction(nameof(login));
-            }
-            else
-            {
-                _logger.LogInformation("Need to create login for user; redirecting");
-                return RedirectToAction(nameof(registerexternal));
-            }
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> registerexternal(string returnUrl = null)
-        {
-            if (IsLoggedIn)
-            {
-                return RedirectToAction(nameof(register));
-            }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
-                return RedirectToAction(nameof(register));
-            }
-
-            var proposedUserName = info?.Principal?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
-
-            var userFromProposedUsername = string.IsNullOrWhiteSpace(proposedUserName) ? null : await _userManager.FindByNameAsync(proposedUserName);
-            var model = new RegisterUsernameViewModel
-            {
-                UserName = proposedUserName
-            };
-
-            if (userFromProposedUsername != null)
-            {
-                ModelState.AddModelError(String.Empty, USER_ALREADY_TAKEN_MESSAGE);
-            }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
-            return View(model);
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> registerexternal(RegisterUsernameViewModel model, string returnUrl = null)
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-            if (IsLoggedIn)
-            {
-                return RedirectToAction(nameof(register));
-            }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
-                return RedirectToAction(nameof(register));
-            }
-
-            IdentityResult result = IdentityResult.Failed();
-            if (ModelState.IsValid)
-            {
-                // Check if username has been taken
-                _logger.LogDebug($"Model valid; calling FindByNameAsyc({model.UserName})");
-                var userFromProposedUsername = await _userManager.FindByNameAsync(model.UserName);
-                if (userFromProposedUsername != null)
-                {
-                    _logger.LogDebug($"Username {model.UserName} already exists; redisplay form");
-                    result = IdentityResult.Failed(new IdentityError { Description = USER_ALREADY_TAKEN_MESSAGE });
-                }
-                else
-                {
-                    // Create the new user (without a password) and add the external login
-                    _logger.LogDebug($"Creating username {model.UserName}");
-                    var newUser = new ApplicationUser { UserName = model.UserName };
-                    result = await _userManager.CreateAsync(newUser);
-                    if (result.Succeeded)
-                    {
-                        _logger.LogDebug($"User created; adding login for external provider {info.LoginProvider}({info.ProviderDisplayName})");
-                        result = await _userManager.AddLoginAsync(newUser, info);
-                    }
-                }
-            }
-
-            if (result.Succeeded)
-            {
-                // Actually log in as the user
-                var signInresult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-                if (signInresult.Succeeded)
-                {
-                    _logger.LogDebug("Login succeeded; newly created login");
-                    return RedirectToLocal(returnUrl);
-                }
-                else
-                {
-                    _logger.LogWarning($"Login failed for new user {info.LoginProvider} {info.ProviderKey}");
-                    return RedirectToAction(nameof(login));
-                }
-            }
-            else
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(String.Empty, error.Description);
-                }
-            }
-
-            // If we got this far, something failed; redisplay form
-            ViewData["ReturnUrl"] = returnUrl;
-            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
-            return View(model);
-        }
 
     }
 }

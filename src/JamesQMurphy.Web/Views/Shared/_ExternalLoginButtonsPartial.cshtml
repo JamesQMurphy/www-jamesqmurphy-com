@@ -1,6 +1,7 @@
 ﻿@using System.Linq
 @using Microsoft.AspNetCore.Identity
 @using JamesQMurphy.Auth
+@using JamesQMurphy.Web.Controllers
 @model JamesQMurphy.Web.Models.AccountViewModels.LoginViewModel
 @inject SignInManager<ApplicationUser> SignInManager
 
@@ -10,7 +11,7 @@
             var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (loginProviders.Count > 0)
             {
-                <form asp-action="externallogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                <form asp-action="@nameof(accountController.loginexternal)" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
                     <div>
                         <p>
                             @foreach (var provider in loginProviders)
