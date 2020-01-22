@@ -7,10 +7,10 @@
 @inject SignInManager<ApplicationUser> SignInManager
 
 @{
-    ViewData["Title"] = "Sign in";
+    ViewData[Constants.VIEWDATA_PAGETITLE] = "Sign in";
 }
 
-<vc:title-heading title="@ViewData["Title"]"></vc:title-heading>
+<vc:title-heading title="@ViewData[Constants.VIEWDATA_PAGETITLE]"></vc:title-heading>
 <div class="row mt-3">
     <div class="col-sm-8 col-md-6 col-lg-5">
         <partial name="_ExternalLoginButtonsPartial" />
