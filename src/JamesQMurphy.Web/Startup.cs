@@ -80,19 +80,25 @@ namespace JamesQMurphy.Web
                 .AddPasswordValidator<ApplicationPasswordValidator<ApplicationUser>>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
-            services.AddAuthentication()
-                .AddTwitter(options =>
+            var authBuilder = services.AddAuthentication();
+            if (!String.IsNullOrWhiteSpace(Configuration["Authentication:Twitter:ConsumerAPIKey"]))
+            {
+                authBuilder.AddTwitter(options =>
                 {
                     options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
                     options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
                     options.CallbackPath = "/account/login-twitter";
-                })
-                .AddGitHub(options =>
+                });
+            }
+            if (!String.IsNullOrWhiteSpace(Configuration["Authentication:GitHub:ClientId"]))
+            {
+                authBuilder.AddGitHub(options =>
                 {
                     options.ClientId = Configuration["Authentication:GitHub:ClientId"];
                     options.ClientSecret = Configuration["Authentication:GitHub:ClientSecret"];
                     options.CallbackPath = "/account/login-github";
                 });
+            }
 
             services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddHealthChecks();
