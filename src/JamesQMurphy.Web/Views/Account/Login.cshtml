@@ -48,7 +48,7 @@
                 </div>
                 <div class="form-group">
                     <p>
-                        <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Sign up as a new user</a>
+                        <a asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["ReturnUrl"]">Sign up as a new user</a>
                     </p>
                 </div>
             </form>

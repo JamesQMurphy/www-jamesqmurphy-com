@@ -1,6 +1,6 @@
 ﻿@model RegisterWithEmailViewModel
 @{
-    ViewData[Constants.VIEWDATA_PAGETITLE] = "Register";
+    ViewData[Constants.VIEWDATA_PAGETITLE] = "Sign Up";
 }
 
 <vc:title-heading title="@ViewData[Constants.VIEWDATA_PAGETITLE]"></vc:title-heading>
@@ -16,14 +16,21 @@ else
 {
     <div class="row">
         <div class="col-sm-8 col-md-6 col-lg-5">
-            <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <form class="pt-3" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
+                    <h4>Choose a Username</h4>
+                    <p>
+                        Your username is public and is visible to everybody.  So for the
+                        love of everything holy, please choose a username that isn't
+                        embarrassing to you or me or anybody else.
+                    </p>
                     <label asp-for="UserName"></label>
-                    <input asp-for="UserName" class="form-control" />
+                    <input asp-for="UserName" class="form-control" placeholder="Go ahead"/>
                     <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <hr />
                     <label asp-for="Email"></label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
