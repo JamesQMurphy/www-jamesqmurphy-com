@@ -172,6 +172,7 @@ namespace JamesQMurphy.Web.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
+            AlertMessageCollection.AddSuccessAlert($"You have successfully signed out of {WebSiteOptions.WebSiteTitle}.");
             return RedirectToLocal(returnUrl);
         }
 

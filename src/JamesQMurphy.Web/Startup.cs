@@ -42,6 +42,13 @@ namespace JamesQMurphy.Web
                 };
             });
 
+            // The Tempdata provider cookie is not essential. Make it essential
+            // so Tempdata is functional when tracking is disabled.
+            // See https://stackoverflow.com/a/54813987/1001100
+            services.Configure<CookieTempDataProviderOptions>(options => {
+                options.Cookie.IsEssential = true;
+            });
+
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
