@@ -21,9 +21,8 @@ else
                 <div class="form-group">
                     <h4>Choose a Username</h4>
                     <p>
-                        Your username is public and is visible to everybody.  So for the
-                        love of everything holy, please choose a username that isn't
-                        embarrassing to you or me or anybody else.
+                        Your username is public and is visible to everybody.  Choose a
+                        username that won't be embarrassing.
                     </p>
                     <label asp-for="UserName"></label>
                     <input asp-for="UserName" class="form-control" placeholder="Go ahead"/>
@@ -52,6 +51,15 @@ else
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Sign Up</button>
             </form>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-sm-8 col-md-6 col-lg-5">
+            <hr />
+            Or, you can sign up using one of these social network providers.  Don't
+            worry &mdash; you can still choose any username that you want.  We won't
+            share your social network information with anybody.  We won't even mention
+            which social network you used.
         </div>
     </div>
     <div class="row mt-3">

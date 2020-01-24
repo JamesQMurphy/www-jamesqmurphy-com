@@ -4,7 +4,7 @@
 @inject Microsoft.AspNetCore.Identity.SignInManager<JamesQMurphy.Auth.ApplicationUser> SignInManager
 @model ExternalLoginButtonsModel
 
-<section>
+<div>
     @{
         var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         if (loginProviders.Count > 0)
@@ -30,4 +30,4 @@
             </form>
         }
     }
-</section>
+</div>

@@ -144,8 +144,6 @@ namespace JamesQMurphy.Web.Controllers
                 _logger.LogDebug($"Claim: Type={claim.Type} Value={claim.Value} Issuer={claim.Issuer}");
             }
 
-            // TODO: handle the case where user already logged in and they just want to link external account
-
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
@@ -309,12 +307,12 @@ namespace JamesQMurphy.Web.Controllers
                 return RedirectToAction(nameof(register));
             }
 
-            var proposedUserName = externalLoginInfo.Principal?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
+            var usernameOnExternalSystem = externalLoginInfo.Principal?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
 
-            var userFromProposedUsername = string.IsNullOrWhiteSpace(proposedUserName) ? null : await _userManager.FindByNameAsync(proposedUserName);
+            var userFromProposedUsername = string.IsNullOrWhiteSpace(usernameOnExternalSystem) ? null : await _userManager.FindByNameAsync(usernameOnExternalSystem);
             var model = new RegisterUsernameViewModel
             {
-                UserName = proposedUserName
+                UserName = usernameOnExternalSystem
             };
 
             if (userFromProposedUsername != null)
@@ -324,6 +322,7 @@ namespace JamesQMurphy.Web.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
+            ViewData[Constants.VIEWDATA_EXTERNALPROVIDERNAME] = externalLoginInfo.ProviderDisplayName;
             return View(model);
         }
 

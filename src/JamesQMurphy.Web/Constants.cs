@@ -10,5 +10,6 @@ namespace JamesQMurphy.Web
         public const string VIEWDATA_PAGETITLE = "Title";
         public const string VIEWDATA_MARKDOWN = "Markdown";
         public const string VIEWDATA_NOPRIVACYCONSENT = "NoPrivacyConsent";
+        public const string VIEWDATA_EXTERNALPROVIDERNAME = "ExternalProviderName";
     }
 }

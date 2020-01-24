@@ -1,18 +1,22 @@
 ﻿@model RegisterUsernameViewModel
 @{
     ViewData[Constants.VIEWDATA_PAGETITLE] = "Choose a Username";
-    var webSiteTitle = webSiteOptions.WebSiteTitle;
+    var exteralProviderName = ViewData[Constants.VIEWDATA_EXTERNALPROVIDERNAME];
 }
 
-<h1>@ViewData[Constants.VIEWDATA_PAGETITLE]</h1>
+<vc:title-heading title="@ViewData[Constants.VIEWDATA_PAGETITLE]"></vc:title-heading>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-sm-8 col-md-6 col-lg-5">
         <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-            <p>Welcome to @webSiteTitle!  Please choose a username to use on this site.</p>
-            <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <h4>Choose a Username</h4>
+                <p>
+                    Your username is public and is visible to everybody.  Choose a
+                    username that won't be embarrassing.  It can be different from 
+                    your @exteralProviderName username.
+                </p>
                 <label asp-for="UserName"></label>
                 <input asp-for="UserName" class="form-control" />
                 <span asp-validation-for="UserName" class="text-danger"></span>
@@ -22,7 +26,7 @@
                 I agree to the <a asp-area="" asp-controller="home" asp-action="privacy">Privacy Policy</a>.<br />
                 <span asp-validation-for="AcceptPrivacy" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
         </form>
     </div>
 </div>

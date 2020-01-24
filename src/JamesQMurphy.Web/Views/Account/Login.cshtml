@@ -13,40 +13,38 @@
 <div class="row">
     <div class="col-sm-8 col-md-6 col-lg-5">
         <hr />
-        <section>
-            <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Email"></label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+        <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="d-flex justify-content-between">
+                    <label asp-for="Password"></label>
+                    <a asp-action="ForgotPassword">Forgot your password?</a>
                 </div>
-                <div class="form-group">
-                    <div class="d-flex justify-content-between">
-                        <label asp-for="Password"></label>
-                        <a asp-action="ForgotPassword">Forgot your password?</a>
-                    </div>
-                    <input asp-for="Password" class="form-control" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label asp-for="RememberMe">
+                        <input asp-for="RememberMe" />
+                        @Html.DisplayNameFor(m => m.RememberMe)
+                    </label>
                 </div>
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label asp-for="RememberMe">
-                            <input asp-for="RememberMe" />
-                            @Html.DisplayNameFor(m => m.RememberMe)
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary w-100">Sign in with Email</button>
-                </div>
-                <div class="form-group">
-                    <p>
-                        <a asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["ReturnUrl"]">Sign up as a new user</a>
-                    </p>
-                </div>
-            </form>
-        </section>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary w-100">Sign in with Email</button>
+            </div>
+            <div class="form-group">
+                <p>
+                    <a asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["ReturnUrl"]">Sign up as a new user</a>
+                </p>
+            </div>
+        </form>
     </div>
 </div>
 
