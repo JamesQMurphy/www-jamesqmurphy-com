@@ -1,0 +1,33 @@
+﻿@using JamesQMurphy.Web.Controllers
+@using System.Linq
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<JamesQMurphy.Auth.ApplicationUser> SignInManager
+@model ExternalLoginButtonsModel
+
+<section>
+    @{
+        var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+        if (loginProviders.Count > 0)
+        {
+            <form asp-action="@nameof(accountController.loginexternal)" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                <div>
+                    @foreach (var provider in loginProviders)
+                    {
+                        var title = Model.Caption;
+                        if (title.Contains("{0}"))
+                        {
+                            title = String.Format(Model.Caption, provider.DisplayName);
+                        }
+                        if (String.IsNullOrWhiteSpace(title))
+                        {
+                            title = provider.DisplayName;
+                        }
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-secondary w-100" name="provider" value="@provider.Name" title="@title">@title</button>
+                        </div>
+                    }
+                </div>
+            </form>
+        }
+    }
+</section>

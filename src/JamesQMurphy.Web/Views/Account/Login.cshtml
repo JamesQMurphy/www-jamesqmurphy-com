@@ -1,10 +1,4 @@
-﻿@using System.Collections.Generic
-@using System.Linq
-@using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Identity
-@using JamesQMurphy.Auth
-@model JamesQMurphy.Web.Models.AccountViewModels.LoginViewModel
-@inject SignInManager<ApplicationUser> SignInManager
+﻿@model LoginViewModel
 
 @{
     ViewData[Constants.VIEWDATA_PAGETITLE] = "Sign in";
@@ -13,7 +7,7 @@
 <vc:title-heading title="@ViewData[Constants.VIEWDATA_PAGETITLE]"></vc:title-heading>
 <div class="row mt-3">
     <div class="col-sm-8 col-md-6 col-lg-5">
-        <partial name="_ExternalLoginButtonsPartial" />
+        <vc:external-login-buttons caption="Sign in with {0}"></vc:external-login-buttons>
     </div>
 </div>
 <div class="row">
