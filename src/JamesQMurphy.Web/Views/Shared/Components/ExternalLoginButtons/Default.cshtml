@@ -22,9 +22,24 @@
                         {
                             title = provider.DisplayName;
                         }
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-secondary w-100" name="provider" value="@provider.Name" title="@title">@title</button>
-                        </div>
+                    <div class="form-group">
+                        @switch (provider.Name)
+                        {
+                            case "GitHub":
+                                <button type="submit" class="btn btn-dark w-100" style="background-color: #24292E; border-color: #24292E;" name="provider" value="@provider.Name" title="@title"><i class="fab fa-github fa-lg mr-2"></i>@title</button>
+                                break;
+
+                            case "Twitter":
+                                <button type="submit" class="btn btn-secondary w-100" style="background-color: #1DA1F2; border-color: #1DA1F2;" name="provider" value="@provider.Name" title="@title"><i class="fab fa-twitter fa-lg mr-2"></i>@title</button>
+                                break;
+
+                            default:
+                                <button type="submit" class="btn btn-secondary w-100" name="provider" value="@provider.Name" title="@title">@title</button>
+                                break;
+                        }
+
+
+                    </div>
                     }
                 </div>
             </form>
