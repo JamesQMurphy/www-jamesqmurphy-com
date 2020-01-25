@@ -42,6 +42,13 @@ namespace JamesQMurphy.Web
                 };
             });
 
+            // The Tempdata provider cookie is not essential. Make it essential
+            // so Tempdata is functional when tracking is disabled.
+            // See https://stackoverflow.com/a/54813987/1001100
+            services.Configure<CookieTempDataProviderOptions>(options => {
+                options.Cookie.IsEssential = true;
+            });
+
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
@@ -80,6 +87,26 @@ namespace JamesQMurphy.Web
                 .AddPasswordValidator<ApplicationPasswordValidator<ApplicationUser>>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
+            var authBuilder = services.AddAuthentication();
+            if (!String.IsNullOrWhiteSpace(Configuration["Authentication:Twitter:ConsumerAPIKey"]))
+            {
+                authBuilder.AddTwitter(options =>
+                {
+                    options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
+                    options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    options.CallbackPath = "/account/login-twitter";
+                });
+            }
+            if (!String.IsNullOrWhiteSpace(Configuration["Authentication:GitHub:ClientId"]))
+            {
+                authBuilder.AddGitHub(options =>
+                {
+                    options.ClientId = Configuration["Authentication:GitHub:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:GitHub:ClientSecret"];
+                    options.CallbackPath = "/account/login-github";
+                });
+            }
+
             services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddHealthChecks();
             services.ConfigureApplicationCookie(options =>
@@ -90,7 +117,11 @@ namespace JamesQMurphy.Web
 
             // The "new" way to do AddMvc()
             services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-            services.AddRazorPages();
+            var mvcBuilder = services.AddRazorPages();
+#if DEBUG
+            // This lets you edit razor files while the app is running
+            mvcBuilder.AddRazorRuntimeCompilation();
+#endif
 
             services.AddTransient<IMarkdownHtmlRenderer, WebsiteMarkupRenderer>();
             services.AddArticleStoreServices(Configuration);

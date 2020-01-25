@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace JamesQMurphy.Auth
 {
     public class ApplicationUser
     {
+        public const string FIELD_USERNAME = "username";
+        public const string FIELD_NORMALIZEDUSERNAME = "normalizedUsername";
         public const string FIELD_PASSWORDHASH = "passwordHash";
         public const string FIELD_EMAILCONFIRMED = "emailConfirmed";
         public const string FIELD_ISADMINISTRATOR = "isAdministrator";
@@ -15,27 +18,41 @@ namespace JamesQMurphy.Auth
         {
             // Create a single ApplicationUserRecord to represent the ID
             var miniGuid = NewMiniGuid();
-            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid);
-            idRecord.NormalizedKey = miniGuid;
-            records.Add(ApplicationUserRecord.RECORD_TYPE_ID, idRecord);
+            AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid));
         }
 
         public ApplicationUser(IEnumerable<ApplicationUserRecord> applicationUserRecords)
         {
-            foreach(var rec in applicationUserRecords)
+            foreach(var record in applicationUserRecords)
             {
-                records.Add(rec.Provider, rec);
+                if ((records.Count == 0) && (record.Provider != ApplicationUserRecord.RECORD_TYPE_ID))
+                {
+                    AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, record.UserId, record.UserId));
+                }
+                AddOrReplaceUserRecord(record);
+            }
+            if (records.Count == 0)
+            {
+                // Create a single ApplicationUserRecord to represent the ID
+                var miniGuid = NewMiniGuid();
+                AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid));
             }
         }
 
         public IReadOnlyCollection<ApplicationUserRecord> ApplicationUserRecords => records.Values;
 
-        public string UserId => records[ApplicationUserRecord.RECORD_TYPE_ID].Key;
+        public string UserId => records.Values.First().UserId;
 
         public string Email
         {
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.Key ?? "";
-            set => CreateUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, value);
+            set
+            {
+                if (Email != value)
+                {
+                    AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, value, UserId));
+                }
+            }
         }
 
         public string NormalizedEmail
@@ -43,39 +60,29 @@ namespace JamesQMurphy.Auth
             get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.NormalizedKey ?? "";
             set
             {
-                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
-                rec.NormalizedKey = value;
+                if (NormalizedEmail != value)
+                {
+                    GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email)).NormalizedKey = value;
+                }
             }
         }
 
         public string UserName
         {
-            get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_USERNAME)?.Key ?? "";
-            set => CreateUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_USERNAME, value);
+            get => GetStringAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_USERNAME);
+            set => SetStringAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_USERNAME, "", value);
         }
 
         public string NormalizedUserName
         {
-            get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_USERNAME)?.NormalizedKey ?? "";
-            set
-            {
-                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_USERNAME, nameof(UserName));
-                rec.NormalizedKey = value;
-            }
+            get => GetStringAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_NORMALIZEDUSERNAME);
+            set => SetStringAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_NORMALIZEDUSERNAME, "", value);
         }
 
         public bool EmailConfirmed
         {
-            get
-            {
-                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
-                return rec.BoolAttributes.ContainsKey(FIELD_EMAILCONFIRMED) ? rec.BoolAttributes[FIELD_EMAILCONFIRMED] : false;
-            }
-            set
-            {
-                var rec = GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email));
-                rec.SetBoolAttribute(FIELD_EMAILCONFIRMED, value);
-            }
+            get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_EMAILCONFIRMED);
+            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_EMAILCONFIRMED, nameof(Email), value);
         }
 
         public string PasswordHash
@@ -87,11 +94,18 @@ namespace JamesQMurphy.Auth
         public bool IsAdministrator
         {
             get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR);
-            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR, nameof(UserId), value);
+            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_ID, FIELD_ISADMINISTRATOR, "", value);
         }
 
         public void AddOrReplaceUserRecord(ApplicationUserRecord applicationUserRecord)
         {
+            if (records.Count > 0)
+            {
+                if (applicationUserRecord.UserId != this.UserId)
+                {
+                    throw new InvalidOperationException($"Could not add applicationUserRecord with UserId={applicationUserRecord.UserId} to user with UserId={this.UserId}");
+                }
+            }
             records[applicationUserRecord.Provider] = applicationUserRecord;
         }
 
@@ -101,19 +115,6 @@ namespace JamesQMurphy.Auth
                 return records[recordType];
             else
                 return null;
-        }
-
-        private void CreateUserRecordOrThrow(string recordType, string value)
-        {
-            if (records.ContainsKey(recordType))
-            {
-                throw new Exception($"Cannot create recordType {recordType} more than once");
-            }
-            else
-            {
-                var rec = new ApplicationUserRecord(recordType, value, this.UserId);
-                records.Add(recordType, rec);
-            }
         }
 
         private ApplicationUserRecord GetUserRecordOrThrow(string recordType, string requiredProperty)

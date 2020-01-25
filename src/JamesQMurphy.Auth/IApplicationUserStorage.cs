@@ -13,6 +13,7 @@ namespace JamesQMurphy.Auth
         Task<IEnumerable<ApplicationUserRecord>> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken));
         Task<IEnumerable<ApplicationUserRecord>> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken));
         Task<IEnumerable<ApplicationUserRecord>> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable<ApplicationUserRecord>> FindByProviderAndKeyAsync(string provider, string providerKey, CancellationToken cancellationToken = default(CancellationToken));
         Task<IEnumerable<ApplicationUserRecord>> GetAllUserRecordsAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

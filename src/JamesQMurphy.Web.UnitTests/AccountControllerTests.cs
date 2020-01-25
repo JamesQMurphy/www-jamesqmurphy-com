@@ -125,7 +125,7 @@ namespace JamesQMurphy.Web.UnitTests
             var username = "userNew";
             var password = "Abcabc~123";
 
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = password,
@@ -164,7 +164,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var usernameReplace = "userReplace";
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
@@ -202,7 +202,7 @@ namespace JamesQMurphy.Web.UnitTests
             AddExistingUser(_serviceProvider, email, password, username, false);
 
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
@@ -241,7 +241,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var usernameReplace = "userReplace";
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
@@ -279,7 +279,7 @@ namespace JamesQMurphy.Web.UnitTests
             AddExistingUser(_serviceProvider, email, password, username, true);
 
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,

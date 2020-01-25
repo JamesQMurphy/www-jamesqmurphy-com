@@ -16,10 +16,12 @@ namespace JamesQMurphy.Auth.Aws
         {
             public string DynamoDbTableName { get; set; }
             public string UserIdIndexName { get; set; }
+            public string NormalizedUserNameIndexName { get; set; }
         }
 
         private const string PROVIDER = "provider";
         private const string NORMALIZED_KEY = "normalizedKey";
+        private const string NORMALIZED_USERNAME = "normalizedUsername";
         private const string KEY = "key";
         private const string USER_ID = "userId";
         private const string LAST_UPDATED = "lastUpdated";
@@ -72,12 +74,40 @@ namespace JamesQMurphy.Auth.Aws
 
         public async Task<IEnumerable<ApplicationUserRecord>> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
         {
-            return await _findByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress, cancellationToken);
+            return await FindByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress, cancellationToken);
         }
 
         public async Task<IEnumerable<ApplicationUserRecord>> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            return await _findByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_USERNAME, normalizedUserName, cancellationToken);
+            var queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                IndexName = _options.NormalizedUserNameIndexName,
+                Select = Select.ALL_PROJECTED_ATTRIBUTES,
+                KeyConditionExpression = $"{NORMALIZED_USERNAME} = :v_normalizedUserName",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":v_normalizedUserName", new AttributeValue {S = normalizedUserName} }
+                },
+                ScanIndexForward = true
+            };
+
+            var result = await _dynamoDbClient.QueryAsync(queryRequest, cancellationToken);
+
+            if (result.Count == 0)
+            {
+                return Enumerable.Empty<ApplicationUserRecord>();
+            }
+            if (result.Count == 1)
+            {
+                var userId = result.Items[0].ContainsKey(USER_ID) ? result.Items[0][USER_ID].S : "";
+                if (String.IsNullOrWhiteSpace(userId))
+                {
+                    throw new Exception($"Item with {NORMALIZED_USERNAME}={normalizedUserName} did not have a value for {USER_ID}");
+                }
+                return await FindByIdAsync(userId, cancellationToken);
+            }
+            throw new Exception($"Found {result.Count} items with {NORMALIZED_USERNAME}={normalizedUserName}");
         }
 
         public async Task<IEnumerable<ApplicationUserRecord>> GetAllUserRecordsAsync(CancellationToken cancellationToken = default)
@@ -92,7 +122,7 @@ namespace JamesQMurphy.Auth.Aws
             return result.Items.Select(item => ToApplicationUserRecord(item));
         }
 
-        private async Task<IEnumerable<ApplicationUserRecord>> _findByProviderAndKeyAsync(string provider, string providerKey, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ApplicationUserRecord>> FindByProviderAndKeyAsync(string provider, string providerKey, CancellationToken cancellationToken)
         {
             var queryRequest = new QueryRequest
             {
@@ -123,7 +153,6 @@ namespace JamesQMurphy.Auth.Aws
                 return await FindByIdAsync(userId, cancellationToken);
             }
             throw new Exception($"Found {result.Count} items with {PROVIDER}={provider} and {NORMALIZED_KEY}={providerKey}");
-
         }
 
         private ApplicationUserRecord ToApplicationUserRecord(Dictionary<string, AttributeValue> attributeMap)

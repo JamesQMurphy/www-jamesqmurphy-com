@@ -28,6 +28,32 @@ namespace JamesQMurphy.Web.UnitTests
         }
 
         [Test]
+        public void CanCreateFromRecords()
+        {
+            var userId = "someUserId";
+            var records = new ApplicationUserRecord[]
+            {
+                new ApplicationUserRecord("provider1", "key1", userId),
+                new ApplicationUserRecord("provider2", "key2", userId),
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId)
+            };
+            var user = new ApplicationUser(records);
+            Assert.AreEqual(userId, user.UserId);
+        }
+
+        [Test]
+        public void ZeroRecordsStillHasId()
+        {
+            var user = new ApplicationUser(Enumerable.Empty<ApplicationUserRecord>());
+
+            Assert.IsNotNull(user.UserId);
+            Assert.IsEmpty(user.UserName);
+            Assert.IsEmpty(user.NormalizedUserName);
+            Assert.IsEmpty(user.Email);
+            Assert.IsEmpty(user.NormalizedEmail);
+        }
+
+        [Test]
         public void NormalizedKeyForIdNotNull()
         {
             var user = new ApplicationUser();
@@ -51,7 +77,23 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.IsEmpty(user.UserName);
             Assert.IsEmpty(user.NormalizedUserName);
             Assert.AreEqual(emailAddress, user.Email);
-            Assert.IsEmpty(user.NormalizedEmail);
+            Assert.AreEqual(emailAddress, user.NormalizedEmail);
+        }
+
+        [Test]
+        public void CanSetEmailAddressTwice()
+        {
+            var emailAddress = "test@local";
+            var emailAddress2 = "test2@local";
+            var user = new ApplicationUser();
+            user.Email = emailAddress;
+            user.Email = emailAddress2;
+
+            Assert.IsNotNull(user.UserId);
+            Assert.IsEmpty(user.UserName);
+            Assert.IsEmpty(user.NormalizedUserName);
+            Assert.AreEqual(emailAddress2, user.Email);
+            Assert.AreEqual(emailAddress2, user.NormalizedEmail);
         }
 
         [Test]
@@ -71,6 +113,16 @@ namespace JamesQMurphy.Web.UnitTests
             user.Email = emailAddress;
             user.NormalizedEmail = emailAddressNormalized;
             Assert.AreEqual(emailAddressNormalized, user.NormalizedEmail);
+        }
+
+        [Test]
+        public void CanSetNormalizedEmailAddressEmpty()
+        {
+            var user = new ApplicationUser();
+            user.NormalizedEmail = string.Empty;
+            Assert.IsEmpty(user.Email);
+            Assert.IsEmpty(user.NormalizedEmail);
+            Assert.AreEqual(1, user.ApplicationUserRecords.Count);
         }
 
         [Test]
@@ -262,6 +314,26 @@ namespace JamesQMurphy.Web.UnitTests
 
             applicationUserRecord.SetStringAttribute(stringAttribute, stringAttributeValue + "x");
             Assert.IsTrue(applicationUserRecord.IsDirty);
+        }
+
+        [Test]
+        public void CantInsertRecordsWithDifferentUserIds()
+        {
+            var user = new ApplicationUser();
+            Assert.Throws(Is.TypeOf<InvalidOperationException>(),
+                delegate
+                {
+                    user.AddOrReplaceUserRecord(new ApplicationUserRecord("provider", "key", user.UserId + "x"));
+                }
+                );
+        }
+
+        [Test]
+        public void NormalizedKeyDefaultsToKey()
+        {
+            var key = "key";
+            var rec = new ApplicationUserRecord("provider", "key", "userId");
+            Assert.AreEqual(key, rec.NormalizedKey);
         }
 
     }
