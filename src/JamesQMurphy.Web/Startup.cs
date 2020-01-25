@@ -1,4 +1,5 @@
-﻿using JamesQMurphy.Auth;
+﻿using Amazon.SimpleSystemsManagement;
+using JamesQMurphy.Auth;
 using JamesQMurphy.Blog;
 using JamesQMurphy.Email;
 using JamesQMurphy.Web.Models;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace JamesQMurphy.Web
@@ -56,6 +58,31 @@ namespace JamesQMurphy.Web
             {
                 services.AddDataProtection()
                     .PersistKeysToAWSSystemsManager($"/{webSiteOptions.AppName}/DataProtection");
+
+                // Load certain secrets from AWS SSM, if available
+                using (var ssmClient = new AmazonSimpleSystemsManagementClient())
+                {
+                    var keys = new List<string>
+                    {
+                        $"/{webSiteOptions.AppName}/Authentication:Twitter:ConsumerAPIKey",
+                        $"/{webSiteOptions.AppName}/Authentication:Twitter:ConsumerSecret",
+                        $"/{webSiteOptions.AppName}/Authentication:GitHub:ClientId",
+                        $"/{webSiteOptions.AppName}/Authentication:GitHub:ClientSecret",
+                        $"/{webSiteOptions.AppName}/TwitterAccount"
+                    };
+                    var response = ssmClient.GetParametersAsync(
+                        new Amazon.SimpleSystemsManagement.Model.GetParametersRequest
+                        {
+                            Names = keys,
+                            WithDecryption = true
+                        }
+                    ).GetAwaiter().GetResult();
+                    foreach(var p in response.Parameters)
+                    {
+                        // Replace the Configuration key with the SSM key, minus the app name and slashes
+                        Configuration[p.Name.Replace($"/{ webSiteOptions.AppName}/", "")] = p.Value;
+                    }
+                }
             }
 
             switch (Configuration["UserStore:Service"])
