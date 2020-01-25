@@ -27,6 +27,7 @@
     "copydist-mermaid": "copyfiles node_modules/mermaid/dist/**/* wwwroot/dist/lib/mermaid --up 2 --verbose"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.0",
     "autoprefixer": "^9.6.1",
     "bootstrap": "^4.3.1",
     "clean-css-cli": "^4.3.0",
