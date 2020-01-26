@@ -14,12 +14,10 @@ namespace JamesQMurphy.Web.Controllers
     public class adminController : JqmControllerBase
     {
         private readonly IEmailService _emailService;
-        private readonly string _siteName;
 
-        public adminController(IEmailService emailService, WebSiteOptions webSiteOptions)
+        public adminController(IEmailService emailService, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             _emailService = emailService;
-            _siteName = webSiteOptions.WebSiteTitle;
         }
 
         public IActionResult index()
@@ -41,17 +39,17 @@ namespace JamesQMurphy.Web.Controllers
             {
                 var result = await _emailService.SendEmailAsync(
                     model.Email,
-                    $"Test message from {_siteName}",
-                    $"This is a test message from {_siteName}.{Environment.NewLine}{Environment.NewLine}{model.Message}"
+                    $"Test message from {WebSiteOptions.WebSiteTitle}",
+                    $"This is a test message from {WebSiteOptions.WebSiteTitle}.{Environment.NewLine}{Environment.NewLine}{model.Message}"
                     );
 
                 if (result.Success)
                 {
-                    ViewData["SuccessMsg"] = $"Email sent to {model.Email}\n{result.Details}";
+                    AlertMessageCollection.AddSuccessAlert($"Email sent to {model.Email}\n{result.Details}", "Email Sent!");
                 }
                 else
                 {
-                    ViewData["FailMsg"] = $"Email failure\n{result.Details}";
+                    AlertMessageCollection.AddDangerAlert(result.Details, "Email Failure");
                 }
 
             }

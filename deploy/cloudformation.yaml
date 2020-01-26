@@ -60,6 +60,10 @@ Parameters:
     Description: URL for CloudWatch to call to keep Lambda function warm
     Default: '/warm'
 
+  CommentsEmailParameter:
+    Type: String
+    Description: Email for comments
+
   CertificateArnParameter:
     Type: String
     Description: Certificate ARN.  Leave blank if not mapping to a custom URL.
@@ -141,6 +145,7 @@ Resources:
                 Action:
                   - 'ssm:PutParameter'
                   - 'ssm:AddTagsToResource'
+                  - 'ssm:GetParameters'
                   - 'ssm:GetParametersByPath'
                 Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
         - PolicyName: !Sub SQS-SendMessage-${StageParameter}-EmailQueue
@@ -339,17 +344,24 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
+          WebSiteTitle: Cold-Brewed DevOps
           AppName: !Sub '${AppNameParameter}-${StageParameter}'
+          CommentsEmail: !Ref CommentsEmailParameter
+          SiteUrl: !Sub https://${DomainNameParameter}
           ImageBasePath: /blogimages
           DataProtection: AWS
           UseStaticFiles: "false"
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
           ArticleStore__DynamoDbIndexName: !Ref DynamoDbIndexBlogArticlesParameter
+          Authentication__Twitter__ConsumerAPIKey: ""
+          Authentication__Twitter__ConsumerSecret: ""
+          Authentication__GitHub__ClientId: ""
+          Authentication__GitHub__ClientSecret: ""
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
-          UserStore__UserNameIndex: "normalizedUserName-index"
-          UserStore__EmailIndex: "normalizedEmail-index"
+          UserStore__UserIdIndexName: "userId-index"
+          UserStore__NormalizedUserNameIndexName: "normalizedUsername-index"
           Email__Service: SQS
           Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
       Tags:
@@ -492,6 +504,18 @@ Resources:
         RestApiIdParameter: !Ref TheGatewayRestAPI
         ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
         ApiResourceNameParameter: admin
+        LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
+
+
+  TheContactRouteResourceStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToLambda.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: contact
         LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
 
 

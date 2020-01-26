@@ -1,0 +1,25 @@
+﻿@model JamesQMurphy.Blog.Article
+@inject JamesQMurphy.Blog.IMarkdownHtmlRenderer Renderer
+
+<script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+
+<article>
+    @if (!String.IsNullOrWhiteSpace(Model.Title))
+    {
+        <h1 class="display-4">@Model.Title</h1>
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.Description))
+    {
+        <h3>@Model.Description</h3>
+    }
+    @if (Model.PublishDate > DateTime.MinValue.AddDays(1))
+    {
+        <h6 class="text-muted">by JamesQMurphy | @Model.PublishDate.ToString("MMMM d, yyyy")</h6>
+        <br />
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.Content))
+    {
+        @Html.Raw(Renderer.RenderHtml(Model.Content))
+    }
+</article>

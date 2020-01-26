@@ -12,13 +12,11 @@ namespace JamesQMurphy.Web.Controllers
     public class homeController : JqmControllerBase
     {
         private readonly IArticleStore articleStore;
-        private readonly WebSiteOptions webSiteOptions;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public homeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions, UserManager<ApplicationUser> userMgr)
+        public homeController(IArticleStore iarticleStore, WebSiteOptions webSiteOptions, UserManager<ApplicationUser> userMgr) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
-            this.webSiteOptions = webSiteOptions;
             userManager = userMgr;
         }
 
@@ -27,9 +25,7 @@ namespace JamesQMurphy.Web.Controllers
             // Need to optimize this
             var lastTwoArticles = await articleStore.GetLastArticlesAsync(2);
             var lastTwoArticlesList = lastTwoArticles.ToList();
-            var article1 = await articleStore.GetArticleAsync(lastTwoArticlesList[0].Slug);
-            var article2 = await articleStore.GetArticleAsync(lastTwoArticlesList[1].Slug);
-            var homePageItems = new HomePageItems(article1, article2);
+            var homePageItems = new HomePageItems(lastTwoArticlesList[0], lastTwoArticlesList[1]);
 
             return View(homePageItems);
         }
@@ -37,21 +33,21 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult about()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "About This Site";
-            
-            return View("_Article", new Article {
+            var article = new Article
+            {
                 Content = System.IO.File.ReadAllText("Views/Home/About.md")
-            });
+            };
+            return View("Details", article);
         }
 
         public IActionResult privacy()
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Privacy Policy";
-            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
-
-            return View("_Article", new Article
+            var article = new Article
             {
-                Content = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", webSiteOptions.WebSiteTitle)
-            });
+                Content = System.IO.File.ReadAllText("Views/Home/Privacy.md").Replace("@webSiteTitle", WebSiteOptions.WebSiteTitle)
+            };
+            return View("Details", article);
         }
 
         [Microsoft.AspNetCore.Authorization.Authorize]

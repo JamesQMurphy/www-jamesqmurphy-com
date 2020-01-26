@@ -1,4 +1,5 @@
-﻿using JamesQMurphy.Auth;
+﻿using Amazon.SimpleSystemsManagement;
+using JamesQMurphy.Auth;
 using JamesQMurphy.Blog;
 using JamesQMurphy.Email;
 using JamesQMurphy.Web.Models;
@@ -13,12 +14,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace JamesQMurphy.Web
 {
     public class Startup
     {
+        private const string AUTH_TWITTER_CLIENT_ID = "Authentication:Twitter:ConsumerAPIKey";
+        private const string AUTH_TWITTER_CLIENT_SECRET = "Authentication:Twitter:ConsumerSecret";
+        private const string AUTH_GITHUB_CLIENT_ID = "Authentication:GitHub:ClientId";
+        private const string AUTH_GITHUB_CLIENT_SECRET = "Authentication:GitHub:ClientSecret";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -42,6 +49,13 @@ namespace JamesQMurphy.Web
                 };
             });
 
+            // The Tempdata provider cookie is not essential. Make it essential
+            // so Tempdata is functional when tracking is disabled.
+            // See https://stackoverflow.com/a/54813987/1001100
+            services.Configure<CookieTempDataProviderOptions>(options => {
+                options.Cookie.IsEssential = true;
+            });
+
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
@@ -49,6 +63,31 @@ namespace JamesQMurphy.Web
             {
                 services.AddDataProtection()
                     .PersistKeysToAWSSystemsManager($"/{webSiteOptions.AppName}/DataProtection");
+
+                // Load certain secrets from AWS SSM, if available
+                using (var ssmClient = new AmazonSimpleSystemsManagementClient())
+                {
+                    // AWS SSM keys cannot have colons, so replace them with forward slashes
+                    var keys = new List<string>
+                    {
+                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_ID.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_SECRET.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_ID.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_SECRET.Replace(':','/')}"
+                    };
+                    var response = ssmClient.GetParametersAsync(
+                        new Amazon.SimpleSystemsManagement.Model.GetParametersRequest
+                        {
+                            Names = keys,
+                            WithDecryption = true
+                        }
+                    ).GetAwaiter().GetResult();
+                    foreach(var p in response.Parameters)
+                    {
+                        // Replace the Configuration key with the SSM key, minus the app name and slashes
+                        Configuration[p.Name.Replace($"/{ webSiteOptions.AppName}/", "").Replace('/',':')] = p.Value;
+                    }
+                }
             }
 
             switch (Configuration["UserStore:Service"])
@@ -80,18 +119,43 @@ namespace JamesQMurphy.Web
                 .AddPasswordValidator<ApplicationPasswordValidator<ApplicationUser>>()
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
+            var authBuilder = services.AddAuthentication();
+            if (!String.IsNullOrWhiteSpace(Configuration[AUTH_TWITTER_CLIENT_ID]))
+            {
+                authBuilder.AddTwitter(options =>
+                {
+                    options.ConsumerKey = Configuration[AUTH_TWITTER_CLIENT_ID];
+                    options.ConsumerSecret = Configuration[AUTH_TWITTER_CLIENT_SECRET];
+                    options.CallbackPath = "/account/login-twitter";
+                });
+            }
+            if (!String.IsNullOrWhiteSpace(Configuration[AUTH_GITHUB_CLIENT_ID]))
+            {
+                authBuilder.AddGitHub(options =>
+                {
+                    options.ClientId = Configuration[AUTH_GITHUB_CLIENT_ID];
+                    options.ClientSecret = Configuration[AUTH_GITHUB_CLIENT_SECRET];
+                    options.CallbackPath = "/account/login-github";
+                });
+            }
+
             services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddHealthChecks();
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/account/login";
+                options.AccessDeniedPath = "/account/accessdenied";
             });
 
             // The "new" way to do AddMvc()
             services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-            services.AddRazorPages();
+            var mvcBuilder = services.AddRazorPages();
+#if DEBUG
+            // This lets you edit razor files while the app is running
+            mvcBuilder.AddRazorRuntimeCompilation();
+#endif
 
-            services.AddSingleton<IMarkdownHtmlRenderer>(new DefaultMarkdownHtmlRenderer(Configuration["ImageBasePath"]));
+            services.AddTransient<IMarkdownHtmlRenderer, WebsiteMarkupRenderer>();
             services.AddArticleStoreServices(Configuration);
 
             switch (Configuration["Email:Service"])

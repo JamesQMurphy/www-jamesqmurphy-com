@@ -1,4 +1,3 @@
-using System;
 using JamesQMurphy.Auth;
 using JamesQMurphy.Web.Controllers;
 using JamesQMurphy.Web.Models;
@@ -8,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using NUnit.Framework;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
 
 namespace JamesQMurphy.Web.UnitTests
 {
@@ -26,7 +27,8 @@ namespace JamesQMurphy.Web.UnitTests
             _controller = new accountController(
                 _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>(),
                 _serviceProvider.GetService<ILogger<accountController>>(),
-                _emailGenerator);
+                _emailGenerator,
+                new WebSiteOptions());
         }
 
         [Test]
@@ -123,7 +125,7 @@ namespace JamesQMurphy.Web.UnitTests
             var username = "userNew";
             var password = "Abcabc~123";
 
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = password,
@@ -139,9 +141,9 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that user was created
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             Assert.AreEqual(username, user.UserName);
             Assert.AreEqual(email, user.Email);
@@ -162,7 +164,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var usernameReplace = "userReplace";
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
@@ -178,9 +180,9 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was updated
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, passwordReplace);
@@ -200,7 +202,7 @@ namespace JamesQMurphy.Web.UnitTests
             AddExistingUser(_serviceProvider, email, password, username, false);
 
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
@@ -216,9 +218,9 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was updated
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, passwordReplace);
@@ -239,7 +241,7 @@ namespace JamesQMurphy.Web.UnitTests
 
             var usernameReplace = "userReplace";
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
@@ -255,9 +257,9 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was NOT updated
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
@@ -277,7 +279,7 @@ namespace JamesQMurphy.Web.UnitTests
             AddExistingUser(_serviceProvider, email, password, username, true);
 
             var passwordReplace = "Defdef~456";
-            var registerViewModel = new RegisterViewModel()
+            var registerViewModel = new RegisterWithEmailViewModel()
             {
                 Email = email,
                 Password = passwordReplace,
@@ -293,9 +295,9 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(1, _controller.ModelState.ErrorCount);
 
             // Assert that password was NOT updated
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
@@ -327,9 +329,9 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was NOT updated
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
@@ -361,9 +363,9 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(0, _controller.ModelState.ErrorCount);
 
             // Assert that password was NOT updated
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
             Assert.IsNotNull(user);
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
@@ -400,9 +402,9 @@ namespace JamesQMurphy.Web.UnitTests
             var password = "Abcabc~123";
             AddExistingUser(_serviceProvider, email, password, username, true);
 
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
 
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var code = signinManager.UserManager.GeneratePasswordResetTokenAsync(user).GetAwaiter().GetResult();
@@ -441,9 +443,9 @@ namespace JamesQMurphy.Web.UnitTests
             var password = "Abcabc~123";
             AddExistingUser(_serviceProvider, email, password, username, true);
 
-            var userStorage = (InMemoryApplicationUserStorage)_serviceProvider.GetService<IApplicationUserStorage>();
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
-            var user = userStorage.FindByUserNameAsync(normalizedUserName).GetAwaiter().GetResult();
+            var user = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
 
             var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
             var code = "not-a-valid-code";
@@ -502,8 +504,8 @@ namespace JamesQMurphy.Web.UnitTests
                 EmailConfirmed = emailConfirmed
             };
             user.PasswordHash = serviceProvider.GetService<IPasswordHasher<ApplicationUser>>().HashPassword(user, password);
-            var storage = serviceProvider.GetService<IApplicationUserStorage>();
-            storage.CreateAsync(user).GetAwaiter().GetResult();
+            var store = serviceProvider.GetService<IUserStore<ApplicationUser>>();
+            store.CreateAsync(user, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
             return user;
         }
 

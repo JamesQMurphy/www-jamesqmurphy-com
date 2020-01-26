@@ -32,12 +32,13 @@ namespace Microsoft.Extensions.DependencyInjection
             switch (configuration["ArticleStore:Service"])
             {
                 case "LocalFolder":
-                    collection.AddSingleton<IArticleStore>(new LocalFolderArticleStore(configuration["ArticleStore:Path"]));
+                    collection.AddSingleton<IArticleStore>(new CachedArticleStore<LocalFolderArticleStore>(new LocalFolderArticleStore(configuration["ArticleStore:Path"])));
                     break;
 
                 case "DynamoDb":
                     collection.ConfigurePoco<DynamoDbArticleStore.Options>(configuration, "ArticleStore");
-                    collection.AddSingleton<IArticleStore, DynamoDbArticleStore>();
+                    collection.AddSingleton<DynamoDbArticleStore>();
+                    collection.AddSingleton<IArticleStore, CachedArticleStore<DynamoDbArticleStore>>();
                     break;
 
                 default: //InMemory
@@ -45,6 +46,25 @@ namespace Microsoft.Extensions.DependencyInjection
                     break;
             }
             return collection;
+        }
+    }
+}
+
+namespace JamesQMurphy.Web.Extensions
+{
+    public static class MiscellaneousExtensions
+    {
+        public static string GetSiteUrlFallbackToContext(this Web.Models.WebSiteOptions webSiteOptions, Microsoft.AspNetCore.Http.HttpContext httpContext)
+        {
+            if (!String.IsNullOrWhiteSpace(webSiteOptions.SiteUrl))
+            {
+                return webSiteOptions.SiteUrl;
+            }
+            if (httpContext?.Request != null)
+            {
+                return $"{httpContext.Request.Scheme}://{httpContext.Request.Host.Value}";
+            }
+            return String.Empty;
         }
     }
 }

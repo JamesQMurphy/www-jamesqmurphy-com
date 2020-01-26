@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ namespace JamesQMurphy.Auth
         IUserStore<ApplicationUser>,
         IUserPasswordStore<ApplicationUser>,
         IUserEmailStore<ApplicationUser>,
+        IUserLoginStore<ApplicationUser>,
         IUserRoleStore<ApplicationUser>
     {
         private readonly IApplicationUserStorage _storage;
@@ -66,27 +68,40 @@ namespace JamesQMurphy.Auth
 
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.CreateAsync(user, cancellationToken);
+            return await UpdateAsync(user, cancellationToken);
         }
         public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.UpdateAsync(user, cancellationToken);
+            var dirtyRecords = user.ApplicationUserRecords.Where(r => r.IsDirty).ToList();
+            foreach (var rec in dirtyRecords)
+            {
+                var updatedRecord = await _storage.SaveAsync(rec, cancellationToken);
+                user.AddOrReplaceUserRecord(updatedRecord);
+            }
+            return IdentityResult.Success;
         }
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.DeleteAsync(user, cancellationToken);
+            foreach (var rec in user.ApplicationUserRecords)
+            {
+                _ = await _storage.DeleteAsync(rec, cancellationToken);
+            }
+            return IdentityResult.Success;
         }
         public async Task<ApplicationUser> FindById(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByIdAsync(userId, cancellationToken);
+            var records = await _storage.FindByIdAsync(userId, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
         }
         public async Task<ApplicationUser> FindByEmailAddress(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken);
+            var records = await _storage.FindByEmailAddressAsync(normalizedEmailAddress, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
         }
         public async Task<ApplicationUser> FindByUserName(string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _storage.FindByUserNameAsync(userName, cancellationToken);
+            var records = await _storage.FindByUserNameAsync(userName, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
         }
 
         #endregion
@@ -264,6 +279,32 @@ namespace JamesQMurphy.Auth
         }
 
         public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region IUserLoginStore<ApplicationUser> implementation
+        public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login, CancellationToken cancellationToken)
+        {
+            var newApplicationUserRecord = new ApplicationUserRecord(login.LoginProvider, login.ProviderKey, user.UserId);
+            newApplicationUserRecord.SetStringAttribute("providerDisplayName", login.ProviderDisplayName);
+            user.AddOrReplaceUserRecord(newApplicationUserRecord);
+            return Task.CompletedTask;
+        }
+
+        public async Task<ApplicationUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            var records = await _storage.FindByProviderAndKeyAsync(loginProvider, providerKey, cancellationToken);
+            return records.Any() ? new ApplicationUser(records) : null;
+        }
+
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

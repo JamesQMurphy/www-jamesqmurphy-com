@@ -9,37 +9,22 @@ namespace JamesQMurphy.Blog
     {
         private readonly Markdig.MarkdownPipeline pipelineUnsafe;
         private readonly Markdig.MarkdownPipeline pipelineSafe;
-        private readonly string imageBasePath;
 
-        public DefaultMarkdownHtmlRenderer(string ImageBasePath = "")
+        public DefaultMarkdownHtmlRenderer()
         {
             var pipelineBuilderUnsafe = new Markdig.MarkdownPipelineBuilder();
             Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilderUnsafe);
+            Markdig.MarkdownExtensions.UseNoFollowLinks(pipelineBuilderUnsafe);
             Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilderUnsafe);
             pipelineUnsafe = pipelineBuilderUnsafe.Build();
 
             var pipelineBuilderSafe = new Markdig.MarkdownPipelineBuilder();
             Markdig.MarkdownExtensions.UseAdvancedExtensions(pipelineBuilderSafe);
+            Markdig.MarkdownExtensions.UseNoFollowLinks(pipelineBuilderSafe);
             Markdig.MarkdownExtensions.UseBootstrap(pipelineBuilderSafe);
             Markdig.MarkdownExtensions.DisableHtml(pipelineBuilderSafe);
             Markdig.MarkdownExtensions.DisableHeadings(pipelineBuilderSafe);
             pipelineSafe = pipelineBuilderSafe.Build();
-
-            if (ImageBasePath == null)
-            {
-                imageBasePath = "";
-            }
-            else
-            {
-                if (ImageBasePath.EndsWith("/"))
-                {
-                    imageBasePath = ImageBasePath;
-                }
-                else
-                {
-                    imageBasePath = ImageBasePath + "/";
-                }
-            }
         }
 
         public string RenderHtml(string markdown)
@@ -63,6 +48,7 @@ namespace JamesQMurphy.Blog
 
             var writer = new StringWriter();
             var renderer = new Markdig.Renderers.HtmlRenderer(writer);
+            renderer.ObjectWriteBefore += Renderer_ObjectWriteBefore;
             pipelineSafe.Setup(renderer);
 
             var document = Markdig.Markdown.Parse(markdown, pipelineSafe);
@@ -73,11 +59,14 @@ namespace JamesQMurphy.Blog
 
         private void Renderer_ObjectWriteBefore(Markdig.Renderers.IMarkdownRenderer arg1, Markdig.Syntax.MarkdownObject obj)
         {
-            var link = obj as Markdig.Syntax.Inlines.LinkInline;
-            if (link != null && link.IsImage && !(link.Url.StartsWith("/")))
+            var linkInline = obj as Markdig.Syntax.Inlines.LinkInline;
+            if (linkInline != null)
             {
-                link.Url = $"{imageBasePath}{link.Url}";
+                OnBeforeWriteLinkInline(linkInline);
             }
+        }
+        protected virtual void OnBeforeWriteLinkInline(Markdig.Syntax.Inlines.LinkInline linkInline)
+        {
         }
     }
 }

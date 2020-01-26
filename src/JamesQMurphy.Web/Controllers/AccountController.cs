@@ -1,4 +1,5 @@
 ﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.AccountViewModels;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
+    [Authorize]
     public class accountController : JqmControllerBase
     {
         private readonly ApplicationSignInManager<ApplicationUser> _signInManager;
@@ -19,18 +21,35 @@ namespace JamesQMurphy.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailGenerator _emailGenerator;
 
+        private readonly string USER_ALREADY_TAKEN_MESSAGE = "That UserName is already taken.  Please choose another.";
+
         public accountController
         (
             ApplicationSignInManager<ApplicationUser> signInManager,
             ILogger<accountController> logger,
-            IEmailGenerator emailGenerator
-        )
+            IEmailGenerator emailGenerator,
+            WebSiteOptions webSiteOptions
+        ) : base(webSiteOptions)
         {
             _signInManager = signInManager;
             _logger = logger;
             _emailGenerator = emailGenerator;
             _userManager = _signInManager.UserManager;
         }
+
+        [HttpGet]
+        public IActionResult accessdenied()
+        {
+            return Unauthorized();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult myclaims()
+        {
+            return View();
+        }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -64,6 +83,7 @@ namespace JamesQMurphy.Web.Controllers
                         _logger.LogInformation("User logged in.");
                         return RedirectToLocal(returnUrl);
                     }
+                    // TODO: cleanup
                     //if (result.RequiresTwoFactor)
                     //{
                     //    return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
@@ -81,13 +101,81 @@ namespace JamesQMurphy.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// This is where the "Sign in with Twitter/GitHub" buttons post.  The method redirects the
+        /// browser to the appropriate provider's OAuth page, passing along the callback URL.
+        /// </summary>
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult loginexternal(string provider, string returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(loginexternalcallback), "account", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+        }
+
+        /// <summary>
+        /// This is where the external providers send the browser after they've authenticated (or *not*
+        /// authenticated) the user.  If they've been authenticated, we log them in if they've already
+        /// registered, or send them to the registration page if they're new.
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <param name="remoteError"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> loginexternalcallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                _logger.LogError($"Error from external provider: {remoteError}");
+                return RedirectToAction(nameof(login));
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(login));
+            }
+
+            _logger.LogInformation($"Callback from LoginProvider={info.LoginProvider} ProviderKey={info.ProviderKey} ProviderDisplayName={info.ProviderDisplayName}");
+            foreach (var claim in info.Principal.Claims)
+            {
+                _logger.LogDebug($"Claim: Type={claim.Type} Value={claim.Value} Issuer={claim.Issuer}");
+            }
+
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Login succeeded; user already has login");
+                // TODO: fetch image
+
+                return RedirectToLocal(returnUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                // TODO: handle locked out case
+                _logger.LogInformation("User is locked out");
+                return RedirectToAction(nameof(login));
+            }
+            else
+            {
+                _logger.LogInformation("Need to create login for user; redirecting");
+                return RedirectToAction(nameof(registerexternal));
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> logout(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
+            AlertMessageCollection.AddSuccessAlert($"You have successfully signed out of {WebSiteOptions.WebSiteTitle}.");
             return RedirectToLocal(returnUrl);
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -100,7 +188,7 @@ namespace JamesQMurphy.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> register(RegisterViewModel model)
+        public async Task<IActionResult> register(RegisterWithEmailViewModel model)
         {
             ViewData["IsLoggedIn"] = IsLoggedIn;
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
@@ -118,7 +206,7 @@ namespace JamesQMurphy.Web.Controllers
                 // TODO: log this
                 if (userFromEmail?.EmailConfirmed == true)
                 {
-                    await _emailGenerator.GenerateEmailAsync(userFromEmail, EmailType.EmailAlreadyRegistered);
+                    await _emailGenerator.GenerateEmailAsync(userFromEmail.Email, EmailType.EmailAlreadyRegistered);
                 }
 
                 async Task<IdentityResult> resetPasswordAsync(ApplicationUser user)
@@ -144,7 +232,7 @@ namespace JamesQMurphy.Web.Controllers
                 {
                     if (userFromUserName != null)
                     {
-                        result = IdentityResult.Failed(new IdentityError { Description = "That UserName is already taken.  Please choose another." });
+                        result = IdentityResult.Failed(new IdentityError { Description = USER_ALREADY_TAKEN_MESSAGE });
                     }
                     else
                     {
@@ -180,7 +268,7 @@ namespace JamesQMurphy.Web.Controllers
 
                     // Note that Url is null when we create the controller as part of a unit test
                     var link = Url?.Action(nameof(accountController.confirmemail), "account", new { userFromEmail.UserName, code }, Request.Scheme);
-                    await _emailGenerator.GenerateEmailAsync(userFromEmail, EmailType.EmailVerification, link);
+                    await _emailGenerator.GenerateEmailAsync(userFromEmail.Email, EmailType.EmailVerification, link);
 
                     // Note that we do *not* sign in the user
 
@@ -196,6 +284,120 @@ namespace JamesQMurphy.Web.Controllers
             }
 
             // If we got this far, something failed; redisplay form
+            return View(model);
+        }
+
+        /// <summary>
+        /// The browser gets redirected here from <ref>loginexternalcallback</ref>, if they've
+        /// been authenticated but they're not registered
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> registerexternal(string returnUrl = null)
+        {
+            if (IsLoggedIn)
+            {
+                return RedirectToAction(nameof(register));
+            }
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(register));
+            }
+
+            var usernameOnExternalSystem = externalLoginInfo.Principal?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
+
+            var userFromProposedUsername = string.IsNullOrWhiteSpace(usernameOnExternalSystem) ? null : await _userManager.FindByNameAsync(usernameOnExternalSystem);
+            var model = new RegisterUsernameViewModel
+            {
+                UserName = usernameOnExternalSystem
+            };
+
+            if (userFromProposedUsername != null)
+            {
+                ModelState.AddModelError(String.Empty, USER_ALREADY_TAKEN_MESSAGE);
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
+            ViewData[Constants.VIEWDATA_EXTERNALPROVIDERNAME] = externalLoginInfo.ProviderDisplayName;
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> registerexternal(RegisterUsernameViewModel model, string returnUrl = null)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            if (IsLoggedIn)
+            {
+                return RedirectToAction(nameof(register));
+            }
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo == null)
+            {
+                _logger.LogDebug($"GetExternalLoginInfoAsync() returned null");
+                return RedirectToAction(nameof(register));
+            }
+
+            IdentityResult result = IdentityResult.Failed();
+            if (ModelState.IsValid)
+            {
+                // Check if username has been taken
+                // TODO: Should just let CreateAsync return an error, not this if/then stuff
+                _logger.LogDebug($"Model valid; calling FindByNameAsyc({model.UserName})");
+                var userFromProposedUsername = await _userManager.FindByNameAsync(model.UserName);
+                if (userFromProposedUsername != null)
+                {
+                    _logger.LogDebug($"Username {model.UserName} already exists; redisplay form");
+                    result = IdentityResult.Failed(new IdentityError { Description = USER_ALREADY_TAKEN_MESSAGE });
+                }
+                else
+                {
+                    // Create the new user (without a password) and add the external login
+                    _logger.LogDebug($"Creating username {model.UserName}");
+                    var newUser = new ApplicationUser { UserName = model.UserName };
+                    result = await _userManager.CreateAsync(newUser);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogDebug($"User created; adding login for external provider {externalLoginInfo.LoginProvider}({externalLoginInfo.ProviderDisplayName})");
+                        result = await _userManager.AddLoginAsync(newUser, externalLoginInfo);
+                    }
+                }
+            }
+
+            if (result.Succeeded)
+            {
+                // Actually log in as the user
+                var signInresult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                if (signInresult.Succeeded)
+                {
+                    _logger.LogDebug("Login succeeded; newly created login");
+                    return RedirectToLocal(returnUrl);
+                }
+                else
+                {
+                    _logger.LogWarning($"Login failed for new user {externalLoginInfo.LoginProvider} {externalLoginInfo.ProviderKey}");
+                    return RedirectToAction(nameof(login));
+                }
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(String.Empty, error.Description);
+                }
+            }
+
+            // If we got this far, something failed; redisplay form
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             return View(model);
         }
 
@@ -256,7 +458,7 @@ namespace JamesQMurphy.Web.Controllers
                     var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                     // Note that Url is null when we create the controller as part of a unit test
                     var link = Url?.Action(nameof(accountController.resetpassword), "account", new { user.UserName, code }, Request.Scheme);
-                    await _emailGenerator.GenerateEmailAsync(user, EmailType.PasswordReset, link);
+                    await _emailGenerator.GenerateEmailAsync(user.Email, EmailType.PasswordReset, link);
                 }
 
                 // Even if user doesn't exist, show the confirmation page
@@ -301,7 +503,7 @@ namespace JamesQMurphy.Web.Controllers
                     result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
                     if (result.Succeeded)
                     {
-                        await _emailGenerator.GenerateEmailAsync(user, EmailType.PasswordChanged);
+                        await _emailGenerator.GenerateEmailAsync(user.Email, EmailType.PasswordChanged);
                     }
                 }
                 if (result.Succeeded)
@@ -327,5 +529,8 @@ namespace JamesQMurphy.Web.Controllers
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Password Changed";
             return View();
         }
+
+
+
     }
 }

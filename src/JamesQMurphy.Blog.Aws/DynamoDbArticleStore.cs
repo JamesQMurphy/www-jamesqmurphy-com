@@ -19,7 +19,6 @@ namespace JamesQMurphy.Blog.Aws
         private const string TIMESTAMP = "timestamp";
         private const string TITLE = "title";
         private const string DESCRIPTION = "description";
-        //private const string PUBLISH_DATE = "publishDate";
         private const string CONTENT = "content";
         private const string ARTICLE_TYPE = "articleType";
         private const string ARTICLE_TYPE_PUBLISHED = "published";
@@ -62,7 +61,7 @@ namespace JamesQMurphy.Blog.Aws
             }
         }
 
-        public async Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -85,7 +84,7 @@ namespace JamesQMurphy.Blog.Aws
             return result.Items.ConvertAll(i => ToArticleMetadata(i));
         }
 
-        public async Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        public async Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -106,7 +105,7 @@ namespace JamesQMurphy.Blog.Aws
                 ScanIndexForward = false,
             };
             var result = await _dbClient.QueryAsync(queryRequest);
-            return result.Items.ConvertAll(i => ToArticleMetadata(i));
+            return result.Items.ConvertAll(i => new Article { Metadata = ToArticleMetadata(i), Content = i[CONTENT].S });
         }
 
         public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)

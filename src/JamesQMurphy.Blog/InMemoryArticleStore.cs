@@ -7,31 +7,44 @@ namespace JamesQMurphy.Blog
 {
     public class InMemoryArticleStore : IArticleStore
     {
-        public readonly List<Article> Articles = new List<Article>();
+        private readonly SortedDictionary<DateTime, Article> _articlesByDate = new SortedDictionary<DateTime, Article>();
+        private readonly SortedDictionary<string, Article> _articlesBySlug = new SortedDictionary<string, Article>();
         private readonly Dictionary<string, SortedSet<ArticleComment>> _articleComments = new Dictionary<string, SortedSet<ArticleComment>>();
 
         public Task<Article> GetArticleAsync(string slug)
         {
-            return Task.FromResult(Articles.FindLast(a => a.Slug == slug));
+            if (_articlesBySlug.TryGetValue(slug, out Article article))
+            {
+                return Task.FromResult(article);
+            }
+            else
+            {
+                return Task.FromResult((Article)null);
+            }
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
+        public Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate)
         {
-            var list = Articles.FindAll(a =>
-                (a.PublishDate >= startDate) && (a.PublishDate <= endDate)
-                ).ConvertAll(a => a.Metadata);
-            list.Sort();
-            IEnumerable<ArticleMetadata> ienum = list;
-            return Task.FromResult(ienum);
+            return Task.FromResult(_articlesByDate.Keys
+                .Where(d => d >= startDate && d <= endDate)
+                .OrderByDescending(d => d)
+                .Select(d => _articlesByDate[d].Metadata)
+            );
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        public Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles)
         {
-            var list = Articles.ConvertAll(a => a.Metadata);
-            list.Sort();
-            list.Reverse();
-            IEnumerable<ArticleMetadata> ienum = list.GetRange(0, numberOfArticles);
-            return Task.FromResult(ienum);
+            return Task.FromResult(_articlesByDate.Keys
+                .Reverse()
+                .Take(numberOfArticles)
+                .Select(d => _articlesByDate[d])
+            );
+        }
+
+        public void SafeAddArticle(Article article)
+        {
+            _articlesByDate[article.PublishDate] = article;
+            _articlesBySlug[article.Slug] = article;
         }
 
         public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)

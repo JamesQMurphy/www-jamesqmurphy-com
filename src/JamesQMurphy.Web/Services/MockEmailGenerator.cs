@@ -8,13 +8,13 @@ namespace JamesQMurphy.Web.Services
     public class MockEmailGenerator : IEmailGenerator
     {
         // These are C# tuples (https://docs.microsoft.com/en-us/dotnet/csharp/tuples)
-        private readonly List<(ApplicationUser user, EmailType emailType, string[] data)> _emails = new List<(ApplicationUser user, EmailType emailType, string[] data)>();
+        private readonly List<(string emailAddress, EmailType emailType, string[] data)> _emails = new List<(string emailAddress, EmailType emailType, string[] data)>();
 
-        public IList<(ApplicationUser user, EmailType emailType, string[] data)> Emails => _emails;
+        public IList<(string emailAddress, EmailType emailType, string[] data)> Emails => _emails;
 
-        public Task GenerateEmailAsync(ApplicationUser user, EmailType emailType, params string[] data)
+        public Task GenerateEmailAsync(string emailAddress, EmailType emailType, params string[] data)
         {
-            _emails.Add((user, emailType, data));
+            _emails.Add((emailAddress, emailType, data));
             return Task.CompletedTask;
         }
     }

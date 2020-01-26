@@ -24,7 +24,7 @@ namespace JamesQMurphy.Blog
                 .FirstOrDefault());
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetArticlesAsync(DateTime startDate, DateTime endDate)
+        public Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate)
         {
             return Task.FromResult(
                 LoadArticlesFromFiles()
@@ -34,13 +34,12 @@ namespace JamesQMurphy.Blog
                 );
         }
 
-        public Task<IEnumerable<ArticleMetadata>> GetLastArticlesAsync(int numberOfArticles)
+        public Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles)
         {
             return Task.FromResult(
                 LoadArticlesFromFiles()
                     .OrderByDescending(a => a.PublishDate)
                     .Take(numberOfArticles)
-                    .Select(a => a.Metadata)
                 );
         }
 
