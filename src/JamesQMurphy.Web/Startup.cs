@@ -85,7 +85,7 @@ namespace JamesQMurphy.Web
                     foreach(var p in response.Parameters)
                     {
                         // Replace the Configuration key with the SSM key, minus the app name and slashes
-                        Configuration[p.Name.Replace($"/{ webSiteOptions.AppName}/", "")] = p.Value;
+                        Configuration[p.Name.Replace($"/{ webSiteOptions.AppName}/", "").Replace('/',':')] = p.Value;
                     }
                 }
             }
