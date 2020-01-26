@@ -145,6 +145,7 @@ Resources:
                 Action:
                   - 'ssm:PutParameter'
                   - 'ssm:AddTagsToResource'
+                  - 'ssm:GetParameters'
                   - 'ssm:GetParametersByPath'
                 Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
         - PolicyName: !Sub SQS-SendMessage-${StageParameter}-EmailQueue
