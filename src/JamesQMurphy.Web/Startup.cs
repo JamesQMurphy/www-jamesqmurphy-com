@@ -21,6 +21,11 @@ namespace JamesQMurphy.Web
 {
     public class Startup
     {
+        private const string AUTH_TWITTER_CLIENT_ID = "Authentication:Twitter:ConsumerAPIKey";
+        private const string AUTH_TWITTER_CLIENT_SECRET = "Authentication:Twitter:ConsumerSecret";
+        private const string AUTH_GITHUB_CLIENT_ID = "Authentication:GitHub:ClientId";
+        private const string AUTH_GITHUB_CLIENT_SECRET = "Authentication:GitHub:ClientSecret";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -62,13 +67,13 @@ namespace JamesQMurphy.Web
                 // Load certain secrets from AWS SSM, if available
                 using (var ssmClient = new AmazonSimpleSystemsManagementClient())
                 {
+                    // AWS SSM keys cannot have colons, so replace them with forward slashes
                     var keys = new List<string>
                     {
-                        $"/{webSiteOptions.AppName}/Authentication:Twitter:ConsumerAPIKey",
-                        $"/{webSiteOptions.AppName}/Authentication:Twitter:ConsumerSecret",
-                        $"/{webSiteOptions.AppName}/Authentication:GitHub:ClientId",
-                        $"/{webSiteOptions.AppName}/Authentication:GitHub:ClientSecret",
-                        $"/{webSiteOptions.AppName}/TwitterAccount"
+                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_ID.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_SECRET.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_ID.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_SECRET.Replace(':','/')}"
                     };
                     var response = ssmClient.GetParametersAsync(
                         new Amazon.SimpleSystemsManagement.Model.GetParametersRequest
@@ -115,21 +120,21 @@ namespace JamesQMurphy.Web
                 .AddSignInManager<ApplicationSignInManager<ApplicationUser>>();
 
             var authBuilder = services.AddAuthentication();
-            if (!String.IsNullOrWhiteSpace(Configuration["Authentication:Twitter:ConsumerAPIKey"]))
+            if (!String.IsNullOrWhiteSpace(Configuration[AUTH_TWITTER_CLIENT_ID]))
             {
                 authBuilder.AddTwitter(options =>
                 {
-                    options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
-                    options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    options.ConsumerKey = Configuration[AUTH_TWITTER_CLIENT_ID];
+                    options.ConsumerSecret = Configuration[AUTH_TWITTER_CLIENT_SECRET];
                     options.CallbackPath = "/account/login-twitter";
                 });
             }
-            if (!String.IsNullOrWhiteSpace(Configuration["Authentication:GitHub:ClientId"]))
+            if (!String.IsNullOrWhiteSpace(Configuration[AUTH_GITHUB_CLIENT_ID]))
             {
                 authBuilder.AddGitHub(options =>
                 {
-                    options.ClientId = Configuration["Authentication:GitHub:ClientId"];
-                    options.ClientSecret = Configuration["Authentication:GitHub:ClientSecret"];
+                    options.ClientId = Configuration[AUTH_GITHUB_CLIENT_ID];
+                    options.ClientSecret = Configuration[AUTH_GITHUB_CLIENT_SECRET];
                     options.CallbackPath = "/account/login-github";
                 });
             }
