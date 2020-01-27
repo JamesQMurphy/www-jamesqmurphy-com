@@ -73,12 +73,18 @@ pre {
     color: #fff;
     background-color: #24292E;
     border-color: #24292E;
+    &:hover {
+        color: #fff;
+    }
 }
 
 .btn-twitter {
     color: #fff;
     background-color: #1DA1F2;
     border-color: #1DA1F2;
+    &:hover {
+        color: #fff;
+    }
 }
 
 
