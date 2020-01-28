@@ -1,6 +1,4 @@
-We here at @webSiteTitle (hereafter referred to as "the Website") respect your privacy and are committed to protecting your policy.  This Privacy Policy explains what information we collect, how we use it, and how you can control this information.
-
-This policy applies only to this Website.  This website contains links to other websites which are not governed by this policy.
+We here at @webSiteTitle (hereafter referred to as "the Website") respect your privacy and are committed to protecting your data.  This Privacy Policy explains what information we collect, how we use it, and how you can control this information.  The policy applies only to this Website.  The Website contains links to other websites which are not governed by this policy.
 
 This Privacy Policy is subject to change and was last updated on November 15, 2019.
 
@@ -29,11 +27,11 @@ __Contact Us Page__.  The Website maintains a [contact us](/contact) page to all
 
 ## Information That We Automatically Collect
 
-By browsing the Website, we capture certain information including your IP address, browser and operating system version, URLs requested, referring websites, and the dates and times of these events.  This information is stored within the log files using the CloudWatch service of Amazon Web Services (AWS).  The Website uses this information to improve the quality of the Website's content and performance.  We do not link the information contained within CloudWatch to your user account, except as described in the "How We Disclose Data" section.
+By browsing the Website, we capture certain information including your IP address, browser and operating system version, URLs requested, referring websites, and the dates and times of these events.  This information is stored within the log files using the CloudWatch service of Amazon Web Services (AWS).  The Website uses this information to improve the quality of the Website's content and performance.  We do not link the information contained within CloudWatch to your user account, except as described in the "How We Use This Information" section.
 
 ## Information Collected From Other Sources
 
-The Website does not use third-party services that track your activity.  We do not sell or give your information to other companies or services, except as described in the "How We Disclose Data" section.
+The Website does not use third-party services that track your activity.  We do not sell or give your information to other companies or services, except as described in the "How We Use This Information" section.
 
 The Website runs on Amazon Web Services using their [API Gateway](https://aws.amazon.com/api-gateway/) service.  You can read their privacy policy [here](https://aws.amazon.com/privacy/).
 
@@ -45,8 +43,10 @@ While the content on the Website is available to everybody, you must be at least
 
 The Website use cookies for reasons that are essential to running the site:
 * To allow you to sign in
-* To help secure information you provide to the website
+* To help secure the information you provide to the Website, including use of the [Contact Us](/contact) page.
 * To provide status messages after certain actions.  For example, the Website uses cookies to display a message after you have successfully signed off.
+
+If you configure your web browser to reject or "block" these cookies, you will still be able to read the contents of the Website, but you will not be able to sign in, post a comment, or make use of the Contact Us page.
 
 We also use cookies for certain nonessential reasons.  If you do not acknowledge the Privacy Policy notice, the Website will not issue the cookies described below.
 * To track repeat visits to the site
@@ -54,11 +54,29 @@ We also use cookies for certain nonessential reasons.  If you do not acknowledge
 
 This site does _not_ use cookies to track your activity on other sites.
 
-# How We Disclose Data
+# How We Use This Information
 
-The Website does not sell or rent your personal information to marketers or any third parties.  We use email addresses for verification purposes, for login purposes, and for sending out occasional informational messages, such as updates to this Policy Policy.  We will never sell your email address to third parties, and we will never spam you with advertising messages. 
+The Website does not sell or rent your personal information to marketers or any third parties.  We use email addresses for verification purposes, for login purposes, and for sending out occasional informational messages, such as updates to this Policy Policy.  We will never sell your email address to third parties, and we will never spam you with advertising messages.
 
 On rare occasion, we may share your personal information with trusted third parties, including:
 
 * __Service Providers, such as AWS__: We may share your personal information with service providers to help us with things like website hosting, email delivery, and auditing.  The Website is hosted on Amazon Web Services (AWS) using their [API Gateway](https://aws.amazon.com/api-gateway/) service. 
 * __Safety, legal, and law enforcement__: We may disclose personal information if necessary: (i) under applicable law; (ii) to enforce our terms and conditions; (iii) to protect our rights, privacy, safety or property, and/or that of you or others; and (iv) to respond to requests from courts, law enforcement agencies, regulatory agencies, and other public and government authorities, which may include authorities outside your country of residence.
+
+
+# How You Can Control This Information
+
+The Website is committed to protecting your privacy, and strives to keep the amount of personal data we collect to the absolute minimum necessary.  If you decide to register with the Website, we offer the following data control options:
+
+* The right to download a copy of the personal data you provided
+* The right to update the personal information
+* The right to request deletion of your personal information, which we are not required to maintain by necessity
+
+These options are available on your individual profile page and are described below.
+
+## Downloading A Copy Of Your Personal Data
+
+## Updating Personal Information
+
+## Requesting Deletion Of Your Personal Information
+
