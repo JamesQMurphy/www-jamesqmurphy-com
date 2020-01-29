@@ -54,6 +54,7 @@ namespace JamesQMurphy.Web
             // See https://stackoverflow.com/a/54813987/1001100
             services.Configure<CookieTempDataProviderOptions>(options => {
                 options.Cookie.IsEssential = true;
+                options.Cookie.Name = ".JQM.ResultMessages";
             });
 
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
@@ -145,6 +146,10 @@ namespace JamesQMurphy.Web
             {
                 options.LoginPath = "/account/login";
                 options.AccessDeniedPath = "/account/accessdenied";
+            });
+            services.AddAntiforgery(options =>
+            {
+                options.Cookie.Name = ".JQM.AntiForgery";
             });
 
             // The "new" way to do AddMvc()
