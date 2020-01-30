@@ -15,13 +15,10 @@ You may also choose to register through a third-party social provider, such as [
 
 The Website reservs the right to delete your account for any reason, including choosing a username that can be construed as harmful, inflammatory, or intentionally misleading.
 
-__Comments__.  The Website allows registered users to post comments to articles on the website.  If you wish to leave a comment on an article, you must register with the website.  Comments are publicly visible to all users of the website, including users that are not registered.  
-
-You retain the rights to your copyrighted content, except as described below:
-
-*  By submitting comments to the Website, you grant the Website a royalty-free, perpetual, irrevocable, non-exclusive, unrestricted, worldwide license to reproduce, prepare derivative works, distribute copies, perform, or publicly display your user content in any medium and for any purpose, including commercial purposes, and to authorize others to do so.
-*  You cannot permanently delete your comments.  You may choose to hide the comments that you post, provided you maintain an active registration on the Website.  The comments will no longer be publicly visible; however, others may have posted copies of portions of your comments.
-*  If you choose to delete your account (see below), you forfeit the rights to any comments that you post.
+__Comments__.  The Website allows registered users to post comments to articles on the website.  If you wish to leave a comment on an article, you must register with the Website.  Comments are publicly visible to all users of the Website, including, but not limited to:
+* Other registered users
+* Users and visitors to the Website that are not registered
+* Search Engine "bots" and RSS Feed Aggregators
 
 __Contact Us Page__.  The Website maintains a [contact us](/contact) page to allow users to leave feedback and ask questions.  You do not need to register to use the Contact Us page, but if you are registered and signed into the site, that information is captured as well.  Any information that you provide via the Contact Us page will be stored in our systems and potentially sent via email to the administrators of the Website.  When submitting content through the Contact Us page, you grant the Website a royalty-free, perpetual, irrevocable, non-exclusive, unrestricted, worldwide license to reproduce, prepare derivative works, distribute copies, perform, or publicly display your user content in any medium and for any purpose, including commercial purposes, and to authorize others to do so.
 
@@ -37,7 +34,7 @@ The Website runs on Amazon Web Services using their [API Gateway](https://aws.am
 
 ## Children's Personal Information
 
-While the content on the Website is available to everybody, you must be at least 13 years old to register with the Website.
+While the content on the Website is available to everybody, you must be at least 16 years old to register with the Website.
 
 # Cookies and Tracking Technologies
 
@@ -52,7 +49,7 @@ We also use cookies for certain nonessential reasons.  If you do not acknowledge
 * To track repeat visits to the site
 * To record your acknowledgement of the Privacy Policy
 
-This site does _not_ use cookies to track your activity on other sites.
+The Website does _not_ use cookies to track your activity on other sites.  The Website does not respond to "Do Not Track" signals from browsers.
 
 # How We Use This Information
 
