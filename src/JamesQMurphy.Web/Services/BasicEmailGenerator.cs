@@ -79,6 +79,8 @@ email address.  You can sign in with your email address and password here:
 
 {_webSiteOptions.SiteUrl}/account/{nameof(JamesQMurphy.Web.Controllers.accountController.forgotpassword)}
 
+There is also a link on that page to reset your password.
+
 If you think it is somebody else, don't worry... that person cannot use your email address.  If you have any questions or
 concerns, feel free to contact us at {_webSiteOptions.SiteUrl}/contact.
 <br/></p>
