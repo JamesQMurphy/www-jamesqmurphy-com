@@ -1,4 +1,7 @@
-﻿@{ var webSiteTitle = webSiteOptions.WebSiteTitle; }
+﻿@{
+    var webSiteTitle = webSiteOptions.WebSiteTitle;
+    var currentUserId = httpContextAccessor?.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,24 +28,31 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="home" asp-action="index">@webSiteTitle</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                <a class="navbar-brand" asp-controller="home" asp-action="index">@webSiteTitle</a>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="blog" asp-action="index">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="home" asp-action="about">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="~/contact">Contact</a>
-                        </li>
-                    </ul>
+                    <div class="navbar-nav flex-grow-1">
+                        <a class="nav-item nav-link text-dark" asp-controller="blog" asp-action="index">Blog</a>
+                        <a class="nav-item nav-link text-dark" asp-controller="home" asp-action="about">About</a>
+                        <a class="nav-item nav-link text-dark" href="~/contact">Contact</a>
+                    </div>
                 </div>
+                @if (String.IsNullOrWhiteSpace(currentUserId))
+                {
+                    <div>
+                        <a class="btn btn-primary" asp-controller="account" asp-action="register">Sign Up</a>
+                        <a class="btn btn-secondary" asp-controller="account" asp-action="login">Sign In</a>
+                    </div>
+                }
+                else
+                {
+                    <a class="nav-item nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user-circle fa-lg"></i>
+                    </a>
+                }
             </div>
         </nav>
     </header>
