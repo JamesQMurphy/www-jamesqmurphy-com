@@ -50,6 +50,16 @@ namespace JamesQMurphy.Web.Controllers
             return View("Details", article);
         }
 
+        public IActionResult terms()
+        {
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Terms and Conditions";
+            var article = new Article
+            {
+                Content = System.IO.File.ReadAllText("Views/Home/TermsAndConditions.md").Replace("@webSiteTitle", WebSiteOptions.WebSiteTitle)
+            };
+            return View("Details", article);
+        }
+
         [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> secret()
         {
