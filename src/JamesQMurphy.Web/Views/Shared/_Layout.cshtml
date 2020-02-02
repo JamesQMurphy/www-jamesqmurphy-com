@@ -1,6 +1,7 @@
 ﻿@{
     var webSiteTitle = webSiteOptions.WebSiteTitle;
     var currentUserId = httpContextAccessor?.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+    var currentUsername = httpContextAccessor?.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
 }
 <!DOCTYPE html>
 <html>
@@ -54,9 +55,11 @@
                             <i class="fas fa-user-circle fa-lg"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#">My Profile</a>
+                            <a class="dropdown-item" href="#">Welcome @currentUsername</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Sign Out</a>
+                            <form class="form-inline" asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.logout)" asp-route-returnurl="" method="post">
+                                <button type="submit" class="dropdown-item">Sign Out</button>
+                            </form>
                         </div>
                     </div>
                 }
