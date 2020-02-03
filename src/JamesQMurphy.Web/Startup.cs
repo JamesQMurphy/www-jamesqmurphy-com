@@ -43,7 +43,7 @@ namespace JamesQMurphy.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
                 options.ConsentCookie = new CookieBuilder()
                 {
-                    Name = ".JQM.PrivacyConsent.20191115",
+                    Name = ".JQM.PrivacyConsent.20200203",
                     Expiration = TimeSpan.FromDays(365),
                     IsEssential = true
                 };

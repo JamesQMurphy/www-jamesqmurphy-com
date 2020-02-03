@@ -52,10 +52,10 @@ namespace JamesQMurphy.Web.Controllers
 
         public IActionResult terms()
         {
-            ViewData[Constants.VIEWDATA_PAGETITLE] = "Terms and Conditions";
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Terms of Service";
             var article = new Article
             {
-                Content = System.IO.File.ReadAllText("Views/Home/TermsAndConditions.md").Replace("@webSiteTitle", WebSiteOptions.WebSiteTitle)
+                Content = System.IO.File.ReadAllText("Views/Home/Terms.md").Replace("@webSiteTitle", WebSiteOptions.WebSiteTitle)
             };
             return View("Details", article);
         }

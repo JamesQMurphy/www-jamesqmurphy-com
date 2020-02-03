@@ -1,6 +1,6 @@
-We here at @webSiteTitle (hereafter referred to as "the Website") respect your privacy and are committed to protecting your data.  This Privacy Policy explains what information we collect, how we use it, and how you can control this information.  The policy applies only to this Website.  The Website contains links to other websites which are not governed by this policy.
+We here at @webSiteTitle ("the Website") respect your privacy and are committed to protecting your data.  This Privacy Policy explains what information we collect, how we use it, and how you can control this information.  The policy applies only to this Website.  The Website contains links to other websites which are not governed by this policy.
 
-This Privacy Policy is subject to change and was last updated on February 1, 2020.
+This Privacy Policy is subject to change and was last updated on February 3, 2020.
 
 
 # Information We Collect
@@ -18,7 +18,7 @@ __Comments__.  The Website allows registered users to post comments to articles.
 * Users and visitors to the Website that are not registered
 * Search Engine "bots" and RSS Feed Aggregators
 
-__Contact Us Page__.  The Website maintains a [Contact Us](/contact) page to allow users to leave feedback and ask questions.  You do not need to register to use the Contact Us page, but if you are registered and signed into the site, that information is captured as well.  Any information that you provide via the Contact Us page will be stored in our systems and potentially sent via email to the administrators of the Website.
+__Contact Us Page__.  The Website maintains a [Get In Touch](/contact) ("Contact page") to allow users to leave feedback and ask questions.  You do not need to register to use the Contact page, but if you are registered and signed into the site, that information is captured as well.  Any information that you provide via the Contact page will be stored in our systems and potentially sent via email to the administrators of the Website.
 
 ## Information That We Automatically Collect
 
@@ -38,10 +38,10 @@ While the content on the Website is available to everybody, you must be at least
 
 The Website use cookies for reasons that are essential to running the site:
 * To allow you to sign in and uniquely identify your account.
-* To help secure the information you provide to the Website.  This includes use of the [Contact Us](/contact) page.
+* To help secure the information you provide to the Website.  This includes use of the Contact page.
 * To provide status messages after certain actions.  For example, the Website uses cookies to display a message after you have successfully signed off.
 
-If you configure your web browser to reject or "block" these cookies, you will still be able to read the contents of the Website, but you will not be able to sign in, post a comment, or make use of the Contact Us page.
+If you configure your web browser to reject or "block" these cookies, you will still be able to read the contents of the Website, but you will not be able to sign in, post a comment, or make use of the Contact page.
 
 We also use cookies for certain nonessential reasons.  If you do not acknowledge this Privacy Policy notice, the Website will not issue cookies for the following purposes:
 * To record your acknowledgement of this Privacy Policy
@@ -55,7 +55,7 @@ The Website does not sell or rent your personal information to marketers or any 
 On rare occasion, we may share your personal information with trusted third parties, including:
 
 * __Service Providers, such as AWS__: We may share your personal information with service providers to help us with things like website hosting, email delivery, and auditing.  The Website is hosted on Amazon Web Services (AWS) using their [API Gateway](https://aws.amazon.com/api-gateway/) service. 
-* __Safety, legal, and law enforcement__: We may disclose personal information if necessary: (a) under applicable law; (b) to enforce our Terms and Conditions; (c) to protect our rights, privacy, safety or property, and/or that of you or others; and (d) to respond to requests from courts, law enforcement agencies, regulatory agencies, and other public and government authorities, which may include authorities outside your country of residence.
+* __Safety, legal, and law enforcement__: We may disclose personal information if necessary: (a) under applicable law; (b) to enforce our [Terms of Service](/home/terms); (c) to protect our rights, privacy, safety or property, and/or that of you or others; and (d) to respond to requests from courts, law enforcement agencies, regulatory agencies, and other public and government authorities, which may include authorities outside your country of residence.
 
 
 # How You Can Control This Information

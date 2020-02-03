@@ -1,16 +1,20 @@
 **Welcome to @webSiteTitle!**
 
-By accessing or viewing @webSiteTitle (hereafter referred to as "the Website"), you are agreeing to these Terms and Conditions.  Please review them carefully.  These Terms and Conditions are subject to change and we reserve the right to change them, at our sole discretion, at any time and for any reason.  These Terms and Conditions are made publicly available on the Website and it is your responsibility to review them periodically.  As such, you waive any right to receive specific notice of individual updates.
+By accessing or viewing @webSiteTitle ("the Website"), you are agreeing to these Terms of Service ("Terms").  Please review them carefully.  These Terms are subject to change and we reserve the right to change them, at our sole discretion, at any time and for any reason.  These Terms are made publicly available on the Website and it is your responsibility to review them periodically.  As such, you waive any right to receive specific notice of individual updates.
 
-These Terms and Conditions were last updated on February 1, 2020.
+These Terms of Service were last updated on February 3, 2020.
 
 The information provided on the Website is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject us to any registration requirement within such jurisdiction or country. Accordingly, if you choose to access the Website, you agree that you do so on your own initiative and are solely responsible for compliance with local laws, if and to the extent local laws are applicable.
 
-The storage and transfer of information on the Website is governed by the Privacy Policy.  We strongly urge to to review our Privacy Policy.  By agreeing to these Terms and Conditions, you also agree to the Privacy Policy.
+The storage and transfer of information on the Website is governed by the [Privacy Policy](/home/privacy).  We strongly urge to to review our Privacy Policy.  By agreeing to these Terms, you also agree to the Privacy Policy.
+
+# Contact Page
+
+The Website maintains a [Get In Touch](/contact) ("Contact page") to allow users to leave feedback and ask questions.  You do not need to register to use the Contact page.  When submitting content through the Contact page, you forfeit all copyright to any content submitted through the Contact page.  Content submitted through the Contact Page is subject to the same limitations and terms as comments, described below.
 
 # Account Registration
 
-Content such as blog posts and comments are publicly available to everyone.  As such, these Terms and Conditions apply to all users of the Website, whether or not you create an account with the Website.  If you wish to contribute (post) your own comments, you are required to register (sign up) with the Website by creating an account.  All information provided during the registration process is subject to the Website's Privacy Policy.  Even if you choose not to register with the Website, you still agree to these Terms and Conditions.
+Content such as blog posts and comments are publicly available to everyone.  As such, these Terms apply to all users of the Website, whether or not you create an account with the Website.  If you wish to contribute (post) your own comments, you are required to register (sign up) with the Website by creating an account.  All information provided during the registration process is subject to the Website's Privacy Policy.  Even if you choose not to register with the Website, you still agree to these Terms.
 
 There are two methods of registration:
 
@@ -23,7 +27,7 @@ By registering with the Website, you represent and warrant that:
 
 1. All registration information you submit will be true, accurate, current, and complete.
 1. You will maintain the accuracy of the registration information, and promptly update the information as necessary.
-1. You have the legal capacity and you agree to comply with these Terms and Conditions, as well as the Privacy Policy.
+1. You have the legal capacity and you agree to comply with these Terms, as well as the Privacy Policy.
 1. You are at least 16 years old.
 1. You will not use the Website for any illegal or unauthorized purposes.
 1. You will not create user accounts by automated means or under false pretenses.
@@ -42,9 +46,9 @@ The Website may, at any time and at our sole discretion, suspend, lock, or termi
 The Website offers the ability for registered users to submit their own content, in response to certain blog posts, through a process of *posting comments*.
 Comments you post will be viewable by other users of the Website (registered and non-registered), and through third-party services and websites.  You agree that comments will only be allowed on certain sections of the Website, and it is the sole decision of the Website to decide which areas of the Website may allow comments to be posted.  The Website may change which areas allow comments and which do not, at any time and at our sole discretion.
 
-By posting your own comments on the Website, you grant the Website a royalty-free, perpetual, irrevocable, sublicensable, non-exclusive, unrestricted, worldwide license to reproduce, prepare derivative works, distribute copies, perform, or publicly display your comments in any medium and for any purpose, including commercial purposes, and to authorize others to do so.  You represent and warrant that you have all rights, power, and authority necessary to grant the rights to your comment contained within these Terms and Conditions.
+By posting your own comments on the Website, you grant the Website a royalty-free, perpetual, irrevocable, sublicensable, non-exclusive, unrestricted, worldwide license to reproduce, prepare derivative works, distribute copies, perform, or publicly display your comments in any medium and for any purpose, including commercial purposes, and to authorize others to do so.  You represent and warrant that you have all rights, power, and authority necessary to grant the rights to your comment contained within these Terms.
 
-Because you alone are responsible for your comments, you may expose yourself to liability if you post or share Content without all necessary rights.  You expressly agree to exonerate the Website from any and all responsibility and to refrain from any legal action against the Website regarding your comments.  The Website is under no obligation to monitor or edit your comments; however, we reserve the right to, in our sole discretion, delete or remove your comments at any time and for any reason, including, but not limited to, a violation of these Terms and Conditions, a violation of our Privacy Policy, or if you otherwise create liability for us.
+Because you alone are responsible for your comments, you may expose yourself to liability if you post or share Content without all necessary rights.  You expressly agree to exonerate the Website from any and all responsibility and to refrain from any legal action against the Website regarding your comments.  The Website is under no obligation to monitor or edit your comments; however, we reserve the right to, in our sole discretion, delete or remove your comments at any time and for any reason, including, but not limited to, a violation of these Terms, a violation of our Privacy Policy, or if you otherwise create liability for us.
 
 You may not post any comments that contain information that is:
 
@@ -59,23 +63,19 @@ You may not post any comments that contain information that is:
 
 The Website may use its own discretion in determining if a comment meets the above criteria.
 
-You may edit certain comments that you have previously posted.  Edits to comments are subject to the same Terms and Conditions listed above for posting comments and you agree that you grant the Website the same license described above.  The Website reserves the right to limit the ability to edit comments that you post.  You may also delete (erase) comments that you have posted, but you acknowledge that comments or portions of your comments may have already been copied and/or distributed as permitted.  The Website reserves the right to limit or remove the ability for you to delete or erase your comments.
+You may edit certain comments that you have previously posted.  Edits to comments are subject to the same Terms listed above for posting comments and you agree that you grant the Website the same license described above.  The Website reserves the right to limit the ability to edit comments that you post.  You may also delete (erase) comments that you have posted, but you acknowledge that comments or portions of your comments may have already been copied and/or distributed as permitted.  The Website reserves the right to limit or remove the ability for you to delete or erase your comments.
 
 # Account Deletion
 
-If you register an account, by either method specified above, you may request that your account be deleted through the [Contact Us](/contact) page.  In order to verify your identity, you must be signed into the Website when requesting account deletion through the Contact Us page.  In accordance with our Privacy Policy, we will delete your account and all personal information pertaining to your account, with the following exceptions:
+If you register an account, by either method specified above, you may request that your account be deleted through the Contact page.  In order to verify your identity, you must be signed into the Website when requesting account deletion through the Contact page.  In accordance with our Privacy Policy, we will delete your account and all personal information pertaining to your account, with the following exceptions:
 
 * All comments that you have posted on the Website will remain on the Website.  Instead of a username, the Website will display "deleted user" or an equivalent anonymized phrase.  As specified in our Privacy Policy, once your account is deleted, there is no way to link the comments to your identity.  You agree that if your account is deleted, you forfeit all copyrights to any of your comments that remain on the site.
 
 * Any information that we automatically collect, as described in the Privacy Policy, will remain in our logs and databases.
 
-# Contact Us Page
-
-The Website maintains a [Contact Us](/contact) page to allow users to leave feedback and ask questions.  You do not need to register to use the Contact Us page.  When submitting content through the Contact Us page, you forfeit all copyright to any content submitted through the Contact Us page.  Content submitted through the Contact Page is subject to the same limitations and Terms and Conditions as comments, described above.
-
 # Other Prohibited Activities
 
-Under these Terms and Conditions, you are prohibited from:
+Under these Terms, you are prohibited from:
 
 * Attempting to gain unauthorized access to another user's Account or to the Services (or to other computer systems or networks connected to or used together with the Services).
 * Accessing or using the Website for any purpose other than that for which we make the Website available. The Website may not be used in connection with any commercial endeavors except those that are specifically endorsed or approved by us.
@@ -99,4 +99,4 @@ Under these Terms and Conditions, you are prohibited from:
 
 # Indemnity
 
-You agree to defend, indemnify, and hold us harmless, including our affiliates, agents, and partners, from and against any loss, damage, liability, claim, or demand, including reasonable attorneys' fees and expenses, made by any third party due to or arising out of: (a) your use of the Website; (a) your comments; (c) breach of these Terms and Conditions; (d) any breach of your representations and warranties set forth in these Terms and Conditions; (e) your violation of the rights of a third party, including but not limited to intellectual property rights; or (f) any overt harmful act toward any other user of the Website with whom you connected via the Website. Notwithstanding the foregoing, we reserve the right, at your expense, to assume the exclusive defense and control of any matter for which you are required to indemnify us, and you agree to cooperate, at your expense, with our defense of such claims. We will use reasonable efforts to notify you of any such claim, action, or proceeding which is subject to this indemnification upon becoming aware of it.
+You agree to defend, indemnify, and hold us harmless, including our affiliates, agents, and partners, from and against any loss, damage, liability, claim, or demand, including reasonable attorneys' fees and expenses, made by any third party due to or arising out of: (a) your use of the Website; (a) your comments; (c) breach of these Terms; (d) any breach of your representations and warranties set forth in these Terms; (e) your violation of the rights of a third party, including but not limited to intellectual property rights; or (f) any overt harmful act toward any other user of the Website with whom you connected via the Website. Notwithstanding the foregoing, we reserve the right, at your expense, to assume the exclusive defense and control of any matter for which you are required to indemnify us, and you agree to cooperate, at your expense, with our defense of such claims. We will use reasonable efforts to notify you of any such claim, action, or proceeding which is subject to this indemnification upon becoming aware of it.
