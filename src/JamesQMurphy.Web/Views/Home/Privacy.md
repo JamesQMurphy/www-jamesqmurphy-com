@@ -66,11 +66,5 @@ The Website is committed to protecting your privacy, and strives to keep the amo
 * The right to update the personal information
 * The right to request deletion of your personal information, which we are not required to maintain by necessity
 
-These options are available on your individual profile page and are described below.
-
-## Downloading A Copy Of Your Personal Data
-
-## Updating Personal Information
-
-## Requesting Deletion Of Your Personal Information
+These options are available on your individual profile page.
 
