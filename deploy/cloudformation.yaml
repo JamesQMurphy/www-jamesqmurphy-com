@@ -602,10 +602,11 @@ Resources:
       Runtime: dotnetcore2.1
       Timeout: 30
       Environment:
-        Email__FromAddress: "Cold-Brewed DevOps <no-reply@jamesqmurphy.com>"
-        Email__MailDomain: mg.jamesqmurphy.com
-        Email__ServiceUrl: https://api.mailgun.net/v3
-        Email__ServiceApiKeyName: !Sub '/${AppNameParameter}-${StageParameter}/Email/ServiceApiKey'
+        Variables:
+          Email__FromAddress: "Cold-Brewed DevOps <no-reply@jamesqmurphy.com>"
+          Email__MailDomain: mg.jamesqmurphy.com
+          Email__ServiceUrl: https://api.mailgun.net/v3
+          Email__ServiceApiKeyName: !Sub '/${AppNameParameter}-${StageParameter}/Email/ServiceApiKey'
 
 
   TheEmailSenderEventSourceMapping:
