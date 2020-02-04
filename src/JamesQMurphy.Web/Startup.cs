@@ -176,8 +176,8 @@ namespace JamesQMurphy.Web
                     break;
 
                 case "Mailgun":
-                    services.ConfigurePoco<JamesQMurphy.Email.MailgunEmailService.Options>(Configuration, "Email");
-                    services.AddSingleton<IEmailService, JamesQMurphy.Email.MailgunEmailService>();
+                    services.ConfigurePoco<JamesQMurphy.Email.Mailgun.MailgunEmailService.Options>(Configuration, "Email");
+                    services.AddSingleton<IEmailService, JamesQMurphy.Email.Mailgun.MailgunEmailService>();
                     break;
 
                 default: //NullEmailService

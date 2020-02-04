@@ -3,7 +3,7 @@ using RestSharp.Authenticators;
 using System;
 using System.Threading.Tasks;
 
-namespace JamesQMurphy.Email
+namespace JamesQMurphy.Email.Mailgun
 {
     public class MailgunEmailService : IEmailService
     {
@@ -33,7 +33,14 @@ namespace JamesQMurphy.Email
 			request.AddParameter("from", _options.FromAddress);
 			request.AddParameter("to", emailAddress);
 			request.AddParameter("subject", subject);
-			request.AddParameter("text", message);
+			if (message.Trim().ToLowerInvariant().StartsWith("<html>"))
+			{
+				request.AddParameter("html", message);
+			}
+			else
+			{
+				request.AddParameter("text", message);
+			}
 			request.Method = Method.POST;
 			var restResponse = await client.ExecuteAsync(request);
 			return new EmailResult
