@@ -175,6 +175,11 @@ namespace JamesQMurphy.Web
                     services.AddSingleton<IEmailService, JamesQMurphy.Email.Aws.SQSEmailService>();
                     break;
 
+                case "Mailgun":
+                    services.ConfigurePoco<JamesQMurphy.Email.MailgunEmailService.Options>(Configuration, "Email");
+                    services.AddSingleton<IEmailService, JamesQMurphy.Email.MailgunEmailService>();
+                    break;
+
                 default: //NullEmailService
                     services.AddSingleton<IEmailService, NullEmailService>();
                     break;

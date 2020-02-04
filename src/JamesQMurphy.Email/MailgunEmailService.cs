@@ -7,15 +7,30 @@ namespace JamesQMurphy.Email
 {
     public class MailgunEmailService : IEmailService
     {
-        public async Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
+		public class Options
+		{
+			public string FromAddress { get; set; }
+			public string MailDomain { get; set; } = "mg.jamesqmurphy.com";
+			public string ServiceUrl { get; set; } = "https://api.mailgun.net/v3";
+			public string ServiceApiKey { get; set; }
+		}
+
+		private readonly Options _options;
+
+		public MailgunEmailService(Options options)
+		{
+			_options = options;
+		}
+
+		public async Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
         {
 			RestClient client = new RestClient();
-			client.BaseUrl = new Uri("https://api.mailgun.net/v3");
-			client.Authenticator = new HttpBasicAuthenticator("api", "YOUR_API_KEY");
+			client.BaseUrl = new Uri(_options.ServiceUrl);
+			client.Authenticator = new HttpBasicAuthenticator("api", _options.ServiceApiKey);
 			RestRequest request = new RestRequest();
-			request.AddParameter("domain", "mg.jamesqmurphy.com", ParameterType.UrlSegment);
+			request.AddParameter("domain", _options.MailDomain, ParameterType.UrlSegment);
 			request.Resource = "{domain}/messages";
-			request.AddParameter("from", "Cold-Brewed DevOps <no-reply@jamesqmurphy.com>");
+			request.AddParameter("from", _options.FromAddress);
 			request.AddParameter("to", emailAddress);
 			request.AddParameter("subject", subject);
 			request.AddParameter("text", message);
