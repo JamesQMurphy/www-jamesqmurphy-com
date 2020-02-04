@@ -1,8 +1,7 @@
 ﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
-using Amazon.SQS;
-using Amazon.SQS.Model;
-using JamesQMurphy.Email.Aws;
+using Amazon.SimpleSystemsManagement;
+using JamesQMurphy.Email.Mailgun;
 using System;
 
 namespace JamesQMurphy.Lambda.EmailSender
@@ -16,10 +15,27 @@ namespace JamesQMurphy.Lambda.EmailSender
         {
             context.Logger.LogLine($"Received SQSEvent with {sqsEvent.Records.Count} SQSMessage record(s)");
 
-            context.Logger.LogLine("Creating EmailService object");
-            var emailService = new SESEmailService(new SESEmailService.Options()
+            context.Logger.LogLine("Retrieving ApiKey");
+            string apiKey = String.Empty;
+            using (var ssmClient = new AmazonSimpleSystemsManagementClient())
             {
-                FromAddress = "no-reply@jamesqmurphy.com"
+                var response = ssmClient.GetParameterAsync(
+                    new Amazon.SimpleSystemsManagement.Model.GetParameterRequest
+                    {
+                        Name = Environment.GetEnvironmentVariable("Email__ServiceApiKeyName"),
+                        WithDecryption = true
+                    }
+                ).GetAwaiter().GetResult();
+                apiKey = response.Parameter.Value;
+            }
+
+            context.Logger.LogLine("Creating EmailService object");
+            var emailService = new MailgunEmailService(new MailgunEmailService.Options
+            {
+                FromAddress = Environment.GetEnvironmentVariable("Email__FromAddress"),
+                MailDomain = Environment.GetEnvironmentVariable("Email__MailDomain"),
+                ServiceUrl = Environment.GetEnvironmentVariable("Email__ServiceUrl"),
+                ServiceApiKey = apiKey
             });
 
             foreach (var sqsMessage in sqsEvent.Records)
