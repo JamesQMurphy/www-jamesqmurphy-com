@@ -78,6 +78,27 @@ pre {
     height: 100%;
 }
 
+// Brand-specific colors
+.btn-github {
+    color: #fff;
+    background-color: #24292E;
+    border-color: #24292E;
+    &:hover {
+        color: #fff;
+    }
+}
+
+.btn-twitter {
+    color: #fff;
+    background-color: #1DA1F2;
+    border-color: #1DA1F2;
+    &:hover {
+        color: #fff;
+    }
+}
+
+
 // Import Font Awesome
 @import "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
 @import "../node_modules/@fortawesome/fontawesome-free/scss/brands";
+

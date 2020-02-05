@@ -23,7 +23,8 @@
             </div>
             <div class="form-group">
                 <input asp-for="AcceptPrivacy">
-                I agree to the <a asp-area="" asp-controller="home" asp-action="privacy">Privacy Policy</a>.<br />
+                I agree to the <a asp-area="" asp-controller="home" asp-action="terms">Terms of Service</a>
+                and <a asp-area="" asp-controller="home" asp-action="privacy">Privacy Policy</a>.<br />
                 <span asp-validation-for="AcceptPrivacy" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Sign Up</button>
