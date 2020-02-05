@@ -9,10 +9,12 @@
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.0.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="1.6.0" />
     <PackageReference Include="Amazon.Lambda.SQSEvents" Version="1.1.0" />
+    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.3.102.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\JamesQMurphy.Email.Aws\JamesQMurphy.Email.Aws.csproj" />
+    <ProjectReference Include="..\JamesQMurphy.Email.Mailgun\JamesQMurphy.Email.Mailgun.csproj" />
   </ItemGroup>
   
 </Project>
