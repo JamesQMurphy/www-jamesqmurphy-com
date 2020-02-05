@@ -2,7 +2,8 @@
 
 <vc:article article="@Model"></vc:article>
 
-<h5>Comments</h5>
+<h2>Comments</h2>
+<hr />
 <div class="container" id="commentsRoot"></div>
 <div class="container-fluid" id="addComment">
     @if ((bool)ViewData["isLoggedIn"])
@@ -21,7 +22,7 @@
     }
     else
     {
-        <p class="text-center">You have to be <a asp-controller="account" asp-action="login" asp-route-returnurl="@ViewData["returnUrl"]">logged in</a> to post a comment.</p>
+        <p class="text-center">You need to be <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.login)" asp-route-returnurl="@ViewData["returnUrl"]">signed in</a> to post a comment.</p>
     }
 
 </div>
