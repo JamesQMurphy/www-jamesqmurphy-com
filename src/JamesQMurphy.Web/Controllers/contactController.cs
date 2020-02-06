@@ -30,7 +30,7 @@ namespace JamesQMurphy.Web.Controllers
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             if (ModelState.IsValid)
             {
-                await _emailGenerator.GenerateEmailAsync(WebSiteOptions.CommentsEmail, EmailType.Comments, new string[] { CurrentUserId, model.Comments});
+                await _emailGenerator.GenerateEmailAsync(WebSiteOptions.CommentsEmail, EmailType.Comments, new string[] { CurrentUserName, model.Comments});
                 return RedirectToAction(nameof(commentsConfirmation));
             }
             return View();

@@ -81,7 +81,30 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019-2020 @webSiteTitle &nbsp; <a asp-area="" asp-controller="home" asp-action="privacy">Privacy</a>
+            <div class="row justify-content-between mb-0">
+                <div class="col-4">
+                    &copy;&nbsp;2019-2020 @webSiteTitle
+                </div>
+                <div class="col-4">
+                    <a asp-area="" asp-controller="contact" asp-action="">Get In Touch</a>
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col-4">
+                    &nbsp;
+                </div>
+                <div class="col-4">
+                    <a asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.privacy)">Privacy Policy</a>
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col-4">
+                    &nbsp;
+                </div>
+                <div class="col-4">
+                    <a asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.terms)">Terms of Service</a>
+                </div>
+            </div>
         </div>
     </footer>
 
