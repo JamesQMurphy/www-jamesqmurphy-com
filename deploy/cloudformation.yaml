@@ -529,6 +529,18 @@ Resources:
         LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
 
 
+  TheProfileRouteResourceStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub 'https://${S3BucketForCodeParameter}.s3.amazonaws.com/${S3BucketPathForStaticFilesParameter}/cf-apiGatewayToLambda.yaml'
+      TimeoutInMinutes: 10
+      Parameters:
+        RestApiIdParameter: !Ref TheGatewayRestAPI
+        ParentResourceIdParameter: !GetAtt TheGatewayRestAPI.RootResourceId
+        ApiResourceNameParameter: profile
+        LambdaArnParameter: !GetAtt TheLambdaFunction.Arn
+
+
   TheBlogImagesResourceStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
