@@ -33,6 +33,7 @@ namespace JamesQMurphy.Web.Controllers
             username = await _userManager.GetUserNameAsync(user);
 
             ViewData[Constants.VIEWDATA_PAGETITLE] = $"Profile for {username}";
+            ViewData["username"] = username;
             return View();
         }
     }
