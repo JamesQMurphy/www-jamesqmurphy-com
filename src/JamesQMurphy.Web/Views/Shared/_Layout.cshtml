@@ -54,12 +54,18 @@
                         <a class="nav-item nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-user-circle fa-lg"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-sm-right">
-                            <div class="dropdown-item navbar-text">
-                                <b>
-                                    <small>Signed in as</small><br />
-                                    @currentUsername
-                                </b>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="nav-link text-dark" asp-controller="profile" asp-action="index">
+                                <div class="dropdown-item navbar-text">
+                                    <b>
+                                        <small>Signed in as</small><br />
+                                        @currentUsername
+                                    </b>
+                                </div>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item">
+                                <a class="nav-link text-dark" asp-controller="profile" asp-action="index">My Profile</a>
                             </div>
                             <div class="dropdown-divider"></div>
                             <form class="form-inline" asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.logout)" asp-route-returnurl="" method="post">
