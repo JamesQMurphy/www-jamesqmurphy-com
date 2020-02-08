@@ -523,10 +523,11 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult changepassword()
+        public async Task<IActionResult> changepassword()
         {
+            var hasPassword = await _userManager.HasPasswordAsync(await GetApplicationUserAsync(_userManager));
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Change Your Password";
-            return View();
+            return hasPassword ? View() : View("changePassword_externalLogin");
         }
 
         [HttpPost]
