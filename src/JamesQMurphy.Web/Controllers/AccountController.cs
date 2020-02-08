@@ -209,14 +209,6 @@ namespace JamesQMurphy.Web.Controllers
                     await _emailGenerator.GenerateEmailAsync(userFromEmail.Email, EmailType.EmailAlreadyRegistered);
                 }
 
-                async Task<IdentityResult> resetPasswordAsync(ApplicationUser user)
-                {
-                    return await _userManager.ResetPasswordAsync(
-                        user,
-                        await _userManager.GeneratePasswordResetTokenAsync(user),
-                        pwForm);
-                }
-
                 // Very specific condition of a user trying to re-register with exactly
                 // the same information.  Reset the password.
                 if (userFromUserName != null &&  userFromEmail != null &&
@@ -226,7 +218,7 @@ namespace JamesQMurphy.Web.Controllers
                     userFromUserName.NormalizedUserName == userFromEmail.NormalizedUserName
                 )
                 {
-                    result = await resetPasswordAsync(userFromEmail);
+                    result = await _signInManager.ChangeUserPasswordAsync(userFromEmail, pwForm);
                 }
                 else
                 {
@@ -255,7 +247,7 @@ namespace JamesQMurphy.Web.Controllers
                             }
                             else
                             {
-                                result = await resetPasswordAsync(userFromEmail);
+                                result = await _signInManager.ChangeUserPasswordAsync(userFromEmail, pwForm);
                             }
                         }
                     }
@@ -530,7 +522,58 @@ namespace JamesQMurphy.Web.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> changepassword()
+        {
+            var hasPassword = await _userManager.HasPasswordAsync(await GetApplicationUserAsync(_userManager));
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Change Your Password";
+            return hasPassword ? View() : View("changePassword_externalLogin");
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> changepassword(ChangePasswordViewModel model)
+        {
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Change Your Password";
+            if (ModelState.IsValid)
+            {
+                var user = await GetApplicationUserAsync(_userManager);
+                if (await _userManager.HasPasswordAsync(user))
+                {
+                    var pwVerificationResult = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, model.CurrentPassword);
+                    if (pwVerificationResult == PasswordVerificationResult.Failed)
+                    {
+                        ModelState.AddModelError(String.Empty, "The password you entered did not match the password we currently have");
+                    }
+                    else
+                    {
+                        var result = await _signInManager.ChangeUserPasswordAsync(user, model.Password);
+                        if (result.Succeeded)
+                        {
+                            await _emailGenerator.GenerateEmailAsync(user.Email, EmailType.PasswordChanged);
+                            return RedirectToAction(nameof(changepasswordconfirmation));
+                        }
+                        else
+                        {
+                            _logger.LogError($"Error changing password: {result.ToString()}");
+                            ModelState.AddModelError(String.Empty, "There was a problem changing your password.  Please try again later.");
+                        }
+                    }
+                }
+                else
+                {
+                    return View("changePassword_externalLogin");
+                }
+            }
 
+            // If we got this far, something failed, redisplay (blank) form
+            return View(new ChangePasswordViewModel());
+        }
+
+        [HttpGet]
+        public IActionResult changepasswordconfirmation()
+        {
+            ViewData[Constants.VIEWDATA_PAGETITLE] = "Password Changed";
+            return View();
+        }
     }
 }

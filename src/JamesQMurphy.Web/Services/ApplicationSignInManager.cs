@@ -32,5 +32,15 @@ namespace JamesQMurphy.Web.Services
 
             return await PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         }
+
+        public async Task<IdentityResult> ChangeUserPasswordAsync(TUser user, string password)
+        {
+            return await UserManager.ResetPasswordAsync(
+                user,
+                await UserManager.GeneratePasswordResetTokenAsync(user),
+                password);
+        }
+
+
     }
 }
