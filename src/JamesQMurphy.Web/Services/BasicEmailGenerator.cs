@@ -134,7 +134,7 @@ JamesQMurphy<br/>
 <p>
 We are just letting you know that your password has been successfully changed on {_webSiteOptions.WebSiteTitle}.  If
 this was you, then there's nothing to worry about.  But if you think that somebody else has changed
-your password, please contact us immediately at our <a href='{_webSiteOptions.SiteUrl}/contact)'>Get In Touch</a> page.
+your password, please contact us immediately at our <a href='{_webSiteOptions.SiteUrl}/contact'>Get In Touch</a> page.
 <br/></p>
 <p></br></p>
 <p>
