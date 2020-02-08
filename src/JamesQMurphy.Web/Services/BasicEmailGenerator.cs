@@ -112,7 +112,7 @@ browser) to be taken to the website, where you will be able to enter a new passw
 <br/>
 If this wasn't you, or you've changed your mind, don't worry... we haven't done anything yet.  You 
 can safely delete this message and nothing will happen.  If you have any questions or
-concerns, feel free to contact us at {_webSiteOptions.SiteUrl}/contact.
+concerns, feel free to contact us at our <a href='{_webSiteOptions.SiteUrl}/contact'>Get In Touch</a> page.
 <br/></p>
 <p></br></p>
 <p>
@@ -126,7 +126,7 @@ JamesQMurphy<br/>
                     break;
 
                 case EmailType.PasswordChanged:
-                    subject = "Password changed";
+                    subject = $"Password changed on {_webSiteOptions.WebSiteTitle}";
                     message = $@"
 <html><body>
 <p>Hello,
@@ -134,7 +134,7 @@ JamesQMurphy<br/>
 <p>
 We are just letting you know that your password has been successfully changed on {_webSiteOptions.WebSiteTitle}.  If
 this was you, then there's nothing to worry about.  But if you think that somebody else has changed
-your password, please contact us immediately at {_webSiteOptions.SiteUrl}/contact.
+your password, please contact us immediately at our <a href='{_webSiteOptions.SiteUrl}/contact)'>Get In Touch</a> page.
 <br/></p>
 <p></br></p>
 <p>
