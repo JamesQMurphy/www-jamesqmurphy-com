@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
 
 namespace JamesQMurphy.Web.UnitTests
 {
@@ -29,6 +30,10 @@ namespace JamesQMurphy.Web.UnitTests
                 _serviceProvider.GetService<ILogger<accountController>>(),
                 _emailGenerator,
                 new WebSiteOptions());
+
+            _controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext();
+            _controller.ControllerContext.HttpContext = _serviceProvider.GetService<IHttpContextAccessor>().HttpContext;
+            _controller.Url = new NullUrlHelper();
         }
 
         [Test]
@@ -38,7 +43,7 @@ namespace JamesQMurphy.Web.UnitTests
             var username = "user1";
             var password = "abc123";
 
-            var user = AddExistingUser(_serviceProvider, email, password, username, true);
+            var user = AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
             var loginViewModel = new LoginViewModel()
             {
                 Email = email,
@@ -62,7 +67,7 @@ namespace JamesQMurphy.Web.UnitTests
             var username = "user1";
             var password = "abc123";
 
-            var user = AddExistingUser(_serviceProvider, email, password, username, true);
+            var user = AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
             var loginViewModel = new LoginViewModel()
             {
                 Email = email + "x",
@@ -83,7 +88,7 @@ namespace JamesQMurphy.Web.UnitTests
             var username = "user1";
             var password = "abc123";
 
-            var user = AddExistingUser(_serviceProvider, email, password, username, true);
+            var user = AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
             var loginViewModel = new LoginViewModel()
             {
                 Email = email,
@@ -104,7 +109,7 @@ namespace JamesQMurphy.Web.UnitTests
             var username = "user1";
             var password = "abc123";
 
-            var user = AddExistingUser(_serviceProvider, email, password, username, false);
+            var user = AddExistingUserWithEmail(_serviceProvider, email, password, username, false);
             var loginViewModel = new LoginViewModel()
             {
                 Email = email,
@@ -160,7 +165,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, false);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, false);
 
             var usernameReplace = "userReplace";
             var passwordReplace = "Defdef~456";
@@ -199,7 +204,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, false);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, false);
 
             var passwordReplace = "Defdef~456";
             var registerViewModel = new RegisterWithEmailViewModel()
@@ -237,7 +242,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, true);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
 
             var usernameReplace = "userReplace";
             var passwordReplace = "Defdef~456";
@@ -276,7 +281,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, true);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
 
             var passwordReplace = "Defdef~456";
             var registerViewModel = new RegisterWithEmailViewModel()
@@ -314,7 +319,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, true);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
 
             var viewModel = new ForgotPasswordViewModel()
             {
@@ -348,7 +353,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, false);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, false);
 
             var viewModel = new ForgotPasswordViewModel()
             {
@@ -400,7 +405,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, true);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
 
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
@@ -441,7 +446,7 @@ namespace JamesQMurphy.Web.UnitTests
             var email = "test@test";
             var username = "userExist";
             var password = "Abcabc~123";
-            AddExistingUser(_serviceProvider, email, password, username, true);
+            AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
 
             var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
             var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
@@ -492,7 +497,119 @@ namespace JamesQMurphy.Web.UnitTests
             // Assert that password changed email was NOT sent
             Assert.AreEqual(0, _emailGenerator.Emails.Count);
         }
-        private static ApplicationUser AddExistingUser(IServiceProvider serviceProvider, string emailAddress, string password, string userName, bool emailConfirmed)
+
+        [Test]
+        public void TestChangePassword_Success()
+        {
+            var email = "test@test";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            var passwordNew = "Newabc~123";
+            var user = AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
+            _controller.HttpContext.User = user.ToClaimsPrincipal();
+
+            var viewModel = new ChangePasswordViewModel()
+            {
+                CurrentPassword = password,
+                Password = passwordNew,
+                ConfirmPassword = passwordNew
+            };
+
+            var result = _controller.changepassword(viewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.RedirectToActionResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
+            Assert.AreEqual(nameof(accountController.changepasswordconfirmation), viewResult.ActionName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that password was updated
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
+            var userFound = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
+            Assert.IsNotNull(userFound);
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(userFound, userFound.PasswordHash, passwordNew);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that "Change Password" message was sent
+            Assert.AreEqual(1, _emailGenerator.Emails.Count);
+            Assert.AreEqual(EmailType.PasswordChanged, _emailGenerator.Emails[0].emailType);
+        }
+
+
+        [Test]
+        public void TestChangePassword_Fail()
+        {
+            var email = "test@test";
+            var username = "userExist";
+            var password = "Abcabc~123";
+            var passwordNew = "Newabc~123";
+            var user = AddExistingUserWithEmail(_serviceProvider, email, password, username, true);
+            _controller.HttpContext.User = user.ToClaimsPrincipal();
+
+            var viewModel = new ChangePasswordViewModel()
+            {
+                CurrentPassword = password + "X",
+                Password = passwordNew,
+                ConfirmPassword = passwordNew
+            };
+
+            var result = _controller.changepassword(viewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
+            Assert.IsNull(viewResult.ViewName);
+            Assert.AreEqual(1, _controller.ModelState.ErrorCount);
+
+            // Assert that password was NOT updated
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
+            var userFound = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
+            Assert.IsNotNull(userFound);
+            var signinManager = _serviceProvider.GetService<ApplicationSignInManager<ApplicationUser>>();
+            var pwVerificationResult = signinManager.UserManager.PasswordHasher.VerifyHashedPassword(userFound, userFound.PasswordHash, password);
+            Assert.AreEqual(PasswordVerificationResult.Success, pwVerificationResult);
+
+            // Assert that "Change Password" message was not sent
+            Assert.AreEqual(0, _emailGenerator.Emails.Count);
+        }
+
+
+        [Test]
+        public void TestChangePassword_UserDoesNotHavePassword()
+        {
+            var username = "userExist";
+            var user = AddExistingExternalUser(_serviceProvider, username);
+            _controller.HttpContext.User = user.ToClaimsPrincipal();
+
+            var viewModel = new ChangePasswordViewModel()
+            {
+                CurrentPassword = "X",
+                Password = "XXXXXX",
+                ConfirmPassword = "XXXXXX"
+            };
+
+            var result = _controller.changepassword(viewModel).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf<Microsoft.AspNetCore.Mvc.ViewResult>(result);
+            var viewResult = result as Microsoft.AspNetCore.Mvc.ViewResult;
+            Assert.AreEqual("changePassword_externalLogin", viewResult.ViewName);
+            Assert.AreEqual(0, _controller.ModelState.ErrorCount);
+
+            // Assert that user still does not have password
+            var userStore = _serviceProvider.GetService<IUserStore<ApplicationUser>>();
+            var normalizedUserName = _serviceProvider.GetService<ILookupNormalizer>().NormalizeName(username);
+            var userFound = userStore.FindByNameAsync(normalizedUserName, CancellationToken.None).GetAwaiter().GetResult();
+            var userPasswordStore = userStore as IUserPasswordStore<ApplicationUser>;
+            Assert.IsFalse(userPasswordStore.HasPasswordAsync(userFound, CancellationToken.None).GetAwaiter().GetResult());
+
+            // Assert that "Change Password" message was not sent
+            Assert.AreEqual(0, _emailGenerator.Emails.Count);
+        }
+
+
+
+        private static ApplicationUser AddExistingUserWithEmail(IServiceProvider serviceProvider, string emailAddress, string password, string userName, bool emailConfirmed)
         {
             var normalizer = serviceProvider.GetService<ILookupNormalizer>();
             var user = new ApplicationUser()
@@ -504,6 +621,19 @@ namespace JamesQMurphy.Web.UnitTests
                 EmailConfirmed = emailConfirmed
             };
             user.PasswordHash = serviceProvider.GetService<IPasswordHasher<ApplicationUser>>().HashPassword(user, password);
+            var store = serviceProvider.GetService<IUserStore<ApplicationUser>>();
+            store.CreateAsync(user, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+            return user;
+        }
+
+        private static ApplicationUser AddExistingExternalUser(IServiceProvider serviceProvider, string userName)
+        {
+            var normalizer = serviceProvider.GetService<ILookupNormalizer>();
+            var user = new ApplicationUser()
+            {
+                UserName = userName,
+                NormalizedUserName = normalizer.NormalizeName(userName)
+            };
             var store = serviceProvider.GetService<IUserStore<ApplicationUser>>();
             store.CreateAsync(user, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
             return user;
