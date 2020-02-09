@@ -83,30 +83,37 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            <div class="row justify-content-between mb-0">
-                <div class="col-4">
-                    &copy;&nbsp;2019-2020 @webSiteTitle
-                </div>
-                <div class="col-4">
-                    <a asp-area="" asp-controller="contact" asp-action="">Get In Touch</a>
-                </div>
-            </div>
-            <div class="row justify-content-between">
-                <div class="col-4">
+    <footer class="footer navbar-fixed-bottom border-top text-light bg-dark">
+        <div class="container pt-6">
+            <div class="row">
+                <div class="col-12">
                     &nbsp;
                 </div>
-                <div class="col-4">
-                    <a asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.privacy)">Privacy Policy</a>
+            </div>
+            <div class="row mx-sm-1">
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.about)">About Me</a>
+                </div>
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.privacy)">Privacy Policy</a>
                 </div>
             </div>
-            <div class="row justify-content-between">
-                <div class="col-4">
-                    &nbsp;
+            <div class="row mx-sm-1 mt-2">
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="contact" asp-action="">Contact Me</a>
                 </div>
-                <div class="col-4">
-                    <a asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.terms)">Terms of Service</a>
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.terms)">Terms of Service</a>
+                </div>
+            </div>
+            <div class="row mx-sm-1 mt-3">
+                <div class="col-12">
+                    <span style="display:inline-block">&copy;&nbsp;2019-2020 James Murphy</span> 
+                </div>
+            </div>
+            <div class="row mx-sm-1">
+                <div class="col-12">
+                    &nbsp;
                 </div>
             </div>
         </div>
