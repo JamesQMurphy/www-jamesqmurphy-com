@@ -116,7 +116,7 @@ BlogComments.HtmlForMoreBlock = function (id, viewText) {
 
 
 BlogComments.ViewMoreCtl_GenerateHtml = function (id, innerText) {
-    return '<span class="jqm-linkButton" id="' + id + VIEW_MORE_CTL_SUFFIX + '" style="display:none">' + innerText + '</span>';
+    return '<span class="btn btn-sm btn-link py-0" id="' + id + VIEW_MORE_CTL_SUFFIX + '" style="display:none">' + innerText + '</span>';
 };
 
 BlogComments.ViewMoreCtl_Refresh = function (commentId) {
