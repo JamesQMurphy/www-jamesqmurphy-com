@@ -4,8 +4,10 @@
 @using JamesQMurphy.Web.Models.AccountViewModels
 @using JamesQMurphy.Web.Models.ContactViewModels
 @using JamesQMurphy.Web.Models.ViewComponentModels
+@using JamesQMurphy.Web.Services
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, JamesQMurphy.Web
 
 @inject WebSiteOptions webSiteOptions
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor  httpContextAccessor

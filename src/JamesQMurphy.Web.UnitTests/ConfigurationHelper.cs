@@ -4,12 +4,14 @@ using JamesQMurphy.Web.Controllers;
 using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 
 namespace JamesQMurphy.Web.UnitTests
@@ -59,11 +61,21 @@ namespace JamesQMurphy.Web.UnitTests
             };
             serviceCollection.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
 
+            serviceCollection.AddSingleton<ITempDataDictionaryFactory>(new TempDataDictionaryFactory(new NullTempDataProvider()));
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             httpContextAccessor.HttpContext.RequestServices = serviceProvider;
 
             return serviceProvider;
+        }
+
+        public static ClaimsPrincipal ToClaimsPrincipal(this ApplicationUser user)
+        {
+            var claimsIdentity = new ClaimsIdentity();
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.UserId));
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+            return new ClaimsPrincipal(claimsIdentity);
         }
     }
 }

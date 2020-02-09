@@ -15,9 +15,16 @@
         <textarea asp-for="Comments" class="form-control" rows="10"></textarea>
         <span asp-validation-for="Comments" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
 </form>
+<small>
+    By submitting comments using this page, you agree to be bound by the
+    <a asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.terms)">Terms of Service</a> and the
+    <a asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.privacy)">Privacy Policy</a>. <br />
+</small>
+
 <p class="mt-3">
     You can also reach me on these sites:
 </p>

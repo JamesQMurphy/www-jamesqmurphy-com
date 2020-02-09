@@ -1,4 +1,8 @@
-﻿@{ var webSiteTitle = webSiteOptions.WebSiteTitle; }
+﻿@{
+    var webSiteTitle = webSiteOptions.WebSiteTitle;
+    var currentUserId = httpContextAccessor?.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+    var currentUsername = httpContextAccessor?.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "";
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,24 +29,49 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="home" asp-action="index">@webSiteTitle</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="blog" asp-action="index">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="home" asp-action="about">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="~/contact">Contact</a>
-                        </li>
-                    </ul>
+                <a class="navbar-brand order-3 order-sm-1" asp-controller="home" asp-action="index">@webSiteTitle</a>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse order-8 order-sm-2">
+                    <div class="navbar-nav flex-grow-1">
+                        <a class="nav-item nav-link text-dark" asp-controller="blog" asp-action="index">Blog</a>
+                        <a class="nav-item nav-link text-dark" asp-controller="home" asp-action="about">About</a>
+                        <a class="nav-item nav-link text-dark" href="~/contact">Contact</a>
+                    </div>
                 </div>
+                @if (String.IsNullOrWhiteSpace(currentUserId))
+                {
+                    <div class="order-4 order-sm-3">
+                        <!-- Commenting these out for now
+                        <a class="btn btn-primary btn-sm" asp-controller="account" asp-action="register">Sign Up</a>
+                        <a class="btn btn-secondary btn-sm" asp-controller="account" asp-action="login">Sign In</a>
+                            -->
+                    </div>
+                }
+                else
+                {
+                    <div class="nav-item dropdown order-4 order-sm-3">
+                        <a class="nav-item nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item text-dark" asp-controller="profile" asp-action="index">
+                                <b>
+                                    <small>Signed in as</small><br />
+                                    @currentUsername
+                                </b>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-dark" asp-controller="profile" asp-action="index">My Profile</a>
+                            <div class="dropdown-divider"></div>
+                            <form class="form-inline" asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.logout)" asp-route-returnurl="" method="post">
+                                <button type="submit" class="dropdown-item">Sign Out</button>
+                            </form>
+                        </div>
+                    </div>
+                }
             </div>
         </nav>
     </header>
@@ -54,9 +83,39 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2019-2020 @webSiteTitle &nbsp; <a asp-area="" asp-controller="home" asp-action="privacy">Privacy</a>
+    <footer class="footer navbar-fixed-bottom border-top text-light bg-dark">
+        <div class="container pt-6">
+            <div class="row">
+                <div class="col-12">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="row mx-sm-1">
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.about)">About Me</a>
+                </div>
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.privacy)">Privacy Policy</a>
+                </div>
+            </div>
+            <div class="row mx-sm-1 mt-2">
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="contact" asp-action="">Contact Me</a>
+                </div>
+                <div class="col-6">
+                    <a class="text-light" asp-area="" asp-controller="home" asp-action="@nameof(JamesQMurphy.Web.Controllers.homeController.terms)">Terms of Service</a>
+                </div>
+            </div>
+            <div class="row mx-sm-1 mt-3">
+                <div class="col-12">
+                    <span style="display:inline-block">&copy;&nbsp;2019-2020 James Murphy</span> 
+                </div>
+            </div>
+            <div class="row mx-sm-1">
+                <div class="col-12">
+                    &nbsp;
+                </div>
+            </div>
         </div>
     </footer>
 

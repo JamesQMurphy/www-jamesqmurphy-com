@@ -25,6 +25,7 @@ namespace JamesQMurphy.Web
         private const string AUTH_TWITTER_CLIENT_SECRET = "Authentication:Twitter:ConsumerSecret";
         private const string AUTH_GITHUB_CLIENT_ID = "Authentication:GitHub:ClientId";
         private const string AUTH_GITHUB_CLIENT_SECRET = "Authentication:GitHub:ClientSecret";
+        private const string EMAIL_SERVICEAPIKEY = "Email:ServiceApiKey";
 
         public Startup(IConfiguration configuration)
         {
@@ -43,7 +44,7 @@ namespace JamesQMurphy.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
                 options.ConsentCookie = new CookieBuilder()
                 {
-                    Name = ".JQM.PrivacyConsent.20191115",
+                    Name = ".JQM.PrivacyConsent.20200203",
                     Expiration = TimeSpan.FromDays(365),
                     IsEssential = true
                 };
@@ -54,6 +55,7 @@ namespace JamesQMurphy.Web
             // See https://stackoverflow.com/a/54813987/1001100
             services.Configure<CookieTempDataProviderOptions>(options => {
                 options.Cookie.IsEssential = true;
+                options.Cookie.Name = ".JQM.ResultMessages";
             });
 
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
@@ -73,7 +75,8 @@ namespace JamesQMurphy.Web
                         $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_ID.Replace(':','/')}",
                         $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_SECRET.Replace(':','/')}",
                         $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_ID.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_SECRET.Replace(':','/')}"
+                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_SECRET.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{EMAIL_SERVICEAPIKEY.Replace(':','/')}"
                     };
                     var response = ssmClient.GetParametersAsync(
                         new Amazon.SimpleSystemsManagement.Model.GetParametersRequest
@@ -146,6 +149,10 @@ namespace JamesQMurphy.Web
                 options.LoginPath = "/account/login";
                 options.AccessDeniedPath = "/account/accessdenied";
             });
+            services.AddAntiforgery(options =>
+            {
+                options.Cookie.Name = ".JQM.AntiForgery";
+            });
 
             // The "new" way to do AddMvc()
             services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
@@ -168,6 +175,11 @@ namespace JamesQMurphy.Web
                 case "SQS":
                     services.ConfigurePoco<JamesQMurphy.Email.Aws.SQSEmailService.Options>(Configuration, "Email");
                     services.AddSingleton<IEmailService, JamesQMurphy.Email.Aws.SQSEmailService>();
+                    break;
+
+                case "Mailgun":
+                    services.ConfigurePoco<JamesQMurphy.Email.Mailgun.MailgunEmailService.Options>(Configuration, "Email");
+                    services.AddSingleton<IEmailService, JamesQMurphy.Email.Mailgun.MailgunEmailService>();
                     break;
 
                 default: //NullEmailService
@@ -229,6 +241,11 @@ namespace JamesQMurphy.Web
                     name: "blogDetailsComments",
                     pattern: "blog/{year}/{month}/{slug}/comments",
                     defaults: new { controller = "blog", action = "comments" });
+
+                endpoints.MapControllerRoute(
+                    name: "profile",
+                    pattern: "profile/{username}",
+                    defaults: new { controller = "profile", action = "index" });
 
                 endpoints.MapControllerRoute(
                     name: "default",
