@@ -116,8 +116,8 @@ namespace JamesQMurphy.Web.Controllers
 
         /// <summary>
         /// This is where the external providers send the browser after they've authenticated (or *not*
-        /// authenticated) the user.  If they've been authenticated, we log them in if they've already
-        /// registered, or send them to the registration page if they're new.
+        /// authenticated) the user.  If they've been authenticated, we sign them in if they've already
+        /// registered, or redirect them to the registration page if they're new.
         /// </summary>
         /// <param name="returnUrl"></param>
         /// <param name="remoteError"></param>
