@@ -238,6 +238,11 @@ namespace JamesQMurphy.Web
                     defaults: new { controller = "blog", action = "details" });
 
                 endpoints.MapControllerRoute(
+                    name: "profile",
+                    pattern: "profile/{username}",
+                    defaults: new { controller = "profile", action = "index" });
+
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=home}/{action=index}/{id?}");
             });
