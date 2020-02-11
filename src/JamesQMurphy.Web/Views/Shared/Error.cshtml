@@ -3,23 +3,24 @@
     ViewData[Constants.VIEWDATA_PAGETITLE] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
+<h1 class="text-danger">We're Sorry</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
-
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
-
-<h3>Development Mode</h3>
+<p>&nbsp;</p>
 <p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
+    @if (Model.ShowRequestId)
+    {
+        <strong>Request ID:</strong> <code>@Model.RequestId</code><br />
+    }
+    @if (Model.ShowApiRequestId)
+    {
+        <strong>API Request ID:</strong> <code>@Model.ApiRequestId</code><br />
+    }
+    <strong>Timestamp:</strong> <code>@DateTime.UtcNow.ToString("O")</code><br />
+    &nbsp;
 </p>
+
 <p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
+    We've made a note of the error and we'll take a look at what happened.
+    If you want, you can contact us using our <a href="/contact">Contact Us</a> page.
 </p>
+

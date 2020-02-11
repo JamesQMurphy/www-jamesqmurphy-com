@@ -25,6 +25,11 @@ namespace JamesQMurphy.Web.Controllers
             return View();
         }
 
+        public IActionResult throwerror()
+        {
+            throw new Exception("This is a test exception");
+        }
+
         [HttpGet]
         public IActionResult testemail()
         {
