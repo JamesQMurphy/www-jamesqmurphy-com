@@ -71,7 +71,17 @@ namespace JamesQMurphy.Web.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            string requestId = "";
+            if (HttpContext.Items.ContainsKey(Amazon.Lambda.AspNetCoreServer.AbstractAspNetCoreFunction.LAMBDA_CONTEXT))
+            {
+                var lambdaContext = HttpContext.Items[Amazon.Lambda.AspNetCoreServer.AbstractAspNetCoreFunction.LAMBDA_CONTEXT] as Amazon.Lambda.Core.ILambdaContext;
+                requestId = lambdaContext.AwsRequestId;
+            }
+            else
+            {
+                requestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            }
+            return View(new ErrorViewModel { RequestId = requestId });
         }
     }
 }
