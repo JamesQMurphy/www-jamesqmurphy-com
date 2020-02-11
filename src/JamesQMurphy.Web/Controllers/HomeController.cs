@@ -71,6 +71,8 @@ namespace JamesQMurphy.Web.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
+
             string requestId = "";
             if (HttpContext.Items.ContainsKey(Amazon.Lambda.AspNetCoreServer.AbstractAspNetCoreFunction.LAMBDA_CONTEXT))
             {
