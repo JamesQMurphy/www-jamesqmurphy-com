@@ -73,17 +73,24 @@ namespace JamesQMurphy.Web.Controllers
         {
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
 
-            string requestId = "";
+            var errorViewModel = new ErrorViewModel();
+
             if (HttpContext.Items.ContainsKey(Amazon.Lambda.AspNetCoreServer.AbstractAspNetCoreFunction.LAMBDA_CONTEXT))
             {
                 var lambdaContext = HttpContext.Items[Amazon.Lambda.AspNetCoreServer.AbstractAspNetCoreFunction.LAMBDA_CONTEXT] as Amazon.Lambda.Core.ILambdaContext;
-                requestId = lambdaContext.AwsRequestId;
+                errorViewModel.RequestId = lambdaContext.AwsRequestId;
             }
             else
             {
-                requestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+                errorViewModel.RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
             }
-            return View(new ErrorViewModel { RequestId = requestId });
+
+            if (HttpContext.Items.ContainsKey(Amazon.Lambda.AspNetCoreServer.AbstractAspNetCoreFunction.LAMBDA_REQUEST_OBJECT))
+            {
+                var apiRequest = HttpContext.Items[Amazon.Lambda.AspNetCoreServer.AbstractAspNetCoreFunction.LAMBDA_REQUEST_OBJECT] as Amazon.Lambda.APIGatewayEvents.APIGatewayProxyRequest;
+                errorViewModel.ApiRequestId = apiRequest?.RequestContext?.RequestId ?? "";
+            }
+            return View(errorViewModel);
         }
     }
 }

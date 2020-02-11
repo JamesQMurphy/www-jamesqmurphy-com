@@ -6,14 +6,18 @@
 <h1 class="text-danger">We're Sorry</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 <p>&nbsp;</p>
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code><br/>
-        <strong>Timestamp:</strong> <code>@DateTime.UtcNow.ToString("O")</code><br/>
-        &nbsp;
-    </p>
-}
+<p>
+    @if (Model.ShowRequestId)
+    {
+        <strong>Request ID:</strong> <code>@Model.RequestId</code><br />
+    }
+    @if (Model.ShowApiRequestId)
+    {
+        <strong>API Request ID:</strong> <code>@Model.ApiRequestId</code><br />
+    }
+    <strong>Timestamp:</strong> <code>@DateTime.UtcNow.ToString("O")</code><br />
+    &nbsp;
+</p>
 
 <p>
     We've made a note of the error and we'll take a look at what happened.
