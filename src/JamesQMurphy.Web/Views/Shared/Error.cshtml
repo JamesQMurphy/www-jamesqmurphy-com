@@ -5,11 +5,12 @@
 
 <h1 class="text-danger">We're Sorry</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
-
+<p>&nbsp;</p>
 @if (Model.ShowRequestId)
 {
     <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code><br/>
+        <strong>Timestamp:</strong> <code>@DateTime.UtcNow.ToString("O")</code>
     </p>
 }
 
