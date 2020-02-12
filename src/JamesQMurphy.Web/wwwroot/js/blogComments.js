@@ -1,9 +1,11 @@
 ﻿const COMMENTS_SECTION_ID = "commentsRoot";
 const VIEW_MORE_CTL_SUFFIX = "_viewMoreCtl";
+const REPLY_CTL_SUFFIX = "_replyCtl";
 
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
     BlogComments.commentsUrl = window.location.href.split('#')[0] + '/comments';
+    BlogComments.isLoggedIn = $("#submitUserComment").length > 0;
 
     // Create the "View More Comments" control
     commentsSection.append($(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS')));
@@ -33,6 +35,7 @@ function BlogComments() { }
 
 BlogComments.lastTimestampRetrieved = '';
 BlogComments.commentsUrl = '';
+BlogComments.isLoggedIn = false;
 
 BlogComments.FetchLatestComments = function () {
     $.getJSON(BlogComments.commentsUrl + '?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
@@ -94,6 +97,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
             '<div class="jqm-comment-body media-body px-3">' +
                 '<b>' + blogArticleComment.authorName + '</b> ' + (blogArticleComment.isMine ? '(you)' : '') + '<br/>' +
                 blogArticleComment.htmlContent +
+                (BlogComments.isLoggedIn ? BlogComments.ReplyCtl_GenerateHtml(blogArticleComment.commentId, 'REPLY') : "") +
                 BlogComments.HtmlForMoreBlock(blogArticleComment.commentId, 'VIEW REPLIES') +
             '</div>' + 
             '</div>').hide().insertBefore(insertBeforeElement);
@@ -116,8 +120,13 @@ BlogComments.HtmlForMoreBlock = function (id, viewText) {
 
 
 BlogComments.ViewMoreCtl_GenerateHtml = function (id, innerText) {
-    return '<span class="btn btn-sm btn-link py-0" id="' + id + VIEW_MORE_CTL_SUFFIX + '" style="display:none">' + innerText + '</span>';
+    return '<span class="btn btn-sm btn-link p-0" id="' + id + VIEW_MORE_CTL_SUFFIX + '" style="display:none"><i class="fas fa-caret-down fa-small"></i> ' + innerText + '</span>';
 };
+
+BlogComments.ReplyCtl_GenerateHtml = function (id, innerText) {
+    return '<span class="btn btn-sm btn-link p-0" id="' + id + REPLY_CTL_SUFFIX + '" >' + innerText + '</span>';
+};
+
 
 BlogComments.ViewMoreCtl_Refresh = function (commentId) {
     var childComments = BlogComments.GetChildCommentElements(commentId);
