@@ -5,7 +5,7 @@ const REPLY_CTL_SUFFIX = "_replyCtl";
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
     BlogComments.commentsUrl = window.location.href.split('#')[0] + '/comments';
-    BlogComments.isLoggedIn = $("#submitUserComment").length > 0;
+    BlogComments.canComment = $("#submitUserComment").length > 0;
 
     // Create the "View More Comments" control
     commentsSection.append($(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS')));
@@ -35,7 +35,7 @@ function BlogComments() { }
 
 BlogComments.lastTimestampRetrieved = '';
 BlogComments.commentsUrl = '';
-BlogComments.isLoggedIn = false;
+BlogComments.canComment = false;
 
 BlogComments.FetchLatestComments = function () {
     $.getJSON(BlogComments.commentsUrl + '?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
@@ -97,7 +97,7 @@ BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
             '<div class="jqm-comment-body media-body px-3">' +
                 '<b>' + blogArticleComment.authorName + '</b> ' + (blogArticleComment.isMine ? '(you)' : '') + '<br/>' +
                 blogArticleComment.htmlContent +
-                (BlogComments.isLoggedIn ? BlogComments.ReplyCtl_GenerateHtml(blogArticleComment.commentId, 'REPLY') : "") +
+                (BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleComment.commentId, 'REPLY') : "") +
                 BlogComments.HtmlForMoreBlock(blogArticleComment.commentId, 'VIEW REPLIES') +
             '</div>' + 
             '</div>').hide().insertBefore(insertBeforeElement);
