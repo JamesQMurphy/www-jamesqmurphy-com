@@ -7,6 +7,19 @@ $(function () {
     BlogComments.commentsUrl = window.location.href.split('#')[0] + '/comments';
     BlogComments.canComment = $("#submitUserComment").length > 0;
 
+    // Determine the names of the hidden property and visibilityChangeEvent
+    // Source: https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+    if (typeof document.hidden !== "undefined") {
+        BlogComments.hidden = "hidden";
+        BlogComments.visibilityChange = "visibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+        BlogComments.hidden = "msHidden";
+        BlogComments.visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        BlogComments.hidden = "webkitHidden";
+        BlogComments.visibilityChange = "webkitvisibilitychange";
+    }
+
     // Create the "View More Comments" control
     commentsSection.append($(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS')));
     BlogComments.ViewMoreCtl_BindClick(COMMENTS_SECTION_ID);
@@ -19,6 +32,11 @@ $(function () {
     $("#submitUserComment").click(function () {
         BlogComments.SubmitComments($("#userComment").val(), COMMENTS_SECTION_ID);
     });
+
+    // Wire up the visibility event
+    document.addEventListener(BlogComments.visibilityChange, function () {
+        setTimeout(BlogComments.FetchLatestComments, 4000);
+    }, false);
 
     // Preload a bunch of comments up-front
     BlogComments.FetchLatestComments();
@@ -36,18 +54,22 @@ function BlogComments() { }
 BlogComments.lastTimestampRetrieved = '';
 BlogComments.commentsUrl = '';
 BlogComments.canComment = false;
+BlogComments.hidden = "hidden";
+BlogComments.visibilityChange = "visibilitychange";
 
 BlogComments.FetchLatestComments = function () {
-    $.getJSON(BlogComments.commentsUrl + '?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
-        if (commentsArray.length > 0) {
-            BlogComments.InsertCommentsIntoDOM(commentsArray);
-            BlogComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
-            setTimeout(BlogComments.FetchLatestComments, 2000);
-        }
-        else {
-            setTimeout(BlogComments.FetchLatestComments, 6000);
-        }
-    });
+    if (!document[BlogComments.hidden]) {
+        $.getJSON(BlogComments.commentsUrl + '?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
+            if (commentsArray.length > 0) {
+                BlogComments.InsertCommentsIntoDOM(commentsArray);
+                BlogComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
+                setTimeout(BlogComments.FetchLatestComments, 2000);
+            }
+            else {
+                setTimeout(BlogComments.FetchLatestComments, 6000);
+            }
+        });
+    }
 };
 
 BlogComments.SubmitComments = function (comment, replyToCommentId) {
