@@ -15,7 +15,7 @@ namespace Tests
         [Test]
         public void CanCreate()
         {
-            Assert.IsInstanceOf<ArticleComment>(new ArticleComment());
+            Assert.IsInstanceOf<ArticleReaction>(new ArticleReaction());
         }
 
         [Test]
@@ -27,7 +27,7 @@ namespace Tests
             var authorName = "SomeUserName";
             var timestampId = "2019-12-07T15:27:47.8710606Z";
 
-            var ArticleComment = new ArticleComment()
+            var ArticleComment = new ArticleReaction()
             {
                 ArticleSlug = slug,
                 Content = content,
@@ -46,7 +46,7 @@ namespace Tests
         [Test]
         public void SettingPropertyToNullForcesEmpty()
         {
-            var ArticleComment = new ArticleComment()
+            var ArticleComment = new ArticleReaction()
             {
                 ArticleSlug = null,
                 Content = null,
@@ -69,7 +69,7 @@ namespace Tests
             var originalTimestamp = originalTime.ToString("O");
             var originalTimestampId = originalTimestamp;
             var originalCommentId = originalTimestamp.Replace('.', '-').Replace(':', '-');
-            var originalComment = new ArticleComment()
+            var originalComment = new ArticleReaction()
             {
                 TimestampId = originalTimestampId
             };
@@ -84,7 +84,7 @@ namespace Tests
             var replyTimestamp = replyTime.ToString("O");
             var replyCommentId = originalCommentId + "_" + replyTimestamp.Replace('.', '-').Replace(':', '-');
             var replyTimestampId = $"{replyTimestamp}_{originalTimestamp}";
-            var replyComment = new ArticleComment()
+            var replyComment = new ArticleReaction()
             {
                 TimestampId = replyTimestampId
             };
@@ -99,7 +99,7 @@ namespace Tests
         [Test]
         public void CompareToNull()
         {
-            Assert.AreEqual(0, new ArticleComment().CompareTo(new ArticleComment()));
+            Assert.AreEqual(0, new ArticleReaction().CompareTo(new ArticleReaction()));
         }
     }
 }

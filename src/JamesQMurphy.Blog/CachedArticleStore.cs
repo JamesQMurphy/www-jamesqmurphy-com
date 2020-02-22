@@ -85,7 +85,7 @@ namespace JamesQMurphy.Blog
             return _lastArticles.AsEnumerable();
         }
 
-        public async Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        public async Task<IEnumerable<ArticleReaction>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
             // TODO: possibly cache comments
             return await _backingArticleStore.GetArticleComments(articleSlug, sinceTimestamp, pageSize, latest);

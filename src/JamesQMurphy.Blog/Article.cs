@@ -11,7 +11,7 @@ namespace JamesQMurphy.Blog
     {
         private const string yamlHeader = "---";
         private const string yamlFooter = "...";
-        public readonly SortedSet<ArticleComment> ArticleComments = new SortedSet<ArticleComment>();
+        public readonly SortedSet<ArticleReaction> ArticleComments = new SortedSet<ArticleReaction>();
 
         public ArticleMetadata Metadata { get; set; } = new ArticleMetadata();
         public string Content { get; set; }

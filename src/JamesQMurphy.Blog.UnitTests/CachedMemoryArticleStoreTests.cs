@@ -46,7 +46,7 @@ namespace Tests
                 return InMemoryArticleStore.GetLastArticlesAsync(numberOfArticles);
             }
 
-            public Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+            public Task<IEnumerable<ArticleReaction>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
             {
                 throw new NotImplementedException();
             }

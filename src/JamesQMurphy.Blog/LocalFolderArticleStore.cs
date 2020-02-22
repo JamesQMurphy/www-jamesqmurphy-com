@@ -52,10 +52,10 @@ namespace JamesQMurphy.Blog
             }
         }
 
-        public async Task<IEnumerable<ArticleComment>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        public async Task<IEnumerable<ArticleReaction>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
-            var listToReturn = new SortedSet<ArticleComment>();
-            var currentComment = new ArticleComment();
+            var listToReturn = new SortedSet<ArticleReaction>();
+            var currentComment = new ArticleReaction();
 
             void _addIfMatchesCriteria()
             {
@@ -77,7 +77,7 @@ namespace JamesQMurphy.Blog
                     if (lineRead.StartsWith(COMMENT_SEPARATOR))
                     {
                         _addIfMatchesCriteria();
-                        currentComment = new ArticleComment();
+                        currentComment = new ArticleReaction();
                         readingContent = false;
                     }
                     else
@@ -116,7 +116,7 @@ namespace JamesQMurphy.Blog
             {
                 await writer.WriteLineAsync(COMMENT_SEPARATOR);
                 await writer.WriteLineAsync(articleSlug);
-                await writer.WriteLineAsync((new ArticleCommentTimestampId(timestamp, replyingTo)).ToString());
+                await writer.WriteLineAsync((new ArticleReactionTimestampId(timestamp, replyingTo)).ToString());
                 await writer.WriteLineAsync(userId);
                 await writer.WriteLineAsync(userName);
                 await writer.WriteLineAsync(content);

@@ -2,9 +2,9 @@
 
 namespace JamesQMurphy.Blog
 {
-    public class ArticleComment : IComparable<ArticleComment>
+    public class ArticleReaction : IComparable<ArticleReaction>
     {
-        private ArticleCommentTimestampId _articleCommentTimestampId = null;
+        private ArticleReactionTimestampId _articleCommentTimestampId = null;
         private string _articleSlug = string.Empty;
         private string _authorId = string.Empty;
         private string _authorName = string.Empty;
@@ -14,7 +14,7 @@ namespace JamesQMurphy.Blog
         public string TimestampId
         {
             get => _articleCommentTimestampId?.ToString() ?? "";
-            set => _articleCommentTimestampId = new ArticleCommentTimestampId(value);
+            set => _articleCommentTimestampId = new ArticleReactionTimestampId(value);
         }
         public string AuthorId { get => _authorId; set => _authorId = value ?? string.Empty; }
         public string AuthorName { get => _authorName; set => _authorName = value ?? string.Empty; }
@@ -23,7 +23,7 @@ namespace JamesQMurphy.Blog
         public string CommentId => _articleCommentTimestampId.CommentId;
         public string ReplyToId => _articleCommentTimestampId.ReplyToId;
         public string TimestampString => _articleCommentTimestampId.TimeStampString;
-        public int CompareTo(ArticleComment other) => TimestampId.CompareTo(other.TimestampId);
+        public int CompareTo(ArticleReaction other) => TimestampId.CompareTo(other.TimestampId);
         public override int GetHashCode() => CommentId.GetHashCode();
     }
 }
