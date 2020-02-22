@@ -76,9 +76,9 @@ namespace Tests
 
             Assert.AreEqual(originalTime, originalComment.PublishDate);
             Assert.AreEqual(originalTimestamp, originalComment.TimestampString);
-            Assert.AreEqual(originalCommentId, originalComment.CommentId);
+            Assert.AreEqual(originalCommentId, originalComment.ReactionId);
             Assert.AreEqual(originalTimestampId, originalComment.TimestampId);
-            Assert.IsEmpty(originalComment.ReplyToId);
+            Assert.IsEmpty(originalComment.ReactingToId);
 
             var replyTime = originalTime.AddMinutes(30);
             var replyTimestamp = replyTime.ToString("O");
@@ -91,9 +91,9 @@ namespace Tests
 
             Assert.AreEqual(replyTime, replyComment.PublishDate);
             Assert.AreEqual(replyTimestamp, replyComment.TimestampString);
-            Assert.AreEqual(replyCommentId, replyComment.CommentId);
+            Assert.AreEqual(replyCommentId, replyComment.ReactionId);
             Assert.AreEqual(replyTimestampId, replyComment.TimestampId);
-            Assert.AreEqual(originalComment.CommentId, replyComment.ReplyToId);
+            Assert.AreEqual(originalComment.ReactionId, replyComment.ReactingToId);
         }
 
         [Test]

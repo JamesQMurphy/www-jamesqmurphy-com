@@ -98,18 +98,18 @@ namespace JamesQMurphy.Web.Controllers
 
         public async Task<IActionResult> comments(string year, string month, string slug, string sinceTimestamp = "")
         {
-            var comments = await articleStore.GetArticleComments($"{year}/{month}/{slug}", sinceTimestamp, 1);
+            var comments = await articleStore.GetArticleReactions($"{year}/{month}/{slug}", sinceTimestamp, 1);
             var thisUserId = CurrentUserId;
 
             return new JsonResult(comments.Select(c => new BlogArticleComment {
-                commentId = c.CommentId,
+                commentId = c.ReactionId,
                 articleSlug = c.ArticleSlug,
                 authorName = c.AuthorName,
                 authorImageUrl = "/images/unknownPersonPlaceholder.png",
                 timestamp = c.PublishDate.ToString("O"),
                 isMine = (c.AuthorId == thisUserId),
                 htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(c.Content),
-                replyToId = c.ReplyToId
+                replyToId = c.ReactingToId
             }));
         }
 
@@ -118,7 +118,7 @@ namespace JamesQMurphy.Web.Controllers
         [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> commentsPost(string year, string month, string slug, string userComment, string sinceTimestamp = "", string replyTo = "")
         {
-            var retVal = await articleStore.AddComment($"{year}/{month}/{slug}", userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
+            var retVal = await articleStore.AddReaction($"{year}/{month}/{slug}", ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
             if (retVal)
             {
                 return await this.comments(year, month, slug, sinceTimestamp);

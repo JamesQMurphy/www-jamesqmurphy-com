@@ -26,8 +26,8 @@ namespace JamesQMurphy.Blog
             }
         }
 
-        public string CommentId => _JoinPiecesInReverseOrderDownTo(0);
-        public string ReplyToId => _JoinPiecesInReverseOrderDownTo(1);
+        public string ReactionId => _JoinPiecesInReverseOrderDownTo(0);
+        public string ReactingToId => _JoinPiecesInReverseOrderDownTo(1);
 
         private string _JoinPiecesInReverseOrderDownTo(int stopAt)
         {

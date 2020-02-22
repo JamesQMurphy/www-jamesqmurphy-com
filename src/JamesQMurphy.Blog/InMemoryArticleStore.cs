@@ -9,7 +9,7 @@ namespace JamesQMurphy.Blog
     {
         private readonly SortedDictionary<DateTime, Article> _articlesByDate = new SortedDictionary<DateTime, Article>();
         private readonly SortedDictionary<string, Article> _articlesBySlug = new SortedDictionary<string, Article>();
-        private readonly Dictionary<string, SortedSet<ArticleReaction>> _articleComments = new Dictionary<string, SortedSet<ArticleReaction>>();
+        private readonly Dictionary<string, SortedSet<ArticleReaction>> _articleReactions = new Dictionary<string, SortedSet<ArticleReaction>>();
 
         public Task<Article> GetArticleAsync(string slug)
         {
@@ -47,38 +47,39 @@ namespace JamesQMurphy.Blog
             _articlesBySlug[article.Slug] = article;
         }
 
-        public Task<IEnumerable<ArticleReaction>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        public Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
-            var comments = _GetCommentsDictionaryForArticle(articleSlug).Where(ac => ac.TimestampString.CompareTo(sinceTimestamp ?? "") > 0);
+            var comments = _GetReactionsDictionaryForArticle(articleSlug).Where(ac => ac.TimestampString.CompareTo(sinceTimestamp ?? "") > 0);
             return Task.FromResult(latest ? comments.Reverse().Take(pageSize) : comments.Take(pageSize));
         }
 
-        public Task<bool> AddComment(string articleSlug, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
-            var result = _GetCommentsDictionaryForArticle(articleSlug).Add(new ArticleReaction
+            var result = _GetReactionsDictionaryForArticle(articleSlug).Add(new ArticleReaction
             {
                 ArticleSlug = articleSlug,
                 TimestampId = (new ArticleReactionTimestampId(timestamp, replyingTo)).ToString(),
                 Content = content,
                 AuthorId = userId,
                 AuthorName = userName,
+                ReactionType = articleReactionType
             });
 
             return Task.FromResult(result);
         }
 
-        private SortedSet<ArticleReaction> _GetCommentsDictionaryForArticle(string articleSlug)
+        private SortedSet<ArticleReaction> _GetReactionsDictionaryForArticle(string articleSlug)
         {
-            SortedSet<ArticleReaction> comments;
-            lock (_articleComments)
+            SortedSet<ArticleReaction> reactions;
+            lock (_articleReactions)
             {
-                if (!_articleComments.TryGetValue(articleSlug, out comments))
+                if (!_articleReactions.TryGetValue(articleSlug, out reactions))
                 {
-                    comments = new SortedSet<ArticleReaction>();
-                    _articleComments.Add(articleSlug, comments);
+                    reactions = new SortedSet<ArticleReaction>();
+                    _articleReactions.Add(articleSlug, reactions);
                 }
             }
-            return comments;
+            return reactions;
         }
     }
 }

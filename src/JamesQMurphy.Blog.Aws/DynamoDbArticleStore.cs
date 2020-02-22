@@ -108,12 +108,12 @@ namespace JamesQMurphy.Blog.Aws
             return result.Items.ConvertAll(i => new Article { Metadata = ToArticleMetadata(i), Content = i[CONTENT].S });
         }
 
-        public Task<IEnumerable<ArticleReaction>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        public Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> AddComment(string articleSlug, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
             throw new NotImplementedException();
         }

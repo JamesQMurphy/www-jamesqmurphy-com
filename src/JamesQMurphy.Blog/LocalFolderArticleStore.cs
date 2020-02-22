@@ -52,7 +52,7 @@ namespace JamesQMurphy.Blog
             }
         }
 
-        public async Task<IEnumerable<ArticleReaction>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        public async Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
             var listToReturn = new SortedSet<ArticleReaction>();
             var currentComment = new ArticleReaction();
@@ -92,6 +92,7 @@ namespace JamesQMurphy.Blog
                             currentComment.TimestampId = await reader.ReadLineAsync();
                             currentComment.AuthorId = await reader.ReadLineAsync();
                             currentComment.AuthorName = await reader.ReadLineAsync();
+                            currentComment.ReactionType = (ArticleReactionType) Enum.Parse(typeof(ArticleReactionType), await reader.ReadLineAsync());
                             currentComment.Content = await reader.ReadLineAsync();
                             readingContent = true;
                         }
@@ -110,7 +111,7 @@ namespace JamesQMurphy.Blog
             }
         }
 
-        public async Task<bool> AddComment(string articleSlug, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public async Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
             using (var writer = new StreamWriter(Path.Combine(RootFolder, "comments.txt"), true))
             {
@@ -119,6 +120,7 @@ namespace JamesQMurphy.Blog
                 await writer.WriteLineAsync((new ArticleReactionTimestampId(timestamp, replyingTo)).ToString());
                 await writer.WriteLineAsync(userId);
                 await writer.WriteLineAsync(userName);
+                await writer.WriteLineAsync(articleReactionType.ToString());
                 await writer.WriteLineAsync(content);
             }
             return true;

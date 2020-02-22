@@ -85,15 +85,15 @@ namespace JamesQMurphy.Blog
             return _lastArticles.AsEnumerable();
         }
 
-        public async Task<IEnumerable<ArticleReaction>> GetArticleComments(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        public async Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
-            // TODO: possibly cache comments
-            return await _backingArticleStore.GetArticleComments(articleSlug, sinceTimestamp, pageSize, latest);
+            // TODO: possibly cache reactions
+            return await _backingArticleStore.GetArticleReactions(articleSlug, sinceTimestamp, pageSize, latest);
         }
 
-        public async Task<bool> AddComment(string articleSlug, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public async Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
-            return await _backingArticleStore.AddComment(articleSlug, content, userId, userName, timestamp, replyingTo);
+            return await _backingArticleStore.AddReaction(articleSlug, articleReactionType, content, userId, userName, timestamp, replyingTo);
         }
     }
 }
