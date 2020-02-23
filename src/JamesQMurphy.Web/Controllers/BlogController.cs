@@ -114,7 +114,7 @@ namespace JamesQMurphy.Web.Controllers
                             authorImageUrl = "/images/unknownPersonPlaceholder.png",
                             timestamp = r.PublishDate.ToString("O"),
                             isMine = (r.AuthorId == thisUserId),
-                            editState = "",
+                            editState = r.EditState,
                             htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
                             replyToId = r.ReactingToId
                         };

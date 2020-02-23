@@ -3,6 +3,7 @@
 userid001
 Username1
 Comment
+
 This is a reply to Article One, ten minutes after it was posted.
 It spans two lines.
 -------------------------------------------------------------
@@ -11,6 +12,7 @@ It spans two lines.
 userid002
 AReallyReallyReallyReallyReallyReallyReallyReallyReallyLongUserName
 Comment
+
 This is a reply to the Line Breaks Matter article.
 It was posted on December 1, 2019.
 -------------------------------------------------------------
@@ -19,14 +21,16 @@ It was posted on December 1, 2019.
 userid002
 AReallyReallyReallyReallyReallyReallyReallyReallyReallyLongUserName
 Comment
+edited
 This is another reply to Article One.
-It was posted on December 1, 2019.
+It was posted on December 1, 2019 and has been edited.
 -------------------------------------------------------------
 2019/06/article-one
 2019-12-01T18:02:00.0000000Z
 userid003
 Username3
 Comment
+
 This is another reply to Article One.  Metus vulputate eu scelerisque felis imperdiet proin. Varius morbi enim nunc faucibus a pellentesque. In hendrerit gravida rutrum quisque non. Nisl suscipit adipiscing bibendum est. Pellentesque adipiscing commodo elit at imperdiet dui. Fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate sapien nec. Sed risus pretium quam vulputate dignissim suspendisse. Nunc consequat interdum varius sit amet mattis vulputate enim nulla. Nibh venenatis cras sed felis eget velit aliquet sagittis. Amet nisl suscipit adipiscing bibendum est ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada. Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. Viverra accumsan in nisl nisi scelerisque eu ultrices. Dictum non consectetur a erat. Cursus metus aliquam eleifend mi in nulla. Non diam phasellus vestibulum lorem. Enim praesent elementum facilisis leo vel fringilla est ullamcorper eget. Aliquet eget sit amet tellus cras adipiscing.
 -------------------------------------------------------------
 2019/06/article-one
@@ -34,6 +38,7 @@ This is another reply to Article One.  Metus vulputate eu scelerisque felis impe
 +++User+++
 User
 Comment
+
 Yes another awesome reply to Article One.  This one is from the user with email address user@local.
 
 Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. Viverra accumsan in nisl nisi scelerisque eu ultrices. Dictum non consectetur a erat. Cursus metus aliquam eleifend mi in nulla. Non diam phasellus vestibulum lorem. Enim praesent elementum facilisis leo vel fringilla est ullamcorper eget. Aliquet eget sit amet tellus cras adipiscing.
@@ -43,6 +48,7 @@ Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. Viver
 +++User+++
 User
 Comment
+
 This is a reply to Username3's comment.  It should be indented and appear after Username3's comment.
 
 -------------------------------------------------------------
@@ -51,6 +57,7 @@ This is a reply to Username3's comment.  It should be indented and appear after 
 +++User+++
 RegisteredUser
 Comment
+
 <script>alert('Pwned');</script>
 -------------------------------------------------------------
 2019/06/article-one
@@ -58,6 +65,7 @@ Comment
 +++User+++
 RegisteredUser
 Comment
+
 <script>alert('before Pwned');</script>
 -------------------------------------------------------------
 2019/06/article-one
@@ -65,6 +73,7 @@ Comment
 +++User+++
 RegisteredUser
 Edit
+
 Yes another reply to Article One, but it has been edited.  This one is from the user with email address user@local.
 
 Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. Viverra accumsan in nisl nisi scelerisque eu ultrices. Dictum non consectetur a erat. Cursus metus aliquam eleifend mi in nulla. Non diam phasellus vestibulum lorem. Enim praesent elementum facilisis leo vel fringilla est ullamcorper eget. Aliquet eget sit amet tellus cras adipiscing.
