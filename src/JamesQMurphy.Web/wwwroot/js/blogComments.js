@@ -113,7 +113,7 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
                 '<img class="img-fluid" src="' + blogArticleReaction.authorImageUrl + '">' +
             '</div>' +
             '<div class="jqm-comment-body media-body px-3">' +
-                '<b>' + blogArticleReaction.authorName + '</b> ' + (blogArticleReaction.isMine ? '(you) ' : '') + (blogArticleReaction.isEdited ? '(edited) ' : '') + '<br/>' +
+                '<b>' + blogArticleReaction.authorName + '</b> ' + (blogArticleReaction.isMine ? '(you) ' : '') + (blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ') ' : '') + '<br/>' +
                 blogArticleReaction.htmlContent +
                 (BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "") +
                 BlogComments.HtmlForMoreBlock(blogArticleReaction.commentId, 'VIEW REPLIES') +

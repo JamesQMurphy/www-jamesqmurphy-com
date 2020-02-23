@@ -114,7 +114,7 @@ namespace JamesQMurphy.Web.Controllers
                             authorImageUrl = "/images/unknownPersonPlaceholder.png",
                             timestamp = r.PublishDate.ToString("O"),
                             isMine = (r.AuthorId == thisUserId),
-                            isEdited = false,
+                            editState = "",
                             htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
                             replyToId = r.ReactingToId
                         };
@@ -128,7 +128,7 @@ namespace JamesQMurphy.Web.Controllers
                             authorImageUrl = "/images/unknownPersonPlaceholder.png",
                             timestamp = r.PublishDate.ToString("O"),
                             isMine = (r.AuthorId == thisUserId),
-                            isEdited = true,
+                            editState = "edited",
                             htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
                             replyToId = "" // TODO: react to react
                         };

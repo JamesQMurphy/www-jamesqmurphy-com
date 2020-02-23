@@ -13,7 +13,7 @@ namespace JamesQMurphy.Web.Models.BlogViewModels
         public string authorImageUrl { get; set; }
         public string timestamp { get; set; }
         public bool isMine { get; set; }
-        public bool isEdited { get; set; }
+        public string editState { get; set; }
         public string htmlContent { get; set; }
         public string replyToId { get; set; }
     }
