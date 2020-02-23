@@ -61,7 +61,7 @@ BlogComments.FetchLatestComments = function () {
     if (!document[BlogComments.hidden]) {
         $.getJSON(BlogComments.commentsUrl + '?sinceTimestamp=' + BlogComments.lastTimestampRetrieved, function (commentsArray) {
             if (commentsArray.length > 0) {
-                BlogComments.InsertCommentsIntoDOM(commentsArray);
+                BlogComments.InsertReactionsIntoDOM(commentsArray);
                 BlogComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
                 setTimeout(BlogComments.FetchLatestComments, 2000);
             }
@@ -81,7 +81,7 @@ BlogComments.SubmitComments = function (comment, replyToCommentId) {
     $.post(BlogComments.commentsUrl, data)
         .done(function (moreComments) {
             $('form').trigger('reset');
-            BlogComments.InsertCommentsIntoDOM(moreComments);
+            BlogComments.InsertReactionsIntoDOM(moreComments);
             BlogComments.lastTimestampRetrieved = moreComments[moreComments.length - 1].timestamp;
 
             // Show the last comment retrieved
@@ -101,36 +101,50 @@ BlogComments.GetChildCommentElements = function (commentId) {
     }
 };
 
-BlogComments.InsertCommentsIntoDOM = function (commentsArray) {
-    $.each(commentsArray, function (_index, blogArticleComment) {
+BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
+    $.each(reactionsArray, function (_index, blogArticleReaction) {
 
-        // Figure out where to insert the new comment
-        var parentId = blogArticleComment.replyToId || COMMENTS_SECTION_ID;
-        var insertBeforeElement = $("#" + parentId + " [id][data-timestamp]").filter(function () {
-            return ($(this).data('timestamp') > blogArticleComment.timestamp)
-                && ($(this).attr('id').startsWith(parentId + '/'));
-        }).first();
+        // Figure out where to insert or replace the new comment
+        var parentId = blogArticleReaction.replyToId || COMMENTS_SECTION_ID;
 
-        // Insert it
-        var newNode = $('<div class="jqm-comment media my-3" id="' + blogArticleComment.commentId + '" data-timestamp="' + blogArticleComment.timestamp + '">' +
+        // Generate new node
+        var newNode = $('<div class="jqm-comment media my-3" id="' + blogArticleReaction.commentId + '" data-timestamp="' + blogArticleReaction.timestamp + '">' +
             '<div class="jqm-comment-user-icon">' +
-                '<img class="img-fluid" src="' + blogArticleComment.authorImageUrl + '">' +
+                '<img class="img-fluid" src="' + blogArticleReaction.authorImageUrl + '">' +
             '</div>' +
             '<div class="jqm-comment-body media-body px-3">' +
-                '<b>' + blogArticleComment.authorName + '</b> ' + (blogArticleComment.isMine ? '(you)' : '') + '<br/>' +
-                blogArticleComment.htmlContent +
-                (BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleComment.commentId, 'REPLY') : "") +
-                BlogComments.HtmlForMoreBlock(blogArticleComment.commentId, 'VIEW REPLIES') +
+                '<b>' + blogArticleReaction.authorName + '</b> ' + (blogArticleReaction.isMine ? '(you) ' : '') + (blogArticleReaction.isEdited ? '(edited) ' : '') + '<br/>' +
+                blogArticleReaction.htmlContent +
+                (BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "") +
+                BlogComments.HtmlForMoreBlock(blogArticleReaction.commentId, 'VIEW REPLIES') +
             '</div>' + 
-            '</div>').hide().insertBefore(insertBeforeElement);
+            '</div>');
 
-        // Bind click event to control
-        BlogComments.ViewMoreCtl_BindClick(blogArticleComment.commentId);
+        // Insert or replace
+        var existingElement = $("#" + blogArticleReaction.commentId);
+        if (existingElement.length > 0) {
+            if (existingElement.is(':hidden')) {
+                newNode.hide();
+            }
+            existingElement.replaceWith(newNode);
+        }
+        else {
+            // Insert new node (hidden)
+            var insertBeforeElement = $("#" + parentId + " [id][data-timestamp]").filter(function () {
+                return ($(this).data('timestamp') > blogArticleReaction.timestamp)
+                    && ($(this).attr('id').startsWith(parentId + '/'));
+            }).first();
+            newNode.hide().insertBefore(insertBeforeElement);
 
-        // Set up mutation observer under new node's media-body
-        var newNodeMediaBody = $(newNode).children('.media-body').get(0);
-        var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
-        mutationObserver.observe(newNodeMediaBody, { attributes: false, childList: true, characterData: false });
+            // Bind click event to control
+            BlogComments.ViewMoreCtl_BindClick(blogArticleReaction.commentId);
+
+            // Set up mutation observer under new node's media-body
+            var newNodeMediaBody = $(newNode).children('.media-body').get(0);
+            var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
+            mutationObserver.observe(newNodeMediaBody, { attributes: false, childList: true, characterData: false });
+        }
+
     });
 };
 

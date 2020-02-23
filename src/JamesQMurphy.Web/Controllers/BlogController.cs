@@ -98,18 +98,49 @@ namespace JamesQMurphy.Web.Controllers
 
         public async Task<IActionResult> comments(string year, string month, string slug, string sinceTimestamp = "")
         {
-            var comments = await articleStore.GetArticleReactions($"{year}/{month}/{slug}", sinceTimestamp, 1);
+            var reactions = await articleStore.GetArticleReactions($"{year}/{month}/{slug}", sinceTimestamp, 1);
             var thisUserId = CurrentUserId;
 
-            return new JsonResult(comments.Select(c => new BlogArticleComment {
-                commentId = c.ReactionId,
-                articleSlug = c.ArticleSlug,
-                authorName = c.AuthorName,
-                authorImageUrl = "/images/unknownPersonPlaceholder.png",
-                timestamp = c.PublishDate.ToString("O"),
-                isMine = (c.AuthorId == thisUserId),
-                htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(c.Content),
-                replyToId = c.ReactingToId
+            return new JsonResult(reactions.Select(r =>
+            {
+                switch (r.ReactionType)
+                {
+                    case ArticleReactionType.Comment:
+                        return new BlogArticleReaction
+                        {
+                            commentId = r.ReactionId,
+                            articleSlug = r.ArticleSlug,
+                            authorName = r.AuthorName,
+                            authorImageUrl = "/images/unknownPersonPlaceholder.png",
+                            timestamp = r.PublishDate.ToString("O"),
+                            isMine = (r.AuthorId == thisUserId),
+                            isEdited = false,
+                            htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
+                            replyToId = r.ReactingToId
+                        };
+
+                    case ArticleReactionType.Edit:
+                        return new BlogArticleReaction
+                        {
+                            commentId = r.ReactingToId,
+                            articleSlug = r.ArticleSlug,
+                            authorName = r.AuthorName,
+                            authorImageUrl = "/images/unknownPersonPlaceholder.png",
+                            timestamp = r.PublishDate.ToString("O"),
+                            isMine = (r.AuthorId == thisUserId),
+                            isEdited = true,
+                            htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
+                            replyToId = "" // TODO: react to react
+                        };
+                    case ArticleReactionType.Hide:
+                        return null;
+                    case ArticleReactionType.Delete:
+                        return null;
+                    case ArticleReactionType.Vote:
+                        return null;
+                    default:
+                        return null;
+                }
             }));
         }
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Models.BlogViewModels
 {
-    public class BlogArticleComment
+    public class BlogArticleReaction
     {
         public string commentId { get; set; }
         public string articleSlug { get; set; }
@@ -13,6 +13,7 @@ namespace JamesQMurphy.Web.Models.BlogViewModels
         public string authorImageUrl { get; set; }
         public string timestamp { get; set; }
         public bool isMine { get; set; }
+        public bool isEdited { get; set; }
         public string htmlContent { get; set; }
         public string replyToId { get; set; }
     }

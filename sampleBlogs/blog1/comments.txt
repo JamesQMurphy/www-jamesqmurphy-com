@@ -34,7 +34,7 @@ This is another reply to Article One.  Metus vulputate eu scelerisque felis impe
 +++User+++
 User
 Comment
-Yes another reply to Article One.  This one is from the user with email address user@local.
+Yes another awesome reply to Article One.  This one is from the user with email address user@local.
 
 Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. Viverra accumsan in nisl nisi scelerisque eu ultrices. Dictum non consectetur a erat. Cursus metus aliquam eleifend mi in nulla. Non diam phasellus vestibulum lorem. Enim praesent elementum facilisis leo vel fringilla est ullamcorper eget. Aliquet eget sit amet tellus cras adipiscing.
 -------------------------------------------------------------
@@ -54,9 +54,18 @@ Comment
 <script>alert('Pwned');</script>
 -------------------------------------------------------------
 2019/06/article-one
-2019-12-26T12:12:00.6799989Z
+2019-12-26T10:12:00.6799989Z
 +++User+++
 RegisteredUser
 Comment
-<script>alert('hello');</script>
+<script>alert('before Pwned');</script>
+-------------------------------------------------------------
+2019/06/article-one
+2020-01-02T19:00:00.0000000Z_2019-12-02T18:02:00.0000000Z
++++User+++
+RegisteredUser
+Edit
+Yes another reply to Article One, but it has been edited.  This one is from the user with email address user@local.
+
+Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. Viverra accumsan in nisl nisi scelerisque eu ultrices. Dictum non consectetur a erat. Cursus metus aliquam eleifend mi in nulla. Non diam phasellus vestibulum lorem. Enim praesent elementum facilisis leo vel fringilla est ullamcorper eget. Aliquet eget sit amet tellus cras adipiscing.
 
