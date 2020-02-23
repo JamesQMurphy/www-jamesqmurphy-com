@@ -22,7 +22,10 @@
     }
     else
     {
-        <p class="text-center">You need to be <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.login)" asp-route-returnurl="@ViewData["returnUrl"]">signed in</a> to post a comment.</p>
+        <p class="text-center">
+            Want to leave a comment?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["returnUrl"]">Sign up</a>! <br/>
+            Already signed up?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.login)" asp-route-returnurl="@ViewData["returnUrl"]">Sign in</a>!
+        </p>
     }
 
 </div>
