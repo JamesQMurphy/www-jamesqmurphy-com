@@ -1,8 +1,9 @@
-﻿using JamesQMurphy.Blog;
+﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.BlogViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.Extensions;
 using System;
 using System.Linq;
 using System.Text;
@@ -14,11 +15,13 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly IArticleStore articleStore;
         private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions) : base(webSiteOptions)
+        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, UserManager<ApplicationUser> userManager, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
             _markdownHtmlRenderer = markdownHtmlRenderer;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> index(string year = null, string month = null)
@@ -44,8 +47,13 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> details(string year, string month, string slug)
         {
             var article = await articleStore.GetArticleAsync($"{year}/{month}/{slug}");
+            var currentUser = await GetApplicationUserAsync(_userManager);
+            var canModeratePosts = currentUser == null ? false : (await _userManager.GetRolesAsync(currentUser)).Contains("Administrator");
+
             ViewData["isLoggedIn"] = this.IsLoggedIn;
             ViewData["returnUrl"] = $"{HttpContext?.Request?.Path}#addComment";
+            ViewData["canModeratePosts"] = canModeratePosts;
+            
             if (article != null)
             {
                 if (String.IsNullOrWhiteSpace(article.Description))

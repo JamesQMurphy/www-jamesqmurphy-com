@@ -16,23 +16,34 @@
                 <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
             </div>
             <div class="row">
-                <input type="button" class="btn btn-primary" value="Comment" id="submitUserComment"/>
+                <input type="button" class="btn btn-primary" value="Comment" id="submitUserComment" />
             </div>
         </form>
     }
     else
     {
         <p class="text-center">
-            Want to leave a comment?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["returnUrl"]">Sign up</a>! <br/>
+            Want to leave a comment?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["returnUrl"]">Sign up</a>! <br />
             Already signed up?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.login)" asp-route-returnurl="@ViewData["returnUrl"]">Sign in</a>!
         </p>
     }
 
 </div>
 
-    @section Scripts {
-        <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
-        <script>mermaid.initialize({ startOnLoad: true });</script>
-
-        <script src="~/js/blogComments.js" asp-append-version="true"></script>
+@section Scripts {
+    <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
+    <script>mermaid.initialize({ startOnLoad: true });</script>
+    @if ((bool)ViewData["canModeratePosts"])
+    {
+        <script>
+            var canModeratePosts = true;
+        </script>
     }
+    else
+    {
+        <script>
+            var canModeratePosts = false;
+        </script>
+    }
+    <script src="~/js/blogComments.js" asp-append-version="true"></script>
+}

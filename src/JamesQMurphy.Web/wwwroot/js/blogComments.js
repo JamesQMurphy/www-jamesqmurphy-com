@@ -115,7 +115,10 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
             '<div class="jqm-comment-body media-body px-3">' +
                 '<b>' + blogArticleReaction.authorName + '</b> ' + (blogArticleReaction.isMine ? '(you) ' : '') + (blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ') ' : '') + '<br/>' +
                 blogArticleReaction.htmlContent +
-                (BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "") +
+                '<div>' +
+                    (BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "") +
+                    (canModeratePosts ? BlogComments.TrashCtl_GenerateHtml(blogArticleReaction.commentId) : "") +
+                '</div>' +
                 BlogComments.HtmlForMoreBlock(blogArticleReaction.commentId, 'VIEW REPLIES') +
             '</div>' + 
             '</div>');
@@ -163,11 +166,14 @@ BlogComments.ReplyCtl_GenerateHtml = function (id, innerText) {
     return '<span class="btn btn-sm btn-link p-0" id="' + id + REPLY_CTL_SUFFIX + '" >' + innerText + '</span>';
 };
 
+BlogComments.TrashCtl_GenerateHtml = function (id) {
+    return '<span class="fas fa-trash p-0" id="' + id + REPLY_CTL_SUFFIX + '" ></span>';
+};
+
 
 BlogComments.ViewMoreCtl_Refresh = function (commentId) {
     var childComments = BlogComments.GetChildCommentElements(commentId);
     var hiddenCount = childComments.filter(":hidden").length;
-   //var visibleCount = childComments.length - hiddenCount;
     if (hiddenCount > 0) {
         $("#" + commentId + VIEW_MORE_CTL_SUFFIX).show();
     }
