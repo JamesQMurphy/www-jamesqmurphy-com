@@ -2,6 +2,25 @@
 
 <vc:article article="@Model"></vc:article>
 
+<template id="commentTemplate">
+    <div class="jqm-comment media my-3" id="{commentId}" data-timestamp="{timestamp}">
+        <div class="jqm-comment-user-icon">
+            <img class="img-fluid" src="{authorImageUrl}">
+        </div>
+        <div class="jqm-comment-body media-body px-3">
+            <b>{authorName}</b> {you} {editState}<br />
+            {htmlContent}
+            <div>
+                {replyButton}{trashButton}
+            </div>
+            <div class="media my-3" id="{commentId}/more" data-timestamp="z">
+                <span class="btn btn-sm btn-link p-0" id="{commentId}{VIEW_MORE_CTL_SUFFIX}" style="display:none"><i class="fas fa-caret-down fa-small"></i> {viewMoreText}</span>
+                &nbsp;
+            </div>
+        </div>
+    </div>
+</template>
+
 <h2>Comments</h2>
 <hr />
 <div class="container" id="commentsRoot"></div>

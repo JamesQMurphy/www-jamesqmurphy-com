@@ -122,6 +122,10 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
                 BlogComments.HtmlForMoreBlock(blogArticleReaction.commentId, 'VIEW REPLIES') +
             '</div>' + 
             '</div>');
+        newNode = $(templateContent($("template#commentTemplate")[0]).innerHTML
+            .replace(/\{commentId\}/g, blogArticleReaction.commentId)
+            .replace(/\{authorName\}/g, blogArticleReaction.authorName)
+        );
 
         // Insert or replace
         var existingElement = $("#" + blogArticleReaction.commentId);
@@ -218,4 +222,17 @@ if (!String.prototype.startsWith) {
     });
 }
 
-
+// Polyfill for templates
+// https://stackoverflow.com/a/33138997/1001100
+function templateContent(template) {
+    if ("content" in document.createElement("template")) {
+        return document.importNode(template.content, true);
+    } else {
+        var fragment = document.createDocumentFragment();
+        var children = template.childNodes;
+        for (i = 0; i < children.length; i++) {
+            fragment.appendChild(children[i].cloneNode(true));
+        }
+        return fragment;
+    }
+}
