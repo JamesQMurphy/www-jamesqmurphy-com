@@ -108,24 +108,18 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         var parentId = blogArticleReaction.replyToId || COMMENTS_SECTION_ID;
 
         // Generate new node
-        var newNode = $('<div class="jqm-comment media my-3" id="' + blogArticleReaction.commentId + '" data-timestamp="' + blogArticleReaction.timestamp + '">' +
-            '<div class="jqm-comment-user-icon">' +
-                '<img class="img-fluid" src="' + blogArticleReaction.authorImageUrl + '">' +
-            '</div>' +
-            '<div class="jqm-comment-body media-body px-3">' +
-                '<b>' + blogArticleReaction.authorName + '</b> ' + (blogArticleReaction.isMine ? '(you) ' : '') + (blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ') ' : '') + '<br/>' +
-                blogArticleReaction.htmlContent +
-                '<div>' +
-                    (BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "") +
-                    (canModeratePosts ? BlogComments.TrashCtl_GenerateHtml(blogArticleReaction.commentId) : "") +
-                '</div>' +
-                BlogComments.HtmlForMoreBlock(blogArticleReaction.commentId, 'VIEW REPLIES') +
-            '</div>' + 
-            '</div>');
-        newNode = $(templateContent($("template#commentTemplate")[0]).innerHTML
-            .replace(/\{commentId\}/g, blogArticleReaction.commentId)
-            .replace(/\{authorName\}/g, blogArticleReaction.authorName)
-        );
+        var newNode = $(ReplaceInTemplate("template#commentTemplate", new Map([
+            ['VIEW_MORE_CTL_SUFFIX', VIEW_MORE_CTL_SUFFIX],
+            ['commentId',            blogArticleReaction.commentId],
+            ['timestamp',            blogArticleReaction.timestamp],
+            ['authorName',           blogArticleReaction.authorName],
+            ['authorImageUrl',       blogArticleReaction.authorImageUrl],
+            ['you',                  blogArticleReaction.isMine ? '(you)' : ''],
+            ['editState',            blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ')' : ''],
+            ['replyButton',          BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : ""],
+            ['trashButton',          canModeratePosts ? BlogComments.TrashCtl_GenerateHtml(blogArticleReaction.commentId) : ""],
+            ['htmlContent',          blogArticleReaction.htmlContent]
+        ])));
 
         // Insert or replace
         var existingElement = $("#" + blogArticleReaction.commentId);
@@ -211,6 +205,14 @@ BlogComments.OnDOMChange = function (mutations) {
     });
     console.log(insertions + " comment(s) inserted into DOM");
 };
+
+function ReplaceInTemplate(templateSelector, mapValues) {
+    var returnHtml = $(templateSelector).html();
+    mapValues.forEach(function (value, key) {
+        returnHtml = returnHtml.replace(new RegExp('\{' + key + '\}', 'g'), value);
+    });
+    return returnHtml;
+}
 
 // Polyfill for String.startsWith
 if (!String.prototype.startsWith) {
