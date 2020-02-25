@@ -17,14 +17,20 @@
                     {replyButton}{trashButton}
                 </div>
                 <div class="media my-3" id="{commentId}/more" data-timestamp="z">
-                    <span class="btn btn-sm btn-link p-0" id="{commentId}{VIEW_MORE_CTL_SUFFIX}" style="display:none">
-                        <i class="fas fa-caret-down fa-small"></i> VIEW REPLIES
+                    <span class="btn btn-sm btn-link p-0 text-uppercase" id="{commentId}{VIEW_MORE_CTL_SUFFIX}" style="display:none">
+                        <i class="fas fa-caret-down fa-small"></i> View Replies
                     </span>
                     &nbsp;
                 </div>
             </div>
         </div>
     </template>
+    <div class="media my-3" id="commentsRoot/more" data-timestamp="z">
+        <span class="btn btn-sm btn-link p-0 text-uppercase" id="commentsRoot_viewMoreCtl" style="display:none">
+            <i class="fas fa-caret-down fa-small"></i> Show More Comments
+        </span>
+        &nbsp;
+    </div>
 </div>
 <div class="container-fluid" id="addComment">
     @if ((bool)ViewData["isLoggedIn"])

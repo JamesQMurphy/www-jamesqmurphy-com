@@ -20,8 +20,7 @@ $(function () {
         BlogComments.visibilityChange = "webkitvisibilitychange";
     }
 
-    // Create the "View More Comments" control
-    commentsSection.append($(BlogComments.HtmlForMoreBlock(COMMENTS_SECTION_ID, 'SHOW MORE COMMENTS')));
+    // Bind the "View More Comments" control
     BlogComments.ViewMoreCtl_BindClick(COMMENTS_SECTION_ID);
 
     // Wire up the OnDOM change event
@@ -149,16 +148,6 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
     });
 };
 
-BlogComments.HtmlForMoreBlock = function (id, viewText) {
-    return '<div class="media my-3" id="' + id + '/more" data-timestamp="z">' +
-        BlogComments.ViewMoreCtl_GenerateHtml(id, viewText) +
-        '&nbsp;</div>';
-};
-
-
-BlogComments.ViewMoreCtl_GenerateHtml = function (id, innerText) {
-    return '<span class="btn btn-sm btn-link p-0" id="' + id + VIEW_MORE_CTL_SUFFIX + '" style="display:none"><i class="fas fa-caret-down fa-small"></i> ' + innerText + '</span>';
-};
 
 BlogComments.ReplyCtl_GenerateHtml = function (id, innerText) {
     return '<span class="btn btn-sm btn-link p-0" id="' + id + REPLY_CTL_SUFFIX + '" >' + innerText + '</span>';
