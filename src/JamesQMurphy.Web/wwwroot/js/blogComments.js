@@ -165,7 +165,7 @@ BlogComments.ReplyCtl_GenerateHtml = function (id, innerText) {
 };
 
 BlogComments.TrashCtl_GenerateHtml = function (id) {
-    return '<span class="fas fa-trash p-0" id="' + id + REPLY_CTL_SUFFIX + '" ></span>';
+    return '<span class="fas fa-trash p-0 text-muted" id="' + id + REPLY_CTL_SUFFIX + '" ></span>';
 };
 
 
