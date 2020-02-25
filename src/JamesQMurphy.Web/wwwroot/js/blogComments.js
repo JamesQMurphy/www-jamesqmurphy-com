@@ -107,18 +107,18 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         var parentId = blogArticleReaction.replyToId || COMMENTS_SECTION_ID;
 
         // Generate new node
-        var newNode = $(ReplaceInTemplate("template#commentTemplate", new Map([
-            ['VIEW_MORE_CTL_SUFFIX', VIEW_MORE_CTL_SUFFIX],
-            ['commentId',            blogArticleReaction.commentId],
-            ['timestamp',            blogArticleReaction.timestamp],
-            ['authorName',           blogArticleReaction.authorName],
-            ['authorImageUrl',       blogArticleReaction.authorImageUrl],
-            ['you',                  blogArticleReaction.isMine ? '(you)' : ''],
-            ['editState',            blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ')' : ''],
-            ['replyButton',          BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : ""],
-            ['trashButton',          canModeratePosts ? BlogComments.TrashCtl_GenerateHtml(blogArticleReaction.commentId) : ""],
-            ['htmlContent',          blogArticleReaction.htmlContent]
-        ])));
+        var map = new Map();
+        map.set('VIEW_MORE_CTL_SUFFIX', VIEW_MORE_CTL_SUFFIX);
+        map.set('commentId',      blogArticleReaction.commentId);
+        map.set('timestamp',      blogArticleReaction.timestamp);
+        map.set('authorName',     blogArticleReaction.authorName);
+        map.set('authorImageUrl', blogArticleReaction.authorImageUrl);
+        map.set('you',            blogArticleReaction.isMine ? '(you)' : '');
+        map.set('editState',      blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ')' : '');
+        map.set('replyButton',    BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "");
+        map.set('trashButton',    canModeratePosts ? BlogComments.TrashCtl_GenerateHtml(blogArticleReaction.commentId) : "");
+        map.set('htmlContent',    blogArticleReaction.htmlContent);
+        var newNode = $(ReplaceInTemplate("template#commentTemplate", map));
 
         // Insert or replace
         var existingElement = $("#" + blogArticleReaction.commentId);
@@ -196,8 +196,11 @@ BlogComments.OnDOMChange = function (mutations) {
 };
 
 function ReplaceInTemplate(templateSelector, mapValues) {
+    console.log('in ReplaceInTemplate');
+    console.log(mapValues);
     var returnHtml = $(templateSelector).html();
     mapValues.forEach(function (value, key) {
+        console.log('Replacing {' + key + '} with ' + value);
         returnHtml = returnHtml.replace(new RegExp('\{' + key + '\}', 'g'), value);
     });
     return returnHtml;
