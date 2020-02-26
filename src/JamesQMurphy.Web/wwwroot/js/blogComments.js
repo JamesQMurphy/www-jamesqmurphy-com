@@ -1,6 +1,8 @@
 ﻿const COMMENTS_SECTION_ID = "commentsRoot";
 const VIEW_MORE_CTL_SUFFIX = "_viewMoreCtl";
 const REPLY_CTL_SUFFIX = "_replyCtl";
+const HIDE_CTL_SUFFIX = "_hideCtl";
+const DELETE_CTL_SUFFIX = "_deleteCtl";
 
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
@@ -65,7 +67,7 @@ BlogComments.FetchLatestComments = function () {
                 setTimeout(BlogComments.FetchLatestComments, 2000);
             }
             else {
-                setTimeout(BlogComments.FetchLatestComments, 6000);
+                setTimeout(BlogComments.FetchLatestComments, 300000);
             }
         });
     }
@@ -107,6 +109,8 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         var parentId = blogArticleReaction.replyToId || COMMENTS_SECTION_ID;
 
         // Generate new node
+        console.log('blogArticleReaction');
+        console.log(blogArticleReaction);
         var map = new Map();
         map.set('VIEW_MORE_CTL_SUFFIX', VIEW_MORE_CTL_SUFFIX);
         map.set('commentId',      blogArticleReaction.commentId);
@@ -115,8 +119,8 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         map.set('authorImageUrl', blogArticleReaction.authorImageUrl);
         map.set('you',            blogArticleReaction.isMine ? '(you)' : '');
         map.set('editState',      blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ')' : '');
-        map.set('replyButton',    BlogComments.canComment ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "");
-        map.set('trashButton',    canModeratePosts ? BlogComments.TrashCtl_GenerateHtml(blogArticleReaction.commentId) : "");
+        map.set('replyButton',    blogArticleReaction.canReply ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "");
+        map.set('trashButton',    blogArticleReaction.canDelete ? BlogComments.DeleteCtl_GenerateHtml(blogArticleReaction.commentId) : "");
         map.set('htmlContent',    blogArticleReaction.htmlContent);
         var newNode = $(ReplaceInTemplate("template#commentTemplate", map));
 
@@ -136,8 +140,10 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
             }).first();
             newNode.hide().insertBefore(insertBeforeElement);
 
-            // Bind click event to control
+            // Bind click events for controls
             BlogComments.ViewMoreCtl_BindClick(blogArticleReaction.commentId);
+            BlogComments.ReplyCtl_BindClick(blogArticleReaction.commentId);
+            BlogComments.DeleteCtl_BindClick(blogArticleReaction.commentId);
 
             // Set up mutation observer under new node's media-body
             var newNodeMediaBody = $(newNode).children('.media-body').get(0);
@@ -145,17 +151,10 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
             mutationObserver.observe(newNodeMediaBody, { attributes: false, childList: true, characterData: false });
         }
 
+
     });
 };
 
-
-BlogComments.ReplyCtl_GenerateHtml = function (id, innerText) {
-    return '<span class="btn btn-sm btn-link p-0" id="' + id + REPLY_CTL_SUFFIX + '" >' + innerText + '</span>';
-};
-
-BlogComments.TrashCtl_GenerateHtml = function (id) {
-    return '<span class="fas fa-trash p-0 text-muted" id="' + id + REPLY_CTL_SUFFIX + '" ></span>';
-};
 
 
 BlogComments.ViewMoreCtl_Refresh = function (commentId) {
@@ -169,17 +168,50 @@ BlogComments.ViewMoreCtl_Refresh = function (commentId) {
     }
 };
 
+BlogComments.ViewMoreCtl_BindClick = function (commentId) {
+    // Can't simply use $().click()
+    // See https://makeitspendit.com/fix-jquery-click-event-not-working-with-dynamically-added-elements/
+    $('body').on('click', "#" + commentId + VIEW_MORE_CTL_SUFFIX, BlogComments.ViewMoreCtl_OnClick);
+};
+
 BlogComments.ViewMoreCtl_OnClick = function (event) {
     var commentId = event.target.id.replace(VIEW_MORE_CTL_SUFFIX, '');
     BlogComments.GetChildCommentElements(commentId).show();
     BlogComments.ViewMoreCtl_Refresh(commentId);
 };
 
-BlogComments.ViewMoreCtl_BindClick = function (commentId) {
+
+BlogComments.ReplyCtl_GenerateHtml = function (id, innerText) {
+    return '<span class="btn btn-sm btn-link p-0" id="' + id + REPLY_CTL_SUFFIX + '" >' + innerText + '</span>';
+};
+
+BlogComments.ReplyCtl_BindClick = function (commentId) {
     // Can't simply use $().click()
     // See https://makeitspendit.com/fix-jquery-click-event-not-working-with-dynamically-added-elements/
-    $('body').on('click', "#" + commentId + VIEW_MORE_CTL_SUFFIX, BlogComments.ViewMoreCtl_OnClick);
+    $('body').on('click', "#" + commentId + REPLY_CTL_SUFFIX, BlogComments.ReplyCtl_OnClick);
 };
+
+BlogComments.ReplyCtl_OnClick = function (event) {
+    var commentId = event.target.id.replace(REPLY_CTL_SUFFIX, '');
+    alert('clicked Reply for ' + commentId);
+};
+
+
+BlogComments.DeleteCtl_GenerateHtml = function (id) {
+    return '<span class="fas fa-trash-alt p-0 text-muted" id="' + id + DELETE_CTL_SUFFIX + '" ></span>';
+};
+
+BlogComments.DeleteCtl_BindClick = function (commentId) {
+    // Can't simply use $().click()
+    // See https://makeitspendit.com/fix-jquery-click-event-not-working-with-dynamically-added-elements/
+    $('body').on('click', "#" + commentId + DELETE_CTL_SUFFIX, BlogComments.DeleteCtl_OnClick);
+};
+
+BlogComments.DeleteCtl_OnClick = function (event) {
+    var commentId = event.target.id.replace(DELETE_CTL_SUFFIX, '');
+    alert('clicked Delete for ' + commentId);
+};
+
 
 BlogComments.OnDOMChange = function (mutations) {
     var insertions = 0;
@@ -196,7 +228,6 @@ BlogComments.OnDOMChange = function (mutations) {
 };
 
 function ReplaceInTemplate(templateSelector, mapValues) {
-    console.log('in ReplaceInTemplate');
     console.log(mapValues);
     var returnHtml = $(templateSelector).html();
     mapValues.forEach(function (value, key) {

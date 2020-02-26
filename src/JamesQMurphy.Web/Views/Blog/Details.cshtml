@@ -25,6 +25,19 @@
             </div>
         </div>
     </template>
+    <template id="replyToCommentTemplate">
+        <form method="post">
+            <label class="row pt-3 pb-1 border-top" for="userComment">
+                <b>Add a public reply to {username}'s comment</b>
+            </label>
+            <div class="row mb-3">
+                <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
+            </div>
+            <div class="row">
+                <input type="button" class="btn btn-primary" value="Comment" id="submitUserComment" />
+            </div>
+        </form>
+    </template>
     <div class="media my-3" id="commentsRoot/more" data-timestamp="z">
         <span class="btn btn-sm btn-link p-0 text-uppercase" id="commentsRoot_viewMoreCtl" style="display:none">
             <i class="fas fa-caret-down fa-small"></i> Show More Comments

@@ -13,6 +13,9 @@ namespace JamesQMurphy.Web.Models.BlogViewModels
         public string authorImageUrl { get; set; }
         public string timestamp { get; set; }
         public bool isMine { get; set; }
+        public bool canReply { get; set; }
+        public bool canHide { get; set; }
+        public bool canDelete { get; set; }
         public string editState { get; set; }
         public string htmlContent { get; set; }
         public string replyToId { get; set; }
