@@ -26,15 +26,15 @@
         </div>
     </template>
     <template id="replyToCommentTemplate">
-        <form method="post">
-            <label class="row pt-3 pb-1 border-top" for="userComment">
-                <b>Add a public reply to {username}'s comment</b>
+        <form method="post" class="mx-3" id="{commentId}/reply">
+            <label class="row" for="userComment">
+                <b>Add a public reply to {authorName}'s comment</b>
             </label>
             <div class="row mb-3">
                 <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
             </div>
-            <div class="row">
-                <input type="button" class="btn btn-primary" value="Comment" id="submitUserComment" />
+            <div class="row justify-content-end">
+                <input type="button" class="btn btn-primary text-uppercase" value="Reply" id="submitUserComment" />
             </div>
         </form>
     </template>

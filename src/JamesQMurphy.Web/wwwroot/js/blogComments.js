@@ -193,7 +193,15 @@ BlogComments.ReplyCtl_BindClick = function (commentId) {
 
 BlogComments.ReplyCtl_OnClick = function (event) {
     var commentId = event.target.id.replace(REPLY_CTL_SUFFIX, '');
-    alert('clicked Reply for ' + commentId);
+    var replyForm = $("#" + commentId + "\\/reply");
+    if (replyForm.length === 0) {
+        var map = new Map();
+        map.set('commentId', commentId);
+        map.set('authorName', 'xxx');
+        replyForm = $(ReplaceInTemplate("template#replyToCommentTemplate", map)).insertBefore($("#" + commentId + "\\/more").first());
+    }
+    replyForm.show();
+    $(event.target).hide();
 };
 
 
