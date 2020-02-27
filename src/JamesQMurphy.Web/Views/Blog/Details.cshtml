@@ -13,7 +13,7 @@
             <div class="jqm-comment-body media-body px-3 text-break">
                 <b>{authorName}</b> {you} {editState}<br />
                 {htmlContent}
-                <div class="d-flex justify-content-between">
+                <div class="jqm-comment-controls d-flex justify-content-between">
                     {replyButton}{trashButton}
                 </div>
                 <div class="media my-3" id="{commentId}/more" data-timestamp="z">
@@ -31,10 +31,11 @@
                 <b>Add a public reply to {authorName}'s comment</b>
             </label>
             <div class="row mb-3">
-                <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
+                <textarea name="commentContent" id="userComment{commentId}" maxlength="1000" style="min-width: 100%"></textarea>
             </div>
             <div class="row justify-content-end">
-                <input type="button" class="btn btn-primary text-uppercase" value="Reply" id="submitUserComment" />
+                <span class="btn btn-secondary text-uppercase mx-2" id="{commentId}{CANCELREPLY_CTL_SUFFIX}">Cancel</span>
+                <input type="button" class="btn btn-primary text-uppercase" value="Reply" id="{commentId}{SUBMITREPLY_CTL_SUFFIX}" />
             </div>
         </form>
     </template>

@@ -3,6 +3,8 @@ const VIEW_MORE_CTL_SUFFIX = "_viewMoreCtl";
 const REPLY_CTL_SUFFIX = "_replyCtl";
 const HIDE_CTL_SUFFIX = "_hideCtl";
 const DELETE_CTL_SUFFIX = "_deleteCtl";
+const SUBMITREPLY_CTL_SUFFIX = "_submitReplyCtl";
+const CANCELREPLY_CTL_SUFFIX = "_cancelReplyCtl";
 
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
@@ -29,7 +31,7 @@ $(function () {
     var mutationObserver = new MutationObserver(BlogComments.OnDOMChange);
     mutationObserver.observe(commentsSection.get(0), { attributes: false, childList: true, characterData: false });
 
-    // Wire up click event for comment submission
+    // Wire up click event for main comment submission
     $("#submitUserComment").click(function () {
         BlogComments.SubmitComments($("#userComment").val(), COMMENTS_SECTION_ID);
     });
@@ -109,8 +111,6 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         var parentId = blogArticleReaction.replyToId || COMMENTS_SECTION_ID;
 
         // Generate new node
-        console.log('blogArticleReaction');
-        console.log(blogArticleReaction);
         var map = new Map();
         map.set('VIEW_MORE_CTL_SUFFIX', VIEW_MORE_CTL_SUFFIX);
         map.set('commentId',      blogArticleReaction.commentId);
@@ -193,15 +193,32 @@ BlogComments.ReplyCtl_BindClick = function (commentId) {
 
 BlogComments.ReplyCtl_OnClick = function (event) {
     var commentId = event.target.id.replace(REPLY_CTL_SUFFIX, '');
+    var originalReplyButton = $(event.target);
+
+    // Create or show reply form
     var replyForm = $("#" + commentId + "\\/reply");
     if (replyForm.length === 0) {
+        // Create form
         var map = new Map();
         map.set('commentId', commentId);
+        map.set('SUBMITREPLY_CTL_SUFFIX', SUBMITREPLY_CTL_SUFFIX);
+        map.set('CANCELREPLY_CTL_SUFFIX', CANCELREPLY_CTL_SUFFIX);
         map.set('authorName', 'xxx');
-        replyForm = $(ReplaceInTemplate("template#replyToCommentTemplate", map)).insertBefore($("#" + commentId + "\\/more").first());
+        replyForm = $(ReplaceInTemplate("template#replyToCommentTemplate", map)).insertAfter($("#" + commentId + " > .jqm-comment-body > .jqm-comment-controls").first());
+
+        // Wire up form buttons
+        $('body').on('click', "#" + commentId + SUBMITREPLY_CTL_SUFFIX, function (event) {
+            replyForm.hide();
+            BlogComments.SubmitComments($("#userComment" + commentId).val(), commentId);
+            originalReplyButton.show();
+        });
+        $('body').on('click', "#" + commentId + CANCELREPLY_CTL_SUFFIX, function (event) {
+            replyForm.hide();
+            originalReplyButton.show();
+        });
     }
     replyForm.show();
-    $(event.target).hide();
+    originalReplyButton.hide();
 };
 
 
@@ -232,14 +249,11 @@ BlogComments.OnDOMChange = function (mutations) {
         });
         BlogComments.ViewMoreCtl_Refresh(parentCommentId);
     });
-    console.log(insertions + " comment(s) inserted into DOM");
 };
 
 function ReplaceInTemplate(templateSelector, mapValues) {
-    console.log(mapValues);
     var returnHtml = $(templateSelector).html();
     mapValues.forEach(function (value, key) {
-        console.log('Replacing {' + key + '} with ' + value);
         returnHtml = returnHtml.replace(new RegExp('\{' + key + '\}', 'g'), value);
     });
     return returnHtml;
