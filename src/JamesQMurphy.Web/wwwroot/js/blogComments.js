@@ -181,8 +181,8 @@ BlogComments.ViewMoreCtl_OnClick = function (event) {
 };
 
 
-BlogComments.ReplyCtl_GenerateHtml = function (id, innerText) {
-    return '<span class="btn btn-sm btn-link p-0" id="' + id + REPLY_CTL_SUFFIX + '" >' + innerText + '</span>';
+BlogComments.ReplyCtl_GenerateHtml = function (commentId, innerText) {
+    return '<span class="btn btn-sm btn-link p-0" id="' + commentId + REPLY_CTL_SUFFIX + '" >' + innerText + '</span>';
 };
 
 BlogComments.ReplyCtl_BindClick = function (commentId) {
