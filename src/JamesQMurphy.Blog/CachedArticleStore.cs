@@ -91,7 +91,7 @@ namespace JamesQMurphy.Blog
             return await _backingArticleStore.GetArticleReactions(articleSlug, sinceTimestamp, pageSize, latest);
         }
 
-        public async Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public async Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
             return await _backingArticleStore.AddReaction(articleSlug, articleReactionType, content, userId, userName, timestamp, replyingTo);
         }

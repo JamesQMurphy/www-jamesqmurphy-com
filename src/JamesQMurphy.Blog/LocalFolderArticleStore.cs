@@ -112,20 +112,21 @@ namespace JamesQMurphy.Blog
             }
         }
 
-        public async Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public async Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
+            var reactionId = (new ArticleReactionTimestampId(timestamp, replyingTo)).ToString();
             using (var writer = new StreamWriter(Path.Combine(RootFolder, "comments.txt"), true))
             {
                 await writer.WriteLineAsync(COMMENT_SEPARATOR);
                 await writer.WriteLineAsync(articleSlug);
-                await writer.WriteLineAsync((new ArticleReactionTimestampId(timestamp, replyingTo)).ToString());
+                await writer.WriteLineAsync(reactionId);
                 await writer.WriteLineAsync(userId);
                 await writer.WriteLineAsync(userName);
                 await writer.WriteLineAsync(articleReactionType.ToString());
                 await writer.WriteLineAsync(); // for EditState
                 await writer.WriteLineAsync(content);
             }
-            return true;
+            return reactionId;
         }
 
     }

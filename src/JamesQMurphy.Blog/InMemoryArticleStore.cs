@@ -53,9 +53,9 @@ namespace JamesQMurphy.Blog
             return Task.FromResult(latest ? comments.Reverse().Take(pageSize) : comments.Take(pageSize));
         }
 
-        public Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
-            var result = _GetReactionsDictionaryForArticle(articleSlug).Add(new ArticleReaction
+            var newReaction = new ArticleReaction
             {
                 ArticleSlug = articleSlug,
                 TimestampId = (new ArticleReactionTimestampId(timestamp, replyingTo)).ToString(),
@@ -63,9 +63,10 @@ namespace JamesQMurphy.Blog
                 AuthorId = userId,
                 AuthorName = userName,
                 ReactionType = articleReactionType
-            });
+            };
+            _GetReactionsDictionaryForArticle(articleSlug).Add(newReaction);
 
-            return Task.FromResult(result);
+            return Task.FromResult(newReaction.ReactionId);
         }
 
         private SortedSet<ArticleReaction> _GetReactionsDictionaryForArticle(string articleSlug)

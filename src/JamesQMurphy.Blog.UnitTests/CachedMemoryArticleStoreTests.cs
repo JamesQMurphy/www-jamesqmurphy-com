@@ -51,7 +51,7 @@ namespace Tests
                 throw new NotImplementedException();
             }
 
-            public Task<bool> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+            public Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
             {
                 throw new NotImplementedException();
             }

@@ -165,14 +165,14 @@ namespace JamesQMurphy.Web.Controllers
         [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> commentsPost(string year, string month, string slug, string userComment, string sinceTimestamp = "", string replyTo = "")
         {
-            var retVal = await articleStore.AddReaction($"{year}/{month}/{slug}", ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
-            if (retVal)
+            var newReactionId = await articleStore.AddReaction($"{year}/{month}/{slug}", ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
+            if (String.IsNullOrEmpty(newReactionId))
             {
-                return await this.comments(year, month, slug, sinceTimestamp);
+                return BadRequest();
             }
             else
             {
-                return BadRequest();
+                return await this.comments(year, month, slug, sinceTimestamp);
             }
         }
     }
