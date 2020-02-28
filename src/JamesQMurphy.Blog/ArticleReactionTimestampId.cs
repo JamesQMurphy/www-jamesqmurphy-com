@@ -28,6 +28,7 @@ namespace JamesQMurphy.Blog
 
         public string ReactionId => _JoinPiecesInReverseOrderDownTo(0);
         public string ReactingToId => _JoinPiecesInReverseOrderDownTo(1);
+        public int NestingLevel => _pieces.Count;
 
         private string _JoinPiecesInReverseOrderDownTo(int stopAt)
         {

@@ -27,6 +27,7 @@ namespace JamesQMurphy.Blog
         public string ReactionId => _articleCommentTimestampId.ReactionId;
         public string ReactingToId => _articleCommentTimestampId.ReactingToId;
         public string TimestampString => _articleCommentTimestampId.TimeStampString;
+        public int NestingLevel => _articleCommentTimestampId.NestingLevel;
         public int CompareTo(ArticleReaction other) => TimestampId.CompareTo(other.TimestampId);
         public override int GetHashCode() => ReactionId.GetHashCode();
     }

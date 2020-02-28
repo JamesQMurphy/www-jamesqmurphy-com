@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Tests
 {
-    public class ArticleCommentTests
+    public class ArticleReactionTests
     {
         [SetUp]
         public void Setup()
@@ -27,7 +27,7 @@ namespace Tests
             var authorName = "SomeUserName";
             var timestampId = "2019-12-07T15:27:47.8710606Z";
 
-            var ArticleComment = new ArticleReaction()
+            var articleReaction = new ArticleReaction()
             {
                 ArticleSlug = slug,
                 Content = content,
@@ -36,17 +36,17 @@ namespace Tests
                 TimestampId = timestampId
             };
 
-            Assert.AreEqual(slug, ArticleComment.ArticleSlug);
-            Assert.AreEqual(content, ArticleComment.Content);
-            Assert.AreEqual(authorId, ArticleComment.AuthorId);
-            Assert.AreEqual(authorName, ArticleComment.AuthorName);
-            Assert.AreEqual(timestampId, ArticleComment.TimestampId);
+            Assert.AreEqual(slug, articleReaction.ArticleSlug);
+            Assert.AreEqual(content, articleReaction.Content);
+            Assert.AreEqual(authorId, articleReaction.AuthorId);
+            Assert.AreEqual(authorName, articleReaction.AuthorName);
+            Assert.AreEqual(timestampId, articleReaction.TimestampId);
         }
 
         [Test]
         public void SettingPropertyToNullForcesEmpty()
         {
-            var ArticleComment = new ArticleReaction()
+            var articleReaction = new ArticleReaction()
             {
                 ArticleSlug = null,
                 Content = null,
@@ -55,11 +55,11 @@ namespace Tests
                 TimestampId = null
             };
 
-            Assert.AreEqual(string.Empty, ArticleComment.ArticleSlug);
-            Assert.AreEqual(string.Empty, ArticleComment.Content);
-            Assert.AreEqual(string.Empty, ArticleComment.AuthorId);
-            Assert.AreEqual(string.Empty, ArticleComment.AuthorName);
-            Assert.AreEqual(string.Empty, ArticleComment.TimestampId);
+            Assert.AreEqual(string.Empty, articleReaction.ArticleSlug);
+            Assert.AreEqual(string.Empty, articleReaction.Content);
+            Assert.AreEqual(string.Empty, articleReaction.AuthorId);
+            Assert.AreEqual(string.Empty, articleReaction.AuthorName);
+            Assert.AreEqual(string.Empty, articleReaction.TimestampId);
         }
 
         [Test]
@@ -100,6 +100,25 @@ namespace Tests
         public void CompareToNull()
         {
             Assert.AreEqual(0, new ArticleReaction().CompareTo(new ArticleReaction()));
+        }
+
+        [Test]
+        public void DetermineParentFromId()
+        {
+            var rootDate = System.DateTime.UtcNow;
+            var id1 = new ArticleReactionTimestampId(rootDate);
+            var id2 = new ArticleReactionTimestampId(rootDate.AddDays(1), id1.ReactionId);
+            var id3 = new ArticleReactionTimestampId(rootDate.AddDays(2), id2.ReactionId);
+            var id4 = new ArticleReactionTimestampId(rootDate.AddDays(3), id3.ReactionId);
+
+            Assert.IsEmpty(id1.ReactingToId);
+            Assert.AreEqual(1, id1.NestingLevel);
+            Assert.AreEqual(id1.ReactionId, id2.ReactingToId);
+            Assert.AreEqual(2, id2.NestingLevel);
+            Assert.AreEqual(id2.ReactionId, id3.ReactingToId);
+            Assert.AreEqual(3, id3.NestingLevel);
+            Assert.AreEqual(id3.ReactionId, id4.ReactingToId);
+            Assert.AreEqual(4, id4.NestingLevel);
         }
     }
 }

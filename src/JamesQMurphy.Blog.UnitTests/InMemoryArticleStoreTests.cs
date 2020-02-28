@@ -2,6 +2,7 @@
 using JamesQMurphy.Blog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tests
 {
@@ -145,6 +146,28 @@ namespace Tests
         public void NoArticleReturnsNull()
         {
             Assert.IsNull(Store.GetArticleAsync("doesn't exist").GetAwaiter().GetResult());
+        }
+
+        [Test]
+        public void NestedComments()
+        {
+            var rootDate = System.DateTime.UtcNow;
+            var article = _articles[0];
+
+            Store.AddReaction(article.Slug, ArticleReactionType.Comment, "content", "userId", "username", rootDate);
+            var reaction1 = Store.GetArticleReactions(article.Slug).GetAwaiter().GetResult().First();
+            Assert.IsEmpty(reaction1.ReactingToId);
+            Assert.AreEqual(1, reaction1.NestingLevel);
+
+            Store.AddReaction(article.Slug, ArticleReactionType.Comment, "content", "userId", "username", rootDate.AddDays(1), reaction1.ReactionId);
+            var reaction2 = Store.GetArticleReactions(article.Slug).GetAwaiter().GetResult().Last();
+            Assert.AreEqual(reaction1.ReactionId, reaction2.ReactingToId);
+            Assert.AreEqual(2, reaction2.NestingLevel);
+
+            Store.AddReaction(article.Slug, ArticleReactionType.Comment, "content", "userId", "username", rootDate.AddDays(2), reaction2.ReactionId);
+            var reaction3 = Store.GetArticleReactions(article.Slug).GetAwaiter().GetResult().Last();
+            Assert.AreEqual(reaction2.ReactionId, reaction3.ReactingToId);
+            Assert.AreEqual(3, reaction3.NestingLevel);
         }
 
     }
