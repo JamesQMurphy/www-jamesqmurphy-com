@@ -165,7 +165,14 @@ namespace JamesQMurphy.Web.Controllers
         [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> commentsPost(string year, string month, string slug, string userComment, string sinceTimestamp = "", string replyTo = "")
         {
-            var newReactionId = await articleStore.AddReaction($"{year}/{month}/{slug}", ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTo);
+            // Make sure replyTo doesnt have a nesting level equal or greater than the site level
+            var replyTimestampId = new ArticleReactionTimestampId(replyTo);
+            while (replyTimestampId.NestingLevel >= WebSiteOptions.CommentNestLevels && !String.IsNullOrEmpty(replyTimestampId.ReactingToId))
+            {
+                replyTimestampId = new ArticleReactionTimestampId(replyTimestampId.ReactingToId);
+            }
+
+            var newReactionId = await articleStore.AddReaction($"{year}/{month}/{slug}", ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTimestampId.TimeStampString);
             if (String.IsNullOrEmpty(newReactionId))
             {
                 return BadRequest();

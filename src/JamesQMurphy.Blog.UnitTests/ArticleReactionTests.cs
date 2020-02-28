@@ -2,6 +2,7 @@ using System.IO;
 using NUnit.Framework;
 using JamesQMurphy.Blog;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Tests
 {
@@ -68,7 +69,7 @@ namespace Tests
             var originalTime = new System.DateTime(2019, 10, 15, 8, 30, 0).ToUniversalTime();
             var originalTimestamp = originalTime.ToString("O");
             var originalTimestampId = originalTimestamp;
-            var originalCommentId = originalTimestamp.Replace('.', '-').Replace(':', '-');
+            var originalCommentId = ArticleReactionTimestampId.TimestampToJQueryFriendlyString(originalTimestamp);
             var originalComment = new ArticleReaction()
             {
                 TimestampId = originalTimestampId
@@ -82,7 +83,7 @@ namespace Tests
 
             var replyTime = originalTime.AddMinutes(30);
             var replyTimestamp = replyTime.ToString("O");
-            var replyCommentId = originalCommentId + "_" + replyTimestamp.Replace('.', '-').Replace(':', '-');
+            var replyCommentId = originalCommentId + "_" + ArticleReactionTimestampId.TimestampToJQueryFriendlyString(replyTimestamp);
             var replyTimestampId = $"{replyTimestamp}_{originalTimestamp}";
             var replyComment = new ArticleReaction()
             {
@@ -120,5 +121,68 @@ namespace Tests
             Assert.AreEqual(id3.ReactionId, id4.ReactingToId);
             Assert.AreEqual(4, id4.NestingLevel);
         }
+
+        [Test]
+        public void EmptyReactionTimestampIdWorks()
+        {
+            var reactionTimestampId = new ArticleReactionTimestampId("");
+            Assert.IsEmpty(reactionTimestampId.ReactionId);
+            Assert.AreEqual(0, reactionTimestampId.NestingLevel);
+        }
+
+        [Test]
+        public void ConvertToJQueryFriendlyAndBack()
+        {
+            var timestampString = System.DateTime.UtcNow.ToString("O");
+
+            var jqueryFriendlyString = ArticleReactionTimestampId.TimestampToJQueryFriendlyString(timestampString);
+
+            // from https://stackoverflow.com/a/2837646/1001100
+            Assert.IsFalse(Regex.IsMatch(jqueryFriendlyString, @"[!""#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]"));
+
+            var backToTimestampString = ArticleReactionTimestampId.JQueryFriendlyToTimestampString(jqueryFriendlyString);
+            Assert.AreEqual(timestampString, backToTimestampString);
+        }
+
+        [Test]
+        public void TimestampIdConvertedProperly()
+        {
+            var rootDate = System.DateTime.UtcNow;
+            var replyDate = rootDate.AddDays(1);
+
+            var rootId = new ArticleReactionTimestampId(rootDate);
+            var replyId = new ArticleReactionTimestampId(replyDate, rootId.ReactionId);
+
+            // Assert ToString() returns as timestamps
+            Assert.AreEqual(replyId.ToString(), ArticleReactionTimestampId.JQueryFriendlyToTimestampString(replyId.ToString()));
+
+            // Assert ReactionId returns as JQuery-friendly
+            Assert.AreEqual(replyId.ReactionId, ArticleReactionTimestampId.TimestampToJQueryFriendlyString(replyId.ReactionId));
+
+            // Assert reactionID gets converted back to timestamps internally
+            var replyIdFromPrevious = new ArticleReactionTimestampId(replyId.ReactionId);
+            Assert.AreEqual(replyIdFromPrevious.ToString(), ArticleReactionTimestampId.JQueryFriendlyToTimestampString(replyIdFromPrevious.ToString()));
+        }
+
+        [Test]
+        public void ReactingToIdIsCorrerct()
+        {
+            var timestampId = "2020-02-28T21:41:06.1781051Z_2019-12-26T10:12:00.6799989Z";
+            var reactionId = "2019-12-26T10c12c00p6799989Z_2020-02-28T21c41c06p1781051Z";
+            var reactingToId = "2019-12-26T10c12c00p6799989Z";
+
+            var comment = new ArticleReaction
+            {
+                TimestampId = timestampId
+            };
+
+            Assert.AreEqual(reactionId, comment.ReactionId);
+            Assert.AreEqual(reactingToId, comment.ReactingToId);
+
+            var computed = new ArticleReactionTimestampId(reactionId);
+            Assert.AreEqual(reactingToId, computed.ReactingToId);
+
+        }
+
     }
 }

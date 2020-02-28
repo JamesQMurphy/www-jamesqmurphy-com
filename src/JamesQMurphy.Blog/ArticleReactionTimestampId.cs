@@ -7,13 +7,21 @@ namespace JamesQMurphy.Blog
     public class ArticleReactionTimestampId : IComparable<ArticleReactionTimestampId>
     {
         private const char SEPARATOR = '_';
+
+        public static string TimestampToJQueryFriendlyString(string timestampString) => timestampString.Replace(':','c').Replace('.','p');
+        public static string JQueryFriendlyToTimestampString(string jqueryFriendlyString) => jqueryFriendlyString.Replace('c', ':').Replace('p', '.');
+
+
         private readonly List<string> _pieces = new List<string>();
 
         public ArticleReactionTimestampId(string timestampId)
         {
             if (!string.IsNullOrEmpty(timestampId))
             {
-                _pieces.AddRange(timestampId.Split(new char[] { SEPARATOR }));
+                _pieces.AddRange(
+                    JQueryFriendlyToTimestampString(timestampId)
+                    .Split(new char[] { SEPARATOR })
+                    );
             }
         }
 
@@ -22,7 +30,11 @@ namespace JamesQMurphy.Blog
             _pieces.Add(timestamp.ToString("O"));
             if (!string.IsNullOrEmpty(replyToId))
             {
-                _pieces.AddRange(replyToId.Split(new char[] { SEPARATOR }).Reverse());
+                _pieces.AddRange(
+                    JQueryFriendlyToTimestampString(replyToId)
+                    .Split(new char[] { SEPARATOR })
+                    .Reverse()
+                    );
             }
         }
 
@@ -41,7 +53,7 @@ namespace JamesQMurphy.Blog
             {
                 retVal = $"{retVal}{SEPARATOR}{_pieces[i]}";
             }
-            return retVal.Replace(':','-').Replace('.','-');
+            return TimestampToJQueryFriendlyString(retVal);
         }
 
         public DateTime TimeStamp
