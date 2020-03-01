@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /blog
+Allow: /contact
 Disallow: /profile
 Disallow: /admin
-Disallow: /contact
 
