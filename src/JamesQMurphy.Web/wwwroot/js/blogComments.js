@@ -6,6 +6,12 @@ const DELETE_CTL_SUFFIX = "_deleteCtl";
 const SUBMITREPLY_CTL_SUFFIX = "_submitReplyCtl";
 const CANCELREPLY_CTL_SUFFIX = "_cancelReplyCtl";
 
+// These are in milliseconds
+const FETCHDELAY_ONVISIBLE = 5000;
+const FETCHDELAY_JUSTRETRIEVED = 5000;
+const FETCHDELAY_JUSTPOSTED = 5000;
+const FETCHDELAY_NONEFOUND = 300000;
+
 $(function () {
     var commentsSection = $("#" + COMMENTS_SECTION_ID);
     BlogComments.commentsUrl = window.location.href.split('#')[0] + '/comments';
@@ -38,7 +44,7 @@ $(function () {
 
     // Wire up the visibility event
     document.addEventListener(BlogComments.visibilityChange, function () {
-        setTimeout(BlogComments.FetchLatestComments, 4000);
+        setTimeout(BlogComments.FetchLatestComments, FETCHDELAY_ONVISIBLE);
     }, false);
 
     // Preload a bunch of comments up-front
@@ -48,7 +54,7 @@ $(function () {
     setTimeout(function () {
         BlogComments.GetChildCommentElements(COMMENTS_SECTION_ID).show();
         BlogComments.ViewMoreCtl_Refresh(COMMENTS_SECTION_ID);
-    }, 500);
+    }, FETCHDELAY_JUSTRETRIEVED);
 });
 
 function BlogComments() { }
@@ -66,10 +72,10 @@ BlogComments.FetchLatestComments = function () {
             if (commentsArray.length > 0) {
                 BlogComments.InsertReactionsIntoDOM(commentsArray);
                 BlogComments.lastTimestampRetrieved = commentsArray[commentsArray.length - 1].timestamp;
-                setTimeout(BlogComments.FetchLatestComments, 2000);
+                setTimeout(BlogComments.FetchLatestComments, FETCHDELAY_JUSTRETRIEVED);
             }
             else {
-                setTimeout(BlogComments.FetchLatestComments, 300000);
+                setTimeout(BlogComments.FetchLatestComments, FETCHDELAY_NONEFOUND);
             }
         });
     }
@@ -82,15 +88,15 @@ BlogComments.SubmitComments = function (comment, replyToCommentId) {
         replyTo: replyToCommentId === COMMENTS_SECTION_ID ? "" : replyToCommentId
     });
     $.post(BlogComments.commentsUrl, data)
-        .done(function (moreComments) {
+        .done(function (pendingComment) {
             $('form').trigger('reset');
-            BlogComments.InsertReactionsIntoDOM(moreComments);
-            BlogComments.lastTimestampRetrieved = moreComments[moreComments.length - 1].timestamp;
+            BlogComments.InsertReactionsIntoDOM([pendingComment]);
 
-            // Show the last comment retrieved
-            BlogComments.GetChildCommentElements(replyToCommentId).last().show();
-            BlogComments.ViewMoreCtl_Refresh(replyToCommentId);
+            // Show the pending comment
+            $('#' + pendingComment.commentId).show();
 
+            // Set up to fetch more
+            setTimeout(BlogComments.FetchLatestComments, FETCHDELAY_JUSTPOSTED);
         })
         .fail(function () { console.log('TODO: this failed'); });
 };
@@ -121,7 +127,7 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         map.set('editState',      blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ')' : '');
         map.set('replyButton',    blogArticleReaction.canReply ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "");
         map.set('trashButton',    blogArticleReaction.canDelete ? BlogComments.DeleteCtl_GenerateHtml(blogArticleReaction.commentId) : "");
-        map.set('htmlContent',    blogArticleReaction.htmlContent);
+        map.set('htmlContent', blogArticleReaction.htmlContent);
         var newNode = $(ReplaceInTemplate("template#commentTemplate", map));
 
         // Insert or replace

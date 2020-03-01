@@ -172,14 +172,34 @@ namespace JamesQMurphy.Web.Controllers
                 replyTimestampId = new ArticleReactionTimestampId(replyTimestampId.ReactingToId);
             }
 
-            var newReactionId = await articleStore.AddReaction($"{year}/{month}/{slug}", ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, DateTime.UtcNow, replyTimestampId.TimeStampString);
-            if (String.IsNullOrEmpty(newReactionId))
+            var articleSlug = $"{year}/{month}/{slug}";
+            var timestamp = DateTime.UtcNow;
+            var timestampId = await articleStore.AddReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, timestamp, replyTimestampId.TimeStampString);
+            if (String.IsNullOrEmpty(timestampId))
             {
                 return BadRequest();
             }
             else
             {
-                return await this.comments(year, month, slug, sinceTimestamp);
+                return new JsonResult(
+                    new BlogArticleReaction
+                    {
+                        commentId = (new ArticleReactionTimestampId(timestampId)).ReactionId,
+                        articleSlug = articleSlug,
+                        authorName = CurrentUserName,
+                        authorImageUrl = "/images/unknownPersonPlaceholder.png",
+                        timestamp = timestamp.ToString("O"),
+                        isMine = true,
+                        canReply = false,
+                        canHide = false,
+                        canDelete = false,
+                        editState = "saving",
+                        htmlContent = @"<div class=""spinner-border m-5"" role=""status"">
+                                            <span class=""sr-only"">Saving your comment...</span>
+                                        </div>",
+                        replyToId = replyTimestampId.ReactionId
+                    }
+                    );
             }
         }
     }
