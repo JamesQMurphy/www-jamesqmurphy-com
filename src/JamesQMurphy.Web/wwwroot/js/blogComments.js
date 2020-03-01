@@ -121,6 +121,7 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         map.set('VIEW_MORE_CTL_SUFFIX', VIEW_MORE_CTL_SUFFIX);
         map.set('commentId',      blogArticleReaction.commentId);
         map.set('timestamp',      blogArticleReaction.timestamp);
+        map.set('timeAgo',        moment(blogArticleReaction.timestamp).fromNow());
         map.set('authorName',     blogArticleReaction.authorName);
         map.set('authorImageUrl', blogArticleReaction.authorImageUrl);
         map.set('you',            blogArticleReaction.isMine ? '(you)' : '');

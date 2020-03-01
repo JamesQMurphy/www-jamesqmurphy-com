@@ -11,7 +11,7 @@
                 <img class="img-fluid" src="{authorImageUrl}">
             </div>
             <div class="jqm-comment-body media-body px-3 text-break">
-                <b>{authorName}</b> {you} {editState}<br />
+                <b>{authorName}</b> {you} <span class="text-muted">{timeAgo} {editState}</span><br />
                 {htmlContent}
                 <div class="jqm-comment-controls d-flex justify-content-between">
                     {replyButton}{trashButton}
@@ -21,19 +21,6 @@
                         <i class="fas fa-caret-down fa-small"></i> View Replies
                     </span>
                     &nbsp;
-                </div>
-            </div>
-        </div>
-    </template>
-    <template id="pendingCommentTemplate">
-        <div class="jqm-comment media my-3" id="{commentId}" data-timestamp="{timestamp}">
-            <div class="jqm-comment-user-icon">
-                <img class="img-fluid" src="{authorImageUrl}">
-            </div>
-            <div class="jqm-comment-body media-body px-3 text-break">
-                <b>{authorName}</b> {you} {editState}<br />
-                <div class="spinner-border m-5" role="status">
-                    <span class="sr-only">Saving your comment...</span>
                 </div>
             </div>
         </div>
@@ -87,6 +74,7 @@
 @section Scripts {
     <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
     <script>mermaid.initialize({ startOnLoad: true });</script>
+    <script type="text/javascript" src="/dist/lib/moment/moment.min.js" asp-append-version="true"></script>
     @if ((bool)ViewData["canModeratePosts"])
     {
         <script>
