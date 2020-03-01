@@ -6,7 +6,7 @@ You're here anyway... go ahead and clone this repo!  If you've got Visual Studio
 
 ## Built and Deployed By Azure DevOps Services
 
-Friends don't let friends right-click publish!  Check out the contents of the `/build` folder, then head on over to [Azure DevOps Services](https://dev.azure.com/jamesqmurphy/www-jamesqmurphy-com/_build?definitionId=5&_a=summary) to see the build pipeline in action.  There's also a [release pipeline](https://dev.azure.com/jamesqmurphy/www-jamesqmurphy-com/_release?_a=releases&definitionId=1) set up that deploys the builds to AWS.
+[Friends don't let friends right-click publish!](https://damianbrady.com.au/2018/02/01/friends-dont-let-friends-right-click-publish/)  Check out the contents of the `/build` folder, then head on over to [Azure DevOps Services](https://dev.azure.com/jamesqmurphy/www-jamesqmurphy-com/_build?definitionId=5&_a=summary) to see the build pipeline in action.  There's also a [release pipeline](https://dev.azure.com/jamesqmurphy/www-jamesqmurphy-com/_release?_a=releases&definitionId=1) set up that deploys the builds to AWS.
 
 ## Hosted on Amazon Web Services
 
