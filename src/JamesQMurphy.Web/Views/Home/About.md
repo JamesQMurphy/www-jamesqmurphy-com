@@ -37,7 +37,7 @@ https://aws.amazon.com/
 
 The website is hosted on AWS, and takes advantage of several AWS services:
 
-![Diagram of JamesQMurphy.com website using AWS Services like API Gateway, Lambda Functions, S3 Storage, CloudWatch Logs, SQS, SES, and DynamoDb](JamesQMurphy-AWS-Diagram20200212.png){.mx-auto .d-block}
+![Diagram of JamesQMurphy.com website using AWS Services like API Gateway, Lambda Functions, S3 Storage, CloudWatch Logs, SQS, SES, and DynamoDb](/images/JamesQMurphy-AWS-Diagram20200212.png){.mx-auto .d-block}
 
 At its center, the website is an ASP.NET Core 3.1 MVC application, hosted inside an
 [AWS Lambda Function](https://aws.amazon.com/lambda/) and
