@@ -180,6 +180,7 @@ namespace Tests
             Assert.AreEqual(reactingToId, comment.ReactingToId);
 
             var computed = new ArticleReactionTimestampId(reactionId);
+            Assert.AreEqual(reactionId, computed.ReactionId);
             Assert.AreEqual(reactingToId, computed.ReactingToId);
 
         }

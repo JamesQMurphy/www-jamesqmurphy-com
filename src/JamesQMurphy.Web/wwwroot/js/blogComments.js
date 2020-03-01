@@ -242,7 +242,7 @@ BlogComments.OnDOMChange = function (mutations) {
     var insertions = 0;
     $.each(mutations, function (_index, mutationRecord) {
         var parentCommentId = mutationRecord.target.parentNode.getAttribute('id') || COMMENTS_SECTION_ID;
-        $(mutationRecord.addedNodes).each(function (_index, addedNode) {
+        $(mutationRecord.addedNodes).filter('.jqm-comment').each(function (_index, addedNode) {
             var commentId = addedNode.getAttribute('id');
             BlogComments.ViewMoreCtl_Refresh(commentId);
             insertions++;

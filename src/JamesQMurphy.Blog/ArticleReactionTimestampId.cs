@@ -22,6 +22,8 @@ namespace JamesQMurphy.Blog
                     JQueryFriendlyToTimestampString(timestampId)
                     .Split(new char[] { SEPARATOR })
                     );
+                _pieces.Sort();
+                _pieces.Reverse();
             }
         }
 
@@ -33,8 +35,9 @@ namespace JamesQMurphy.Blog
                 _pieces.AddRange(
                     JQueryFriendlyToTimestampString(replyToId)
                     .Split(new char[] { SEPARATOR })
-                    .Reverse()
                     );
+                _pieces.Sort();
+                _pieces.Reverse();
             }
         }
 
