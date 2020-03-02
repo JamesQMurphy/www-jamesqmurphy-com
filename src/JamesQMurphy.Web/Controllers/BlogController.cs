@@ -106,7 +106,9 @@ namespace JamesQMurphy.Web.Controllers
 
         public async Task<IActionResult> comments(string year, string month, string slug, string sinceTimestamp = "")
         {
-            var reactions = await articleStore.GetArticleReactions($"{year}/{month}/{slug}", sinceTimestamp, 1);
+            var articleSlug = $"{year}/{month}/{slug}";
+            var article = await articleStore.GetArticleAsync(articleSlug);
+            var reactions = await articleStore.GetArticleReactions(articleSlug, sinceTimestamp, 1);
             var currentUser = await GetApplicationUserAsync(_userManager);
             var canModeratePosts = currentUser == null ? false : currentUser.IsAdministrator;
 
@@ -124,8 +126,8 @@ namespace JamesQMurphy.Web.Controllers
                             authorImageUrl = "/images/unknownPersonPlaceholder.png",
                             timestamp = r.PublishDate.ToString("O"),
                             isMine = (r.AuthorId == CurrentUserId),
-                            canReply = IsLoggedIn,
-                            canHide = (r.AuthorId == CurrentUserId) || canModeratePosts,
+                            canReply = !(article.LockedForComments) && IsLoggedIn,
+                            canHide = (!(article.LockedForComments) && (r.AuthorId == CurrentUserId)) || canModeratePosts,
                             canDelete = canModeratePosts,
                             editState = r.EditState,
                             htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
@@ -141,8 +143,8 @@ namespace JamesQMurphy.Web.Controllers
                             authorImageUrl = "/images/unknownPersonPlaceholder.png",
                             timestamp = r.PublishDate.ToString("O"),
                             isMine = (r.AuthorId == CurrentUserId),
-                            canReply = IsLoggedIn,
-                            canHide = (r.AuthorId == CurrentUserId) || canModeratePosts,
+                            canReply = !(article.LockedForComments) && IsLoggedIn,
+                            canHide = (!(article.LockedForComments) && (r.AuthorId == CurrentUserId)) || canModeratePosts,
                             canDelete = canModeratePosts,
                             editState = "edited",
                             htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),

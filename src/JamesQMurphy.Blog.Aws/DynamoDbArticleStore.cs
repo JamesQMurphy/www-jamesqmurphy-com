@@ -22,6 +22,7 @@ namespace JamesQMurphy.Blog.Aws
         private const string CONTENT = "content";
         private const string ARTICLE_TYPE = "articleType";
         private const string ARTICLE_TYPE_PUBLISHED = "published";
+        private const string LOCKED_FOR_COMMENTS = "lockedForComments";
 
         private readonly IAmazonDynamoDB _dbClient;
         private readonly Options _options;
@@ -125,21 +126,23 @@ namespace JamesQMurphy.Blog.Aws
                 Slug = attributeMap[SLUG].S,
                 PublishDate = DateTime.Parse(attributeMap[TIMESTAMP].S).ToUniversalTime(),
                 Title = attributeMap[TITLE].S,
-                Description = attributeMap.ContainsKey(DESCRIPTION) ? attributeMap[DESCRIPTION].S : ""
+                Description = attributeMap.ContainsKey(DESCRIPTION) ? attributeMap[DESCRIPTION].S : "",
+                LockedForComments = attributeMap.ContainsKey(LOCKED_FOR_COMMENTS) && attributeMap[LOCKED_FOR_COMMENTS].IsBOOLSet ? attributeMap[LOCKED_FOR_COMMENTS].BOOL : false
             };
         }
 
-        private static Document FromArticleMetadata(ArticleMetadata user)
+        private static Document FromArticleMetadata(ArticleMetadata articleMetadata)
         {
             var d = new Document
             {
-                [SLUG] = user.Slug,
-                [TIMESTAMP] = user.PublishDate.ToString("O"),
-                [TITLE] = user.Title
+                [SLUG] = articleMetadata.Slug,
+                [TIMESTAMP] = articleMetadata.PublishDate.ToString("O"),
+                [TITLE] = articleMetadata.Title,
+                [LOCKED_FOR_COMMENTS] = new DynamoDBBool(articleMetadata.LockedForComments)
             };
-            if (!String.IsNullOrWhiteSpace(user.Description))
+            if (!String.IsNullOrWhiteSpace(articleMetadata.Description))
             {
-                d[DESCRIPTION] = user.Description;
+                d[DESCRIPTION] = articleMetadata.Description;
             }
             return d;
         }
