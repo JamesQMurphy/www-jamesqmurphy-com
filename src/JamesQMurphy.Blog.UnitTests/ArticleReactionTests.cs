@@ -182,7 +182,6 @@ namespace Tests
             var computed = new ArticleReactionTimestampId(reactionId);
             Assert.AreEqual(reactionId, computed.ReactionId);
             Assert.AreEqual(reactingToId, computed.ReactingToId);
-
         }
 
     }
