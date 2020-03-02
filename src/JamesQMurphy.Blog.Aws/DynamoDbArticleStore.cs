@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog.Aws
@@ -109,9 +110,29 @@ namespace JamesQMurphy.Blog.Aws
             return result.Items.ConvertAll(i => new Article { Metadata = ToArticleMetadata(i), Content = i[CONTENT].S });
         }
 
-        public Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        public async Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
-            throw new NotImplementedException();
+            QueryRequest queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and #ts > :v_since",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    {"#ts", TIMESTAMP }
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":v_articleSlug", new AttributeValue { S = articleSlug }},
+                    {":v_since", new AttributeValue { S = sinceTimestamp }}
+                },
+                Limit = pageSize,
+                ScanIndexForward = !latest,
+            };
+            var result = await _dbClient.QueryAsync(queryRequest);
+            return result.Items
+                .Where( rec => rec[ARTICLE_TYPE].S != ARTICLE_TYPE_PUBLISHED )
+                .Select(i => ToArticleReaction(i));
         }
 
         public Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
@@ -146,6 +167,21 @@ namespace JamesQMurphy.Blog.Aws
             }
             return d;
         }
+
+        private static ArticleReaction ToArticleReaction(Dictionary<string, AttributeValue> attributeMap)
+        {
+            return new ArticleReaction()
+            {
+                ArticleSlug = attributeMap[SLUG].S,
+                TimestampId = attributeMap[TIMESTAMP].S,
+                AuthorId = "", // TODO
+                AuthorName = "", // TODO
+                ReactionType = (ArticleReactionType)Enum.Parse(typeof(ArticleReactionType), attributeMap[ARTICLE_TYPE].S),
+                EditState = "", // TODO
+                Content = attributeMap[CONTENT].S,
+            };
+        }
+
 
     }
 }
