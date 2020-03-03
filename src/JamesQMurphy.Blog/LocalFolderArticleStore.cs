@@ -93,7 +93,7 @@ namespace JamesQMurphy.Blog
                             currentComment.AuthorId = await reader.ReadLineAsync();
                             currentComment.AuthorName = await reader.ReadLineAsync();
                             currentComment.ReactionType = (ArticleReactionType) Enum.Parse(typeof(ArticleReactionType), await reader.ReadLineAsync());
-                            currentComment.EditState = await reader.ReadLineAsync();
+                            currentComment.EditState = (ArticleReactionEditState)Enum.Parse(typeof(ArticleReactionEditState), await reader.ReadLineAsync());
                             currentComment.Content = await reader.ReadLineAsync();
                             readingContent = true;
                         }
@@ -123,7 +123,7 @@ namespace JamesQMurphy.Blog
                 await writer.WriteLineAsync(userId);
                 await writer.WriteLineAsync(userName);
                 await writer.WriteLineAsync(articleReactionType.ToString());
-                await writer.WriteLineAsync(); // for EditState
+                await writer.WriteLineAsync(ArticleReactionEditState.Original.ToString());
                 await writer.WriteLineAsync(content);
             }
             return reactionId;

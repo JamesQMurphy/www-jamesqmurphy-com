@@ -129,7 +129,7 @@ namespace JamesQMurphy.Web.Controllers
                             canReply = !(article.LockedForComments) && IsLoggedIn,
                             canHide = (!(article.LockedForComments) && (r.AuthorId == CurrentUserId)) || canModeratePosts,
                             canDelete = canModeratePosts,
-                            editState = r.EditState,
+                            editState = _DisplayAsText(r.EditState),
                             htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
                             replyToId = r.ReactingToId
                         };
@@ -203,6 +203,11 @@ namespace JamesQMurphy.Web.Controllers
                     }
                     );
             }
+        }
+
+        private string _DisplayAsText(ArticleReactionEditState editState)
+        {
+            return editState == ArticleReactionEditState.Original ? "" : $"{editState.ToString().ToLowerInvariant()}";
         }
     }
 }

@@ -24,6 +24,7 @@ namespace JamesQMurphy.Blog.Aws
         private const string ARTICLE_TYPE = "articleType";
         private const string ARTICLE_TYPE_PUBLISHED = "published";
         private const string LOCKED_FOR_COMMENTS = "lockedForComments";
+        private const string EDIT_STATE = "editState";
 
         private readonly IAmazonDynamoDB _dbClient;
         private readonly Options _options;
@@ -177,7 +178,7 @@ namespace JamesQMurphy.Blog.Aws
                 AuthorId = "", // TODO
                 AuthorName = "", // TODO
                 ReactionType = (ArticleReactionType)Enum.Parse(typeof(ArticleReactionType), attributeMap[ARTICLE_TYPE].S),
-                EditState = "", // TODO
+                EditState = attributeMap.ContainsKey(EDIT_STATE) ? (ArticleReactionEditState)Enum.Parse(typeof(ArticleReactionEditState), attributeMap[EDIT_STATE].S) : ArticleReactionEditState.Original,
                 Content = attributeMap[CONTENT].S,
             };
         }

@@ -31,7 +31,31 @@ namespace JamesQMurphy.Blog
             {
                 return null;
             }
-            return reactions[0];
+            var completeComment = reactions[0];
+            for (int i = 1; i < reactions.Count; i++)
+            {
+                var r = reactions[i];
+                switch (r.ReactionType)
+                {
+                    case ArticleReactionType.Edit:
+                        completeComment.Content = r.Content;
+                        completeComment.EditState = ArticleReactionEditState.Edited;
+                        break;
+
+                    case ArticleReactionType.Hide:
+                        completeComment.EditState = ArticleReactionEditState.Hidden;
+                        break;
+
+                    case ArticleReactionType.Delete:
+                        completeComment.Content = String.Empty;
+                        completeComment.EditState = ArticleReactionEditState.Deleted;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            return completeComment;
         }
 
     }

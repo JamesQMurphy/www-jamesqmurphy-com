@@ -76,7 +76,7 @@ namespace Tests
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);
             Assert.AreEqual(commentReactionId, completeComment.ReactionId);
-            //TODO: Edit State should be "edited"
+            Assert.AreEqual(ArticleReactionEditState.Edited, completeComment.EditState);
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace Tests
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);
             Assert.AreEqual(commentReactionId, completeComment.ReactionId);
-            //TODO: Edit State should be "hidden"
+            Assert.AreEqual(ArticleReactionEditState.Hidden, completeComment.EditState);
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace Tests
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);
             Assert.AreEqual(commentReactionId, completeComment.ReactionId);
-            //TODO: Edit State should be "deleted"
+            Assert.AreEqual(ArticleReactionEditState.Deleted, completeComment.EditState);
         }
 
         // TODO: add show command
