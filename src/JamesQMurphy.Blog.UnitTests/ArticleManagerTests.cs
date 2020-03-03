@@ -79,6 +79,53 @@ namespace Tests
             //TODO: Edit State should be "edited"
         }
 
+        [Test]
+        public void GetCompleteComment_OneCommentWithHide()
+        {
+            var content = "some comment";
+            var userId = "some_userid";
+            var userName = "SomeUserName";
+            var timestamp = DateTime.UtcNow;
+            var commentReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Comment, content, userId, userName, timestamp).GetAwaiter().GetResult();
+
+            var timestamp2 = timestamp.AddSeconds(1);
+            var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Hide, "doesn't matter", userId, userName, timestamp2).GetAwaiter().GetResult();
+
+            var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
+            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
+            Assert.AreEqual(content, completeComment.Content);
+            Assert.AreEqual(userId, completeComment.AuthorId);
+            Assert.AreEqual(userName, completeComment.AuthorName);
+            Assert.AreEqual(commentReactionId, completeComment.ReactionId);
+            //TODO: Edit State should be "hidden"
+        }
+
+        [Test]
+        public void GetCompleteComment_OneCommentWithDelete()
+        {
+            var content = "some comment";
+            var userId = "some_userid";
+            var userName = "SomeUserName";
+            var timestamp = DateTime.UtcNow;
+            var commentReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Comment, content, userId, userName, timestamp).GetAwaiter().GetResult();
+
+            var timestamp2 = timestamp.AddSeconds(1);
+            var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Delete, "doesn't matter", userId, userName, timestamp2).GetAwaiter().GetResult();
+
+            var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
+            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
+            Assert.AreEqual(String.Empty, completeComment.Content);
+            Assert.AreEqual(userId, completeComment.AuthorId);
+            Assert.AreEqual(userName, completeComment.AuthorName);
+            Assert.AreEqual(commentReactionId, completeComment.ReactionId);
+            //TODO: Edit State should be "deleted"
+        }
+
+        // TODO: add show command
+
+        // TODO: test case where closed/hidden by another
+
+
 
     }
 }
