@@ -49,6 +49,10 @@ namespace JamesQMurphy.Blog
 
         public Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
+            if (pageSize <= 0)
+            {
+                pageSize = int.MaxValue;
+            }
             var comments = _GetReactionsDictionaryForArticle(articleSlug).Where(ac => ac.TimestampString.CompareTo(sinceTimestamp ?? "") > 0);
             return Task.FromResult(latest ? comments.Reverse().Take(pageSize) : comments.Take(pageSize));
         }
