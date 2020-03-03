@@ -68,7 +68,7 @@ namespace Tests
 
             var revisedContent = "revised content";
             var timestamp2 = timestamp.AddSeconds(1);
-            var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Edit, revisedContent, userId, userName, timestamp2).GetAwaiter().GetResult();
+            var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Edit, revisedContent, userId, userName, timestamp2, commentReactionId).GetAwaiter().GetResult();
 
             var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
             Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
@@ -89,7 +89,7 @@ namespace Tests
             var commentReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Comment, content, userId, userName, timestamp).GetAwaiter().GetResult();
 
             var timestamp2 = timestamp.AddSeconds(1);
-            var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Hide, "doesn't matter", userId, userName, timestamp2).GetAwaiter().GetResult();
+            var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Hide, "doesn't matter", userId, userName, timestamp2, commentReactionId).GetAwaiter().GetResult();
 
             var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
             Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
