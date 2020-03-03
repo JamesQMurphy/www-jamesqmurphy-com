@@ -170,5 +170,19 @@ namespace Tests
             Assert.AreEqual(3, reaction3.NestingLevel);
         }
 
+        [Test]
+        public void ZeroPagesizeReturnsAllArticles()
+        {
+            var rootDate = System.DateTime.UtcNow;
+            var article = _articles[0];
+
+            Store.AddReaction(article.Slug, ArticleReactionType.Comment, "content", "userId", "username", rootDate);
+            var reaction = Store.GetArticleReactions(article.Slug).GetAwaiter().GetResult().First();
+
+            var reactionsReturned = Store.GetArticleReactions(article.Slug, pageSize: 0).GetAwaiter().GetResult().ToList();
+            Assert.AreEqual(1, reactionsReturned.Count);
+            Assert.AreEqual(reaction.ReactionId, reactionsReturned[0].ReactionId);
+        }
+
     }
 }
