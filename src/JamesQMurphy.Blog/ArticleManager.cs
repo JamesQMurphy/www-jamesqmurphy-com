@@ -15,11 +15,11 @@ namespace JamesQMurphy.Blog
         }
 
         // Project IArticleStore members
-        public Task<Article> GetArticleAsync(string slug) => ArticleStore.GetArticleAsync(slug);
-        public Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate) => ArticleStore.GetArticleMetadatasAsync(startDate, endDate);
-        public Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles) => ArticleStore.GetLastArticlesAsync(numberOfArticles);
-        public Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false) => ArticleStore.GetArticleReactions(articleSlug, sinceTimestamp, pageSize, latest);
-        public Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "") => ArticleStore.AddReaction(articleSlug, articleReactionType, content, userId, userName, timestamp, replyingTo);
+        public async Task<Article> GetArticleAsync(string slug) => await ArticleStore.GetArticleAsync(slug);
+        public async Task<IEnumerable<ArticleMetadata>> GetArticleMetadatasAsync(DateTime startDate, DateTime endDate) => await ArticleStore.GetArticleMetadatasAsync(startDate, endDate);
+        public async Task<IEnumerable<Article>> GetLastArticlesAsync(int numberOfArticles) => await ArticleStore.GetLastArticlesAsync(numberOfArticles);
+        public async Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false) => await ArticleStore.GetArticleReactions(articleSlug, sinceTimestamp, pageSize, latest);
+        public async Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "") => await ArticleStore.AddReaction(articleSlug, articleReactionType, content, userId, userName, timestamp, replyingTo);
 
         public async Task<ArticleReaction> GetCompleteComment(string slug, ArticleReactionTimestampId reactionId)
         {
@@ -58,5 +58,27 @@ namespace JamesQMurphy.Blog
             return completeComment;
         }
 
+        public async Task<bool> ValidateReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, bool isAdministrator, string replyingTo = "")
+        {
+            // Validate that article exists and is not locked (using cached version is okay)
+            var article = await ArticleStore.GetArticleAsync(articleSlug);
+            if (article == null || article.LockedForComments)
+            {
+                return false;
+            }
+
+            // If reacting to a comment, validate that the comment exists
+            if (!String.IsNullOrEmpty(replyingTo))
+            {
+                var reactingToComment = await GetCompleteComment(articleSlug, new ArticleReactionTimestampId(replyingTo));
+                if (reactingToComment == null)
+                {
+                    return false;
+                }
+            }
+
+            // Passed validation
+            return true;
+        }
     }
 }

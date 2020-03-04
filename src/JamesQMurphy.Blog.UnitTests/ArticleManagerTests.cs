@@ -15,6 +15,21 @@ namespace Tests
             PublishDate = new DateTime(2019, 1, 10, 12, 34, 56),
             Content = "This is article one, published on January 10, 2019 at 12:34pm UTC"
         };
+        private Article _otherArticle = new Article
+        {
+            Title = "Article Two",
+            Slug = "2019/01/article-two",
+            PublishDate = new DateTime(2019, 1, 11, 12, 34, 56),
+            Content = "This is article two, published on January 11, 2019 at 12:34pm UTC"
+        };
+        private Article _lockedArticle = new Article
+        {
+            Title = "Locked Article",
+            Slug = "2019/01/article-locked",
+            PublishDate = new DateTime(2019, 1, 12, 12, 34, 56),
+            Content = "This is a locked article, published on January 12, 2019 at 12:34pm UTC",
+            LockedForComments = true
+        };
         private InMemoryArticleStore _store = new InMemoryArticleStore();
         private ArticleManager _articleManager;
 
@@ -22,6 +37,8 @@ namespace Tests
         public void Setup()
         {
             _store.SafeAddArticle(_article);
+            _store.SafeAddArticle(_otherArticle);
+            _store.SafeAddArticle(_lockedArticle);
             _articleManager = new ArticleManager(_store);
         }
 
@@ -54,7 +71,7 @@ namespace Tests
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);
             Assert.AreEqual(commentReactionId, completeComment.ReactionId);
-            //TODO: Edit State should be empty
+            Assert.AreEqual(ArticleReactionEditState.Original, completeComment.EditState);
         }
 
         [Test]
@@ -125,7 +142,165 @@ namespace Tests
 
         // TODO: test case where closed/hidden by another
 
+        [Test]
+        public void ValidateReaction_ArticleDoesntExist()
+        {
+            Assert.IsFalse(
+                _articleManager.ValidateReaction("doesn't exist", ArticleReactionType.Comment, "content", "userId", "userName", false)
+                .GetAwaiter()
+                .GetResult()
+                );
+            Assert.IsFalse(
+                _articleManager.ValidateReaction("doesn't exist", ArticleReactionType.Comment, "content", "userId", "userName", true)
+                .GetAwaiter()
+                .GetResult()
+                );
+        }
 
+        [Test]
+        public void ValidateReaction_LockedArticle()
+        {
+            Assert.IsFalse(
+                _articleManager.ValidateReaction(
+                    _lockedArticle.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    false)
+                .GetAwaiter()
+                .GetResult()
+                );
+            Assert.IsFalse(
+                _articleManager.ValidateReaction(
+                    _lockedArticle.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    true)
+                .GetAwaiter()
+                .GetResult()
+                );
+        }
 
+        [Test]
+        public void ValidateReaction_NormalArticle()
+        {
+            Assert.IsTrue(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    false)
+                .GetAwaiter()
+                .GetResult()
+                );
+            Assert.IsTrue(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    true)
+                .GetAwaiter()
+                .GetResult()
+                );
+        }
+
+        [Test]
+        public void ValidateReaction_NonExistentComment()
+        {
+            Assert.IsFalse(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    false,
+                    "doesntExist")
+                .GetAwaiter()
+                .GetResult()
+                );
+            Assert.IsFalse(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    true,
+                    "doesntExist")
+                .GetAwaiter()
+                .GetResult()
+                );
+        }
+
+        [Test]
+        public void ValidateReaction_TopLevelComment()
+        {
+            var reactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Comment, "Some content", "UserId", "UserName", DateTime.UtcNow).GetAwaiter().GetResult();
+            Assert.IsTrue(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    false,
+                    reactionId)
+                .GetAwaiter()
+                .GetResult()
+                );
+            Assert.IsTrue(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    true,
+                    reactionId)
+                .GetAwaiter()
+                .GetResult()
+                );
+        }
+
+        [Test]
+        public void ValidateReaction_CommentWrongSlug()
+        {
+            var reactionId = _store.AddReaction(_otherArticle.Slug, ArticleReactionType.Comment, "Some content", "UserId", "UserName", DateTime.UtcNow).GetAwaiter().GetResult();
+            Assert.IsFalse(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    false,
+                    reactionId)
+                .GetAwaiter()
+                .GetResult()
+                );
+            Assert.IsFalse(
+                _articleManager.ValidateReaction(
+                    _article.Slug,
+                    ArticleReactionType.Comment,
+                    "content",
+                    "userId",
+                    "userName",
+                    true,
+                    reactionId)
+                .GetAwaiter()
+                .GetResult()
+                );
+        }
+
+        // TODO: Nested comments
+        // TODO: edits, hides, etc.
     }
 }
