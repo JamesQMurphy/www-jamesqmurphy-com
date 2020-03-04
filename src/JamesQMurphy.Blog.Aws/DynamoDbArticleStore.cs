@@ -136,9 +136,19 @@ namespace JamesQMurphy.Blog.Aws
                 .Select(i => ToArticleReaction(i));
         }
 
-        public Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        public async Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
         {
-            throw new NotImplementedException();
+            var reactionId = (new ArticleReactionTimestampId(timestamp, replyingTo)).ToString();
+            var d = new Document
+            {
+                [SLUG] = articleSlug,
+                [ARTICLE_TYPE] = articleReactionType.ToString(),
+                [CONTENT] = content,
+                //TODO: store authorID and userName
+            };
+            var table = Table.LoadTable(_dbClient, _options.DynamoDbTableName);
+            _ = await table.PutItemAsync(d);
+            return reactionId;
         }
 
         private static ArticleMetadata ToArticleMetadata(Dictionary<string, AttributeValue> attributeMap)
@@ -182,7 +192,6 @@ namespace JamesQMurphy.Blog.Aws
                 Content = attributeMap[CONTENT].S,
             };
         }
-
 
     }
 }
