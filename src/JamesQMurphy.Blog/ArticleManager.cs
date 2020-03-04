@@ -23,7 +23,7 @@ namespace JamesQMurphy.Blog
 
         public async Task<ArticleReaction> GetCompleteComment(string slug, ArticleReactionTimestampId reactionId)
         {
-            var timestampJustBefore = reactionId.TimeStampString.Substring(0, reactionId.TimeStampString.Length - 1);
+            var timestampJustBefore = reactionId.TimestampAsString.Substring(0, reactionId.TimestampAsString.Length - 1);
             var reactions = (await GetArticleReactions(slug, timestampJustBefore, 0))
                 .Where(r => r.ReactionId == reactionId.ReactionId || r.ReactingToId == reactionId.ReactionId)
                 .ToList();

@@ -53,7 +53,7 @@ namespace JamesQMurphy.Blog
             {
                 pageSize = int.MaxValue;
             }
-            var comments = _GetReactionsDictionaryForArticle(articleSlug).Where(ac => ac.TimestampString.CompareTo(sinceTimestamp ?? "") > 0);
+            var comments = _GetReactionsDictionaryForArticle(articleSlug).Where(ac => ac.TimestampAsString.CompareTo(sinceTimestamp ?? "") > 0);
             return Task.FromResult(latest ? comments.Reverse().Take(pageSize) : comments.Take(pageSize));
         }
 

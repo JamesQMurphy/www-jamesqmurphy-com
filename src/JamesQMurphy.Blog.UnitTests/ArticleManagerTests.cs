@@ -49,7 +49,7 @@ namespace Tests
             var timestamp = DateTime.UtcNow;
             var commentReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Comment, content, userId, userName, timestamp).GetAwaiter().GetResult();
             var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
-            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
+            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampAsString);
             Assert.AreEqual(content, completeComment.Content);
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);
@@ -71,7 +71,7 @@ namespace Tests
             var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Edit, revisedContent, userId, userName, timestamp2, commentReactionId).GetAwaiter().GetResult();
 
             var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
-            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
+            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampAsString);
             Assert.AreEqual(revisedContent, completeComment.Content);
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);
@@ -92,7 +92,7 @@ namespace Tests
             var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Hide, "doesn't matter", userId, userName, timestamp2, commentReactionId).GetAwaiter().GetResult();
 
             var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
-            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
+            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampAsString);
             Assert.AreEqual(content, completeComment.Content);
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);
@@ -113,7 +113,7 @@ namespace Tests
             var editReactionId = _store.AddReaction(_article.Slug, ArticleReactionType.Delete, "doesn't matter", userId, userName, timestamp2, commentReactionId).GetAwaiter().GetResult();
 
             var completeComment = _articleManager.GetCompleteComment(_article.Slug, new ArticleReactionTimestampId(commentReactionId)).GetAwaiter().GetResult();
-            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampString);
+            Assert.AreEqual(timestamp.ToString("O"), completeComment.TimestampAsString);
             Assert.AreEqual(String.Empty, completeComment.Content);
             Assert.AreEqual(userId, completeComment.AuthorId);
             Assert.AreEqual(userName, completeComment.AuthorName);

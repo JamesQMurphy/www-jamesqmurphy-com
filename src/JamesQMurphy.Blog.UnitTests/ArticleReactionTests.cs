@@ -76,7 +76,7 @@ namespace Tests
             };
 
             Assert.AreEqual(originalTime, originalComment.PublishDate);
-            Assert.AreEqual(originalTimestamp, originalComment.TimestampString);
+            Assert.AreEqual(originalTimestamp, originalComment.TimestampAsString);
             Assert.AreEqual(originalCommentId, originalComment.ReactionId);
             Assert.AreEqual(originalTimestampId, originalComment.TimestampId);
             Assert.IsEmpty(originalComment.ReactingToId);
@@ -91,7 +91,7 @@ namespace Tests
             };
 
             Assert.AreEqual(replyTime, replyComment.PublishDate);
-            Assert.AreEqual(replyTimestamp, replyComment.TimestampString);
+            Assert.AreEqual(replyTimestamp, replyComment.TimestampAsString);
             Assert.AreEqual(replyCommentId, replyComment.ReactionId);
             Assert.AreEqual(replyTimestampId, replyComment.TimestampId);
             Assert.AreEqual(originalComment.ReactionId, replyComment.ReactingToId);

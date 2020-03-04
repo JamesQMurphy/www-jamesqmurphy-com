@@ -176,7 +176,7 @@ namespace JamesQMurphy.Web.Controllers
 
             var articleSlug = $"{year}/{month}/{slug}";
             var timestamp = DateTime.UtcNow;
-            var timestampId = await articleStore.AddReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, timestamp, replyTimestampId.TimeStampString);
+            var timestampId = await articleStore.AddReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, timestamp, replyTimestampId.TimestampId);
             if (String.IsNullOrEmpty(timestampId))
             {
                 return BadRequest();

@@ -155,7 +155,7 @@ namespace JamesQMurphy.Blog.Aws
             var d = new Document
             {
                 [SLUG] = articleSlug,
-                [TIMESTAMP] = reactionId.ToString(),
+                [TIMESTAMP] = reactionId.TimestampId,
                 [CONTENT] = content,
                 [AUTHOR_ID] = userId,
                 [AUTHOR_NAME] = userName,

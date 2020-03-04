@@ -41,6 +41,7 @@ namespace JamesQMurphy.Blog
             }
         }
 
+        public string TimestampId => String.Join($"{SEPARATOR}", _pieces);
         public string ReactionId => _JoinPiecesInReverseOrderDownTo(0);
         public string ReactingToId => _JoinPiecesInReverseOrderDownTo(1);
         public int NestingLevel => _pieces.Count;
@@ -59,22 +60,7 @@ namespace JamesQMurphy.Blog
             return TimestampToJQueryFriendlyString(retVal);
         }
 
-        public DateTime TimeStamp
-        {
-            get
-            {
-                if (_pieces.Count > 0)
-                {
-                    return DateTime.Parse(_pieces[0]).ToUniversalTime();
-                }
-                else
-                {
-                    return DateTime.MinValue;
-                }
-            }
-        }
-
-        public string TimeStampString
+        public string TimestampAsString
         {
             get
             {
@@ -89,15 +75,9 @@ namespace JamesQMurphy.Blog
             }
         }
 
-        public override string ToString()
-        {
-            return string.Join($"{SEPARATOR}", _pieces);
-        }
+        public override string ToString() => TimestampId;
 
-        public override int GetHashCode()
-        {
-            return ToString().GetHashCode();
-        }
+        public override int GetHashCode() => ToString().GetHashCode();
 
         public override bool Equals(object obj)
         {
@@ -114,7 +94,7 @@ namespace JamesQMurphy.Blog
 
         public int CompareTo(ArticleReactionTimestampId other)
         {
-            return TimeStampString.CompareTo(other?.TimeStampString ?? "");
+            return TimestampAsString.CompareTo(other?.TimestampAsString ?? "");
         }
     }
 }
