@@ -16,12 +16,14 @@ namespace JamesQMurphy.Web.Controllers
         private readonly IArticleStore articleStore;
         private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ArticleManager _articleManager;
 
         public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, UserManager<ApplicationUser> userManager, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
             _markdownHtmlRenderer = markdownHtmlRenderer;
             _userManager = userManager;
+            _articleManager = new ArticleManager(articleStore);
         }
 
         public async Task<IActionResult> index(string year = null, string month = null)
@@ -175,6 +177,11 @@ namespace JamesQMurphy.Web.Controllers
             }
 
             var articleSlug = $"{year}/{month}/{slug}";
+            if (! await _articleManager.ValidateReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, (await GetApplicationUserAsync(_userManager)).IsAdministrator))
+            {
+                return BadRequest();
+            }
+
             var timestamp = DateTime.UtcNow;
             var timestampId = await articleStore.AddReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, timestamp, replyTimestampId.TimestampId);
             if (String.IsNullOrEmpty(timestampId))
