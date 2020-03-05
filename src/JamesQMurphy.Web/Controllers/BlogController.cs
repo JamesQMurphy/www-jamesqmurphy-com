@@ -110,7 +110,7 @@ namespace JamesQMurphy.Web.Controllers
         {
             var articleSlug = $"{year}/{month}/{slug}";
             var article = await articleStore.GetArticleAsync(articleSlug);
-            var reactions = await articleStore.GetArticleReactions(articleSlug, sinceTimestamp, 1);
+            var reactions = await articleStore.GetArticleReactions(articleSlug, sinceTimestamp, 50);
             var currentUser = await GetApplicationUserAsync(_userManager);
             var canModeratePosts = currentUser == null ? false : currentUser.IsAdministrator;
 
