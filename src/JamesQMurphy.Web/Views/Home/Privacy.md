@@ -66,5 +66,5 @@ The Website is committed to protecting your privacy, and strives to keep the amo
 * The right to update the personal information
 * The right to request deletion of your personal information, which we are not required to maintain by necessity
 
-These options are available on your individual profile page.
+These options are available on your [individual profile page](/profile), which is only available if you register with and sign into the Website.
 

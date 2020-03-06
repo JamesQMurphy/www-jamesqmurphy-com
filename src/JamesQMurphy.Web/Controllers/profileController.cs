@@ -3,6 +3,7 @@ using JamesQMurphy.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
@@ -34,6 +35,13 @@ namespace JamesQMurphy.Web.Controllers
 
             ViewData[Constants.VIEWDATA_PAGETITLE] = $"Profile for {username}";
             ViewData["username"] = username;
+            ViewData["isMyAccount"] = (user.UserId == CurrentUserId);
+            if (IsLoggedIn)
+            {
+                var userRecords = (await GetApplicationUserAsync(_userManager)).ApplicationUserRecords;
+                ViewData["idRecord"] = userRecords.Where(r => r.Provider == ApplicationUserRecord.RECORD_TYPE_ID).FirstOrDefault();
+                ViewData["otherRecords"] = userRecords.Where(r => r.Provider != ApplicationUserRecord.RECORD_TYPE_ID).ToList();
+            }
             return View();
         }
     }
