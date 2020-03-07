@@ -36,12 +36,6 @@ namespace JamesQMurphy.Web.Controllers
             ViewData[Constants.VIEWDATA_PAGETITLE] = $"Profile for {username}";
             ViewData["username"] = username;
             ViewData["isMyAccount"] = (user.UserId == CurrentUserId);
-            if (IsLoggedIn)
-            {
-                var userRecords = (await GetApplicationUserAsync(_userManager)).ApplicationUserRecords;
-                ViewData["idRecord"] = userRecords.Where(r => r.Provider == ApplicationUserRecord.RECORD_TYPE_ID).FirstOrDefault();
-                ViewData["otherRecords"] = userRecords.Where(r => r.Provider != ApplicationUserRecord.RECORD_TYPE_ID).ToList();
-            }
             return View();
         }
     }

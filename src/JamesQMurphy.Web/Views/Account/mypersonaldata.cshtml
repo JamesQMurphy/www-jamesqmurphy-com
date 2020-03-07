@@ -1,0 +1,77 @@
+﻿@using JamesQMurphy.Auth
+@model IEnumerable<ApplicationUserRecord>
+@{
+    ViewData[Constants.VIEWDATA_PAGETITLE] = "Your Personal Data";
+}
+
+<vc:title-heading title="@ViewData[Constants.VIEWDATA_PAGETITLE]"></vc:title-heading>
+<p>
+    As described in our <a asp-controller="home" asp-action="privacy">Privacy Policy</a>, you are entitled to view, update,
+    and request deletion of the personal data you provide.  Because we do not track your browsing activity on other sites,
+    we don't collect very much personal data.
+</p>
+<p>
+    Here are the @(Model.Count()) records in our database that contain all your personal data:
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Record Type</th>
+            <th scope="col">Identifier</th>
+            <th scope="col">Other Data</th>
+            <th scope="col">Explanation</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Provider</td>
+                <td>@item.Key</td>
+                <td>
+                    @foreach (var kvp in item.StringAttributes)
+                    {
+                        var valueToShow = (kvp.Key == ApplicationUser.FIELD_PASSWORDHASH) ? "Hidden for security" : kvp.Value;
+                        <text>
+                            <b>@(kvp.Key):</b><br />
+                            @valueToShow<br />
+                            &nbsp;<br />
+                        </text>
+                    }
+                </td>
+                <td>
+                    @switch (item.Provider)
+                    {
+                        case ApplicationUserRecord.RECORD_TYPE_ID:
+                            <text>
+                                Every user in the system has a single ID record which contains your unique user
+                                ID, your username, and any other information specific to the site.  We use this
+                                record to identify every comment that you make on the site.  This record cannot
+                                be used to identify you on any other website.
+                            </text>
+                            break;
+
+                        case ApplicationUserRecord.RECORD_TYPE_EMAIL:
+                            <text>
+                                If you registered with an email address and a password, this record
+                                contains that email address and a special value known as a <i>password hash</i>.
+                                Although we cannnot figure out your password from the password hash, we can
+                                use the hash to make sure you have entered the correct password.
+                            </text>
+                            break;
+
+                        default:
+                            <text>
+                                This record contains the data provided to us from @item.Provider .  When you sign in with
+                                your @item.Provider account, we use this record to determine that it was you
+                                who signed in.
+                            </text>
+                            break;
+                    }
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
