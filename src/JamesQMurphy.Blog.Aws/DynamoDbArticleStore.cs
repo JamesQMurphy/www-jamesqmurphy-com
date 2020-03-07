@@ -134,7 +134,7 @@ namespace JamesQMurphy.Blog.Aws
             {
                 TableName = _options.DynamoDbTableName,
                 Select = Select.ALL_ATTRIBUTES,
-                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleSlug and #ts > :v_since",
+                KeyConditionExpression = $"{SLUG} = :v_articleSlug and #ts > :v_since",
                 ExpressionAttributeNames = new Dictionary<string, string>
                 {
                     {"#ts", TIMESTAMP }
