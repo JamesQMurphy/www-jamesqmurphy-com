@@ -229,10 +229,30 @@ namespace JamesQMurphy.Blog.Aws
                 TimestampId = attributeMap[TIMESTAMP].S,
                 AuthorId = attributeMap[AUTHOR_ID].S,
                 AuthorName = attributeMap[AUTHOR_NAME].S,
-                ReactionType = (ArticleReactionType)Enum.Parse(typeof(ArticleReactionType), attributeMap[ARTICLE_TYPE].S),
                 EditState = attributeMap.ContainsKey(STATUS) ? (ArticleReactionEditState)Enum.Parse(typeof(ArticleReactionEditState), attributeMap[STATUS].S) : ArticleReactionEditState.Original,
                 Content = attributeMap[CONTENT].S,
             };
+            switch(attributeMap[ARTICLE_TYPE].S)
+            {
+                case ARTICLE_TYPE_COMMENT:
+                    reaction.ReactionType = ArticleReactionType.Comment;
+                    break;
+
+                case ARTICLE_TYPE_COMMENTEDIT:
+                    reaction.ReactionType = ArticleReactionType.Edit;
+                    break;
+
+                case ARTICLE_TYPE_COMMENTHIDE:
+                    reaction.ReactionType = ArticleReactionType.Hide;
+                    break;
+
+                case ARTICLE_TYPE_COMMENTDELETE:
+                    reaction.ReactionType = ArticleReactionType.Delete;
+                    break;
+
+                default:
+                    throw new Exception($"Unknown {ARTICLE_TYPE} value \"{attributeMap[ARTICLE_TYPE].S}\"");
+            }
             if (attributeMap.ContainsKey(STATUS))
             {
                 switch (attributeMap[STATUS].S)
