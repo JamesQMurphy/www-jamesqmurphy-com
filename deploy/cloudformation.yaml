@@ -38,7 +38,7 @@ Parameters:
   DynamoDbTableBlogArticlesParameter:
     Type: String
     Description: Name of the DynamoDB table for blog articles
-    Default: prod-blog
+    Default: dev-blog
 
   DynamoDbIndexBlogArticlesParameter:
     Type: String
