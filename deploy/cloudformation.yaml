@@ -109,7 +109,7 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-        - PolicyName: !Sub DynamoDbReadOnlyAccess-${DynamoDbTableBlogArticlesParameter}
+        - PolicyName: !Sub DynamoDbReadWriteAccess-${DynamoDbTableBlogArticlesParameter}
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -118,9 +118,11 @@ Resources:
                   - 'dynamodb:BatchGetItem'
                   - 'dynamodb:Describe*'
                   - 'dynamodb:List*'
-                  - 'dynamodb:GetItem'
+                  - 'dynamodb:Get*'
+                  - 'dynamodb:PutItem'
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
+                  - 'dynamodb:UpdateItem'
                 Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}*'
         - PolicyName: !Sub DynamoDbReadWriteAccess-${DynamoDbTableUsersParameter}
           PolicyDocument:
