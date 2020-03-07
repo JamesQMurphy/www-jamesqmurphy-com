@@ -126,11 +126,15 @@ namespace JamesQMurphy.Blog.Aws
 
         public async Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
         {
+            if (String.IsNullOrWhiteSpace(sinceTimestamp))
+            {
+                sinceTimestamp = "0";
+            }
             QueryRequest queryRequest = new QueryRequest
             {
                 TableName = _options.DynamoDbTableName,
                 Select = Select.ALL_ATTRIBUTES,
-                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleType and #ts > :v_since",
+                KeyConditionExpression = $"{ARTICLE_TYPE} = :v_articleSlug and #ts > :v_since",
                 ExpressionAttributeNames = new Dictionary<string, string>
                 {
                     {"#ts", TIMESTAMP }
