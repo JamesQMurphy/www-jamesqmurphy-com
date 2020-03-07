@@ -38,6 +38,15 @@
                             &nbsp;<br />
                         </text>
                     }
+                    @foreach (var kvp in item.BoolAttributes)
+                    {
+                        var valueToShow = kvp.Value.ToString();
+                        <text>
+                            <b>@(kvp.Key):</b><br />
+                            @valueToShow<br />
+                            &nbsp;<br />
+                        </text>
+                    }
                 </td>
                 <td>
                     @switch (item.Provider)
@@ -45,9 +54,13 @@
                         case ApplicationUserRecord.RECORD_TYPE_ID:
                             <text>
                                 Every user in the system has a single ID record which contains your unique user
-                                ID, your username, and any other information specific to the site.  We use this
-                                record to identify every comment that you make on the site.  This record cannot
-                                be used to identify you on any other website.
+                                identifier, your username, and any other information specific to the site.  Your
+                                Identifier value (@item.Key) will never change.  Every comment that you post on the
+                                website gets associated with this Identifier value, so if you ever change your
+                                username, we will still know it was you.<br/>
+                                <br/>
+                                This record does not contain any personal information, and cannot be used to
+                                identify you on any other website.
                             </text>
                             break;
 
@@ -63,8 +76,8 @@
                         default:
                             <text>
                                 This record contains the data provided to us from @item.Provider .  When you sign in with
-                                your @item.Provider account, we use this record to determine that it was you
-                                who signed in.
+                                your @item.Provider account, we use the Identifier value from this record to determine that
+                                it was you who signed in.
                             </text>
                             break;
                     }
@@ -74,4 +87,8 @@
 
     </tbody>
 </table>
+<p>&nbsp;</p>
+<p>
+ 
+</p>
 
