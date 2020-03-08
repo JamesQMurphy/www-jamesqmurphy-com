@@ -210,7 +210,7 @@ BlogComments.ReplyCtl_OnClick = function (event) {
         map.set('commentId', commentId);
         map.set('SUBMITREPLY_CTL_SUFFIX', SUBMITREPLY_CTL_SUFFIX);
         map.set('CANCELREPLY_CTL_SUFFIX', CANCELREPLY_CTL_SUFFIX);
-        map.set('authorName', 'xxx');
+        map.set('authorName', $("#" + commentId + "\\/authorName").text());
         replyForm = $(ReplaceInTemplate("template#replyToCommentTemplate", map)).insertAfter($("#" + commentId + " > .jqm-comment-body > .jqm-comment-controls").first());
 
         // Wire up form buttons
