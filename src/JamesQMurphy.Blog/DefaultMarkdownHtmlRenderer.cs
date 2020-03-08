@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace JamesQMurphy.Blog
 {
     public class DefaultMarkdownHtmlRenderer : IMarkdownHtmlRenderer
     {
+        private static readonly Regex newlinePreserverRegex = new Regex(@"(\S)(\r\n|\r|\n)(\S)", RegexOptions.Singleline | RegexOptions.Compiled);
+        private const string NEWLINE_PRESERVER_PATTERN = @"$1\$2$3";
+
         private readonly Markdig.MarkdownPipeline pipelineUnsafe;
         private readonly Markdig.MarkdownPipeline pipelineSafe;
 
@@ -42,9 +46,14 @@ namespace JamesQMurphy.Blog
             return writer.ToString();
         }
 
-        public string RenderHtmlSafe(string markdown)
+        public string RenderHtmlSafe(string markdown, bool keepLineBreaks = false)
         {
             if (markdown == null) throw new ArgumentNullException("markdown");
+
+            if (keepLineBreaks)
+            {
+                markdown = newlinePreserverRegex.Replace(markdown, NEWLINE_PRESERVER_PATTERN);
+            }
 
             var writer = new StringWriter();
             var renderer = new Markdig.Renderers.HtmlRenderer(writer);

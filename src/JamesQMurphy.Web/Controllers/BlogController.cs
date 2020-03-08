@@ -114,6 +114,10 @@ namespace JamesQMurphy.Web.Controllers
             var currentUser = await GetApplicationUserAsync(_userManager);
             var canModeratePosts = currentUser == null ? false : currentUser.IsAdministrator;
 
+            string RenderCommentHtml(string content)
+            {
+                return _markdownHtmlRenderer.RenderHtmlSafe(content, keepLineBreaks:true);
+            }
 
             return new JsonResult(reactions.Select(r =>
             {
@@ -132,7 +136,7 @@ namespace JamesQMurphy.Web.Controllers
                             canHide = (!(article.LockedForComments) && (r.AuthorId == CurrentUserId)) || canModeratePosts,
                             canDelete = canModeratePosts,
                             editState = _DisplayAsText(r.EditState),
-                            htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
+                            htmlContent = RenderCommentHtml(r.Content),
                             replyToId = r.ReactingToId
                         };
 
@@ -149,7 +153,7 @@ namespace JamesQMurphy.Web.Controllers
                             canHide = (!(article.LockedForComments) && (r.AuthorId == CurrentUserId)) || canModeratePosts,
                             canDelete = canModeratePosts,
                             editState = "edited",
-                            htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content),
+                            htmlContent = RenderCommentHtml(r.Content),
                             replyToId = "" // TODO: react to react
                         };
                     case ArticleReactionType.Hide:
