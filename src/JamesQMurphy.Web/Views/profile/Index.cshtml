@@ -15,7 +15,15 @@
         </div>
     </div>
 </div>
-
+<p>
+    &nbsp;
+</p>
+@if ((bool)(ViewData["isMyAccount"]))
+{
+    <p>
+        <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.mypersonaldata)">View my personal data</a>
+    </p>
+}
 
 
 
