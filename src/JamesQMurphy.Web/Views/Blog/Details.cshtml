@@ -42,6 +42,24 @@
             </div>
         </form>
     </template>
+    <div class="modal" tabindex="-1" role="dialog" id="CommentTooSmall">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Not Enough Characters</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Comments must be at least three characters long.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Got It</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="media my-3" id="commentsRoot/more" data-timestamp="z">
         <span class="btn btn-sm btn-link p-0 text-uppercase" id="commentsRoot_viewMoreCtl" style="display:none">
             <i class="fas fa-caret-down fa-small"></i> Show More Comments

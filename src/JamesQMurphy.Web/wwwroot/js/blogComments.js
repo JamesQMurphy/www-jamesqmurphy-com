@@ -82,23 +82,30 @@ BlogComments.FetchLatestComments = function () {
 };
 
 BlogComments.SubmitComments = function (comment, replyToCommentId) {
-    var data = addAntiForgeryToken({
-        userComment: comment,
-        sinceTimestamp: BlogComments.lastTimestampRetrieved,
-        replyTo: replyToCommentId === COMMENTS_SECTION_ID ? "" : replyToCommentId
-    });
-    $.post(BlogComments.commentsUrl, data)
-        .done(function (pendingComment) {
-            $('form').trigger('reset');
-            BlogComments.InsertReactionsIntoDOM([pendingComment]);
+    if (comment.length > 2) {
+        var data = addAntiForgeryToken({
+            userComment: comment,
+            sinceTimestamp: BlogComments.lastTimestampRetrieved,
+            replyTo: replyToCommentId === COMMENTS_SECTION_ID ? "" : replyToCommentId
+        });
+        $.post(BlogComments.commentsUrl, data)
+            .done(function (pendingComment) {
+                $('form').trigger('reset');
+                BlogComments.InsertReactionsIntoDOM([pendingComment]);
 
-            // Show the pending comment
-            $('#' + pendingComment.commentId).show();
+                // Show the pending comment
+                $('#' + pendingComment.commentId).show();
 
-            // Set up to fetch more
-            setTimeout(BlogComments.FetchLatestComments, FETCHDELAY_JUSTPOSTED);
-        })
-        .fail(function () { console.log('TODO: this failed'); });
+                // Set up to fetch more
+                setTimeout(BlogComments.FetchLatestComments, FETCHDELAY_JUSTPOSTED);
+            })
+            .fail(function () { console.log('TODO: this failed'); });
+        return true;
+    }
+    else {
+        $('#CommentTooSmall').modal();
+        return false;
+    }
 };
 
 BlogComments.GetChildCommentElements = function (commentId) {
@@ -215,9 +222,10 @@ BlogComments.ReplyCtl_OnClick = function (event) {
 
         // Wire up form buttons
         $('body').on('click', "#" + commentId + SUBMITREPLY_CTL_SUFFIX, function (event) {
-            replyForm.hide();
-            BlogComments.SubmitComments($("#userComment" + commentId).val(), commentId);
-            originalReplyButton.show();
+            if (BlogComments.SubmitComments($("#userComment" + commentId).val(), commentId)) {
+                replyForm.hide();
+                originalReplyButton.show();
+            }
         });
         $('body').on('click', "#" + commentId + CANCELREPLY_CTL_SUFFIX, function (event) {
             replyForm.hide();
