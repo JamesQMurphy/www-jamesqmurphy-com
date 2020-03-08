@@ -39,6 +39,9 @@ namespace JamesQMurphy.Blog.Aws
         private const string STATUS_HIDDEN = "hidden";
         private const string STATUS_DELETED = "deleted";
 
+        // Misc constants
+        private const string GREATER_THAN_Z = "~~";
+
         private readonly IAmazonDynamoDB _dbClient;
         private readonly Options _options;
 
@@ -142,7 +145,7 @@ namespace JamesQMurphy.Blog.Aws
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     {":v_articleSlug", new AttributeValue { S = articleSlug }},
-                    {":v_since", new AttributeValue { S = sinceTimestamp }}
+                    {":v_since", new AttributeValue { S = sinceTimestamp + GREATER_THAN_Z }}
                 },
                 Limit = pageSize,
                 ScanIndexForward = !latest,
