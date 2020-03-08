@@ -4,17 +4,20 @@
 
 <h2>Comments</h2>
 <hr />
-<div class="container" id="commentsRoot">
+<div class="container px-0" id="commentsRoot">
     <template id="commentTemplate">
         <div class="jqm-comment media my-3" id="{commentId}" data-timestamp="{timestamp}">
             <div class="jqm-comment-user-icon">
                 <img class="img-fluid" src="{authorImageUrl}">
             </div>
             <div class="jqm-comment-body media-body pl-3 text-break">
-                <b>{authorName}</b> {you} <span class="text-muted">{timeAgo} {editState}</span><br />
+                <div class="d-flex justify-content-between">
+                    <span><b>{authorName}</b> {you} <span class="text-muted" style="display:inline-block;">{timeAgo}</span> <span class="text-muted">{editState}</span></span>
+                    <span>{trashButton}<br /></span>
+                </div>
                 {htmlContent}
                 <div class="jqm-comment-controls d-flex justify-content-between">
-                    {replyButton}{trashButton}
+                    {replyButton}
                 </div>
                 <div class="media my-3" id="{commentId}/more" data-timestamp="z">
                     <span class="btn btn-sm btn-link p-0 text-uppercase" id="{commentId}{VIEW_MORE_CTL_SUFFIX}" style="display:none">
