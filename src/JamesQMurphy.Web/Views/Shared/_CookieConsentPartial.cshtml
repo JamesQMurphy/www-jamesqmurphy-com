@@ -3,7 +3,7 @@
 @{
     var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
     
-    var showBanner = (!consentFeature?.CanTrack ?? false) && (ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT]?.ToString().ToLowerInvariant() != "true");
+    var showBanner = (!consentFeature?.CanTrack ?? false) && (httpContextAccessor?.HttpContext?.User?.Identity?.IsAuthenticated == false) && (ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT]?.ToString().ToLowerInvariant() != "true");
     var cookieString = consentFeature?.CreateConsentCookie();
     var webSiteTitle = webSiteOptions.WebSiteTitle;
 }
