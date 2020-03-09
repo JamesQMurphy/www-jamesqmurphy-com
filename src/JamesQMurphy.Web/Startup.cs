@@ -25,6 +25,8 @@ namespace JamesQMurphy.Web
         private const string AUTH_TWITTER_CLIENT_SECRET = "Authentication:Twitter:ConsumerSecret";
         private const string AUTH_GITHUB_CLIENT_ID = "Authentication:GitHub:ClientId";
         private const string AUTH_GITHUB_CLIENT_SECRET = "Authentication:GitHub:ClientSecret";
+        private const string AUTH_GOOGLE_CLIENT_ID = "Authentication:Google:ClientId";
+        private const string AUTH_GOOGLE_CLIENT_SECRET = "Authentication:Google:ClientSecret";
         private const string EMAIL_SERVICEAPIKEY = "Email:ServiceApiKey";
 
         public Startup(IConfiguration configuration)
@@ -76,6 +78,8 @@ namespace JamesQMurphy.Web
                         $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_SECRET.Replace(':','/')}",
                         $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_ID.Replace(':','/')}",
                         $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_SECRET.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_GOOGLE_CLIENT_ID.Replace(':','/')}",
+                        $"/{webSiteOptions.AppName}/{AUTH_GOOGLE_CLIENT_SECRET.Replace(':','/')}",
                         $"/{webSiteOptions.AppName}/{EMAIL_SERVICEAPIKEY.Replace(':','/')}"
                     };
                     var response = ssmClient.GetParametersAsync(
@@ -139,6 +143,15 @@ namespace JamesQMurphy.Web
                     options.ClientId = Configuration[AUTH_GITHUB_CLIENT_ID];
                     options.ClientSecret = Configuration[AUTH_GITHUB_CLIENT_SECRET];
                     options.CallbackPath = "/account/login-github";
+                });
+            }
+            if (!String.IsNullOrWhiteSpace(Configuration[AUTH_GOOGLE_CLIENT_ID]))
+            {
+                authBuilder.AddGoogle(options =>
+                {
+                    options.ClientId = Configuration[AUTH_GOOGLE_CLIENT_ID];
+                    options.ClientSecret = Configuration[AUTH_GOOGLE_CLIENT_SECRET];
+                    options.CallbackPath = "/account/login-google";
                 });
             }
 

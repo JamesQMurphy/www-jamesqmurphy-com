@@ -78,8 +78,19 @@ pre {
     color: #fff;
     background-color: #24292E;
     border-color: #24292E;
+
     &:hover {
         color: #fff;
+    }
+}
+
+.btn-google {
+    color: #000;
+    background-color: #fff;
+    border-color: #777;
+
+    &:hover {
+        color: #777;
     }
 }
 
