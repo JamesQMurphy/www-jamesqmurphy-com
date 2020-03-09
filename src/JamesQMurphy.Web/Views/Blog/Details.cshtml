@@ -1,7 +1,7 @@
 ﻿@model JamesQMurphy.Blog.Article
 
 <vc:article article="@Model"></vc:article>
-
+<p>&nbsp;</p>
 <h2>Comments</h2>
 <hr />
 <div class="container px-0" id="commentsRoot">
@@ -12,7 +12,7 @@
             </div>
             <div class="jqm-comment-body media-body pl-3 text-break">
                 <div class="d-flex justify-content-between">
-                    <span><b id="{commentId}/authorName">{authorName}</b> {you} <span class="text-muted" style="display:inline-block;">{timeAgo}</span> <span class="text-muted">{editState}</span></span>
+                    <span><b id="{commentId}/authorName">{authorName}</b> <span class="text-muted" style="display:inline-block;">{timeAgo}</span> <span class="text-muted">{editState}</span></span>
                     <span>{trashButton}<br /></span>
                 </div>
                 {htmlContent}
@@ -20,7 +20,7 @@
                     {replyButton}
                 </div>
                 <div class="media my-3" id="{commentId}/more" data-timestamp="z">
-                    <span class="btn btn-sm btn-link p-0 text-uppercase" id="{commentId}{VIEW_MORE_CTL_SUFFIX}" style="display:none">
+                    <span class="btn btn-sm btn-link p-0" id="{commentId}{VIEW_MORE_CTL_SUFFIX}" style="display:none">
                         <i class="fas fa-caret-down fa-small"></i> View Replies
                     </span>
                     &nbsp;
@@ -37,8 +37,8 @@
                 <textarea name="commentContent" id="userComment{commentId}" maxlength="1000" style="min-width: 100%"></textarea>
             </div>
             <div class="row justify-content-end">
-                <span class="btn btn-secondary text-uppercase mx-2" id="{commentId}{CANCELREPLY_CTL_SUFFIX}">Cancel</span>
-                <input type="button" class="btn btn-primary text-uppercase" value="Reply" id="{commentId}{SUBMITREPLY_CTL_SUFFIX}" />
+                <span class="btn btn-secondary mx-2" id="{commentId}{CANCELREPLY_CTL_SUFFIX}">Cancel</span>
+                <input type="button" class="btn btn-primary" value="Reply" id="{commentId}{SUBMITREPLY_CTL_SUFFIX}" />
             </div>
         </form>
     </template>
@@ -61,7 +61,7 @@
         </div>
     </div>
     <div class="media my-3" id="commentsRoot/more" data-timestamp="z">
-        <span class="btn btn-sm btn-link p-0 text-uppercase" id="commentsRoot_viewMoreCtl" style="display:none">
+        <span class="btn btn-sm btn-link p-0" id="commentsRoot_viewMoreCtl" style="display:none">
             <i class="fas fa-caret-down fa-small"></i> Show More Comments
         </span>
         &nbsp;
@@ -82,13 +82,13 @@ else
         {
             <form method="post">
                 <label class="row pt-3 pb-1 border-top" for="userComment">
-                    <b>Add a public comment...</b>
+                    <b>What's on your mind?</b>
                 </label>
                 <div class="row mb-3">
                     <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
                 </div>
-                <div class="row">
-                    <input type="button" class="btn btn-primary" value="Comment" id="submitUserComment" />
+                <div class="row justify-content-end">
+                    <input type="button" class="btn btn-primary" value="Post Your Comment" id="submitUserComment" />
                 </div>
             </form>
         }

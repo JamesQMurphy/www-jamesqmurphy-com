@@ -133,7 +133,7 @@ BlogComments.InsertReactionsIntoDOM = function (reactionsArray) {
         map.set('authorImageUrl', blogArticleReaction.authorImageUrl);
         map.set('you',            blogArticleReaction.isMine ? '(you)' : '');
         map.set('editState',      blogArticleReaction.editState ? '(' + blogArticleReaction.editState + ')' : '');
-        map.set('replyButton',    blogArticleReaction.canReply ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'REPLY') : "");
+        map.set('replyButton',    blogArticleReaction.canReply ? BlogComments.ReplyCtl_GenerateHtml(blogArticleReaction.commentId, 'Reply') : "");
         map.set('trashButton',    blogArticleReaction.canDelete ? BlogComments.DeleteCtl_GenerateHtml(blogArticleReaction.commentId) : "");
         map.set('htmlContent', blogArticleReaction.htmlContent);
         var newNode = $(ReplaceInTemplate("template#commentTemplate", map));
