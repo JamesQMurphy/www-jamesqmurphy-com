@@ -106,17 +106,5 @@ else
     <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
     <script>mermaid.initialize({ startOnLoad: true });</script>
     <script type="text/javascript" src="/dist/lib/moment/moment.min.js" asp-append-version="true"></script>
-    @if ((bool)ViewData["canModeratePosts"])
-    {
-        <script>
-            var canModeratePosts = true;
-        </script>
-    }
-    else
-    {
-        <script>
-            var canModeratePosts = false;
-        </script>
-    }
     <script src="~/js/blogComments.js" asp-append-version="true"></script>
 }
