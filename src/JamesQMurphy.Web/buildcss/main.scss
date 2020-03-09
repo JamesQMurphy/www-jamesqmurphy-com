@@ -73,6 +73,11 @@ pre {
     height: 100%;
 }
 
+// Fix link buttons in IE and Safari
+span.btn {
+    cursor: pointer;
+}
+
 // Brand-specific colors
 .btn-github {
     color: #fff;
