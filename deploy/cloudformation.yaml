@@ -370,6 +370,8 @@ Resources:
           Authentication__Twitter__ConsumerSecret: ""
           Authentication__GitHub__ClientId: ""
           Authentication__GitHub__ClientSecret: ""
+          Authentication__Google__ClientId: ""
+          Authentication__Google__ClientSecret: ""
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
           UserStore__UserIdIndexName: "userId-index"
