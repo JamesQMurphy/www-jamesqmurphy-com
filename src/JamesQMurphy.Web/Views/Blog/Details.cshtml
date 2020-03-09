@@ -98,6 +98,13 @@ else
                 Want to leave a comment?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["returnUrl"]">Sign up</a>! <br />
                 Already signed up?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.login)" asp-route-returnurl="@ViewData["returnUrl"]">Sign in</a>!
             </p>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col col-sm-8 col-md-6 col-lg-5">
+                        <vc:external-login-buttons caption="Sign in with {0}"></vc:external-login-buttons>
+                    </div>
+                </div>
+            </div>
         }
     </div>
 }
