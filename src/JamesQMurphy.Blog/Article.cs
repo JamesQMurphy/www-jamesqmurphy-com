@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
@@ -11,7 +9,6 @@ namespace JamesQMurphy.Blog
     {
         private const string yamlHeader = "---";
         private const string yamlFooter = "...";
-        public readonly SortedSet<ArticleReaction> ArticleComments = new SortedSet<ArticleReaction>();
 
         public ArticleMetadata Metadata { get; set; } = new ArticleMetadata();
         public string Content { get; set; }
