@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
@@ -19,6 +18,7 @@ namespace JamesQMurphy.Blog
         public string Slug { get => Metadata.Slug; set => Metadata.Slug = value; }
         public DateTime PublishDate { get => Metadata.PublishDate; set => Metadata.PublishDate = value; }
         public string Description { get => Metadata.Description; set => Metadata.Description = value; }
+        public bool LockedForComments { get => Metadata.LockedForComments; set => Metadata.LockedForComments = value; }
 
         public static async Task<Article> ReadFromAsync(TextReader reader)
         {
@@ -94,7 +94,6 @@ namespace JamesQMurphy.Blog
                 await WriteToAsync(writer);
             }
         }
-
         public override string ToString()
         {
             var writer = new StringWriter();

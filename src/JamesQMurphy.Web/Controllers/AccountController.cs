@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -574,6 +576,16 @@ namespace JamesQMurphy.Web.Controllers
         {
             ViewData[Constants.VIEWDATA_PAGETITLE] = "Password Changed";
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> mypersonaldata()
+        {
+            var userRecordsUnsorted = (await GetApplicationUserAsync(_userManager)).ApplicationUserRecords;
+            var userRecords = new List<ApplicationUserRecord>();
+            userRecords.Add(userRecordsUnsorted.Where(r => r.Provider == ApplicationUserRecord.RECORD_TYPE_ID).FirstOrDefault());
+            userRecords.AddRange(userRecordsUnsorted.Where(r => r.Provider != ApplicationUserRecord.RECORD_TYPE_ID));
+            return View(userRecords);
         }
     }
 }

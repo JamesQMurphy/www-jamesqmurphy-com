@@ -15,7 +15,7 @@ namespace JamesQMurphy.Web.UnitTests
         public void Setup()
         {
             articleStore = new InMemoryArticleStore();
-            controller = new Controllers.blogController(articleStore, new DefaultMarkdownHtmlRenderer(), new WebSiteOptions());
+            controller = new Controllers.blogController(articleStore, new DefaultMarkdownHtmlRenderer(), null, new WebSiteOptions());
         }
 
         [Test]

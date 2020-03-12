@@ -1,6 +1,6 @@
 We here at @webSiteTitle ("the Website") respect your privacy and are committed to protecting your data.  This Privacy Policy explains what information we collect, how we use it, and how you can control this information.  The policy applies only to this Website.  The Website contains links to other websites which are not governed by this policy.
 
-This Privacy Policy is subject to change and was last updated on February 3, 2020.
+This Privacy Policy is subject to change and was last updated on March 12, 2020.
 
 
 # Information We Collect
@@ -66,5 +66,5 @@ The Website is committed to protecting your privacy, and strives to keep the amo
 * The right to update the personal information
 * The right to request deletion of your personal information, which we are not required to maintain by necessity
 
-These options are available on your individual profile page.
+These options are available on your [individual profile page](/profile), which is only available if you register with and sign into the Website.
 

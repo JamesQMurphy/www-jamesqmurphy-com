@@ -27,13 +27,13 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 px-1">
             <div class="container">
-                <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler order-1 border-0 px-0 py-1 rounded-0" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                    <span class="fas fa-bars fa-lg"></span>
                 </button>
-                <a class="navbar-brand order-3 order-sm-1" asp-controller="home" asp-action="index">@webSiteTitle</a>
+                <a class="navbar-brand order-3 order-sm-1 mr-0 mr-sm-1" asp-controller="home" asp-action="index">@webSiteTitle</a>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse order-8 order-sm-2">
                     <div class="navbar-nav flex-grow-1">
                         <a class="nav-item nav-link text-dark" asp-controller="blog" asp-action="index">Blog</a>
@@ -44,10 +44,14 @@
                 @if (String.IsNullOrWhiteSpace(currentUserId))
                 {
                     <div class="order-4 order-sm-3">
-                        <!-- Commenting these out for now
-                        <a class="btn btn-primary btn-sm" asp-controller="account" asp-action="register">Sign Up</a>
-                        <a class="btn btn-secondary btn-sm" asp-controller="account" asp-action="login">Sign In</a>
-                            -->
+                        <a class="btn btn-primary btn-sm" aria-label="Sign Up" asp-controller="account" asp-action="register">
+                            <span class="d-block d-sm-none fas fa-user-plus fa-lg my-2"></span>
+                            <span class="d-none d-sm-block">Sign Up</span>
+                        </a>
+                        <a class="btn btn-secondary btn-sm" aria-label="Sign In" asp-controller="account" asp-action="login">
+                            <span class="d-block d-sm-none fas fa-sign-in-alt fa-lg my-2"></span>
+                            <span class="d-none d-sm-block">Sign In</span>
+                        </a>
                     </div>
                 }
                 else
@@ -57,14 +61,14 @@
                             <i class="fas fa-user-circle fa-lg"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item text-dark" asp-controller="profile" asp-action="index">
+                            <a class="dropdown-item text-dark" href="~/profile">
                                 <b>
                                     <small>Signed in as</small><br />
                                     @currentUsername
                                 </b>
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-dark" asp-controller="profile" asp-action="index">My Profile</a>
+                            <a class="dropdown-item text-dark" href="~/profile">My Profile</a>
                             <div class="dropdown-divider"></div>
                             <form class="form-inline" asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.logout)" asp-route-returnurl="" method="post">
                                 <button type="submit" class="dropdown-item">Sign Out</button>

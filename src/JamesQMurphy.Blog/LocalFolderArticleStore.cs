@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog
 {
     public class LocalFolderArticleStore : IArticleStore
     {
+        private const string COMMENT_SEPARATOR = "-------------------------------------------------------------";
         private readonly string RootFolder;
 
         public LocalFolderArticleStore(string rootFolder)
@@ -49,5 +51,83 @@ namespace JamesQMurphy.Blog
                 yield return article;
             }
         }
+
+        public async Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        {
+            var listToReturn = new SortedSet<ArticleReaction>();
+            var currentComment = new ArticleReaction();
+
+            void _addIfMatchesCriteria()
+            {
+                if(currentComment.ArticleSlug == articleSlug)
+                {
+                    if (string.IsNullOrWhiteSpace(sinceTimestamp) || currentComment.TimestampAsString.CompareTo(sinceTimestamp) > 0)
+                    {
+                        listToReturn.Add(currentComment);
+                    }
+                }
+            }
+
+            using (var reader = File.OpenText(Path.Combine(RootFolder, "comments.txt")))
+            {
+                bool readingContent = false;
+                var lineRead = await reader.ReadLineAsync();
+                while (lineRead != null)
+                {
+                    if (lineRead.StartsWith(COMMENT_SEPARATOR))
+                    {
+                        _addIfMatchesCriteria();
+                        currentComment = new ArticleReaction();
+                        readingContent = false;
+                    }
+                    else
+                    {
+                        if (readingContent)
+                        {
+                            currentComment.Content += Environment.NewLine + lineRead;
+                        }
+                        else
+                        {
+                            currentComment.ArticleSlug = lineRead;
+                            currentComment.TimestampId = await reader.ReadLineAsync();
+                            currentComment.AuthorId = await reader.ReadLineAsync();
+                            currentComment.AuthorName = await reader.ReadLineAsync();
+                            currentComment.ReactionType = (ArticleReactionType) Enum.Parse(typeof(ArticleReactionType), await reader.ReadLineAsync());
+                            currentComment.EditState = (ArticleReactionEditState)Enum.Parse(typeof(ArticleReactionEditState), await reader.ReadLineAsync());
+                            currentComment.Content = await reader.ReadLineAsync();
+                            readingContent = true;
+                        }
+                    }
+                    lineRead = await reader.ReadLineAsync();
+                }
+            }
+            _addIfMatchesCriteria();
+            if (latest)
+            {
+                return listToReturn.Reverse().Take(pageSize);
+            }
+            else
+            {
+                return listToReturn.Take(pageSize);
+            }
+        }
+
+        public async Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        {
+            var reactionId = (new ArticleReactionTimestampId(timestamp, replyingTo)).ToString();
+            using (var writer = new StreamWriter(Path.Combine(RootFolder, "comments.txt"), true))
+            {
+                await writer.WriteLineAsync(COMMENT_SEPARATOR);
+                await writer.WriteLineAsync(articleSlug);
+                await writer.WriteLineAsync(reactionId);
+                await writer.WriteLineAsync(userId);
+                await writer.WriteLineAsync(userName);
+                await writer.WriteLineAsync(articleReactionType.ToString());
+                await writer.WriteLineAsync(ArticleReactionEditState.Original.ToString());
+                await writer.WriteLineAsync(content);
+            }
+            return reactionId;
+        }
+
     }
 }

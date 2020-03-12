@@ -1,7 +1,11 @@
-﻿using JamesQMurphy.Blog;
+﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Blog;
 using JamesQMurphy.Web.Models;
+using JamesQMurphy.Web.Models.BlogViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,11 +15,15 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly IArticleStore articleStore;
         private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ArticleManager _articleManager;
 
-        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions) : base(webSiteOptions)
+        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, UserManager<ApplicationUser> userManager, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
             _markdownHtmlRenderer = markdownHtmlRenderer;
+            _userManager = userManager;
+            _articleManager = new ArticleManager(articleStore);
         }
 
         public async Task<IActionResult> index(string year = null, string month = null)
@@ -41,6 +49,13 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> details(string year, string month, string slug)
         {
             var article = await articleStore.GetArticleAsync($"{year}/{month}/{slug}");
+            var currentUser = await GetApplicationUserAsync(_userManager);
+            var canModeratePosts = currentUser == null ? false : currentUser.IsAdministrator;
+
+            ViewData["isLoggedIn"] = this.IsLoggedIn;
+            ViewData["returnUrl"] = $"{HttpContext?.Request?.Path}#addComment";
+            ViewData["canModeratePosts"] = canModeratePosts;
+            
             if (article != null)
             {
                 if (String.IsNullOrWhiteSpace(article.Description))
@@ -89,6 +104,121 @@ namespace JamesQMurphy.Web.Controllers
             sb.AppendFormat("</channel></rss>");
 
             return Content(sb.ToString(), "application/rss+xml");
+        }
+
+        public async Task<IActionResult> comments(string year, string month, string slug, string sinceTimestamp = "")
+        {
+            var articleSlug = $"{year}/{month}/{slug}";
+            var article = await articleStore.GetArticleAsync(articleSlug);
+            var reactions = await articleStore.GetArticleReactions(articleSlug, sinceTimestamp, 50);
+            var currentUser = await GetApplicationUserAsync(_userManager);
+            var canModeratePosts = currentUser == null ? false : currentUser.IsAdministrator;
+
+            string RenderCommentHtml(string content)
+            {
+                return _markdownHtmlRenderer.RenderHtmlSafe(content, keepLineBreaks:true);
+            }
+
+            return new JsonResult(reactions.Select(r =>
+            {
+                switch (r.ReactionType)
+                {
+                    case ArticleReactionType.Comment:
+                        return new BlogArticleReaction
+                        {
+                            commentId = r.ReactionId,
+                            articleSlug = r.ArticleSlug,
+                            authorName = r.AuthorName,
+                            authorImageUrl = "/images/unknownPersonPlaceholder.png",
+                            timestamp = r.PublishDate.ToString("O"),
+                            isMine = (r.AuthorId == CurrentUserId),
+                            canReply = !(article.LockedForComments) && IsLoggedIn,
+                            canHide = (!(article.LockedForComments) && (r.AuthorId == CurrentUserId)) || canModeratePosts,
+                            canDelete = canModeratePosts,
+                            editState = _DisplayAsText(r.EditState),
+                            htmlContent = RenderCommentHtml(r.Content),
+                            replyToId = r.ReactingToId
+                        };
+
+                    case ArticleReactionType.Edit:
+                        return new BlogArticleReaction
+                        {
+                            commentId = r.ReactingToId,
+                            articleSlug = r.ArticleSlug,
+                            authorName = r.AuthorName,
+                            authorImageUrl = "/images/unknownPersonPlaceholder.png",
+                            timestamp = r.PublishDate.ToString("O"),
+                            isMine = (r.AuthorId == CurrentUserId),
+                            canReply = !(article.LockedForComments) && IsLoggedIn,
+                            canHide = (!(article.LockedForComments) && (r.AuthorId == CurrentUserId)) || canModeratePosts,
+                            canDelete = canModeratePosts,
+                            editState = "edited",
+                            htmlContent = RenderCommentHtml(r.Content),
+                            replyToId = "" // TODO: react to react
+                        };
+                    case ArticleReactionType.Hide:
+                        return null;
+                    case ArticleReactionType.Delete:
+                        return null;
+                    case ArticleReactionType.Vote:
+                        return null;
+                    default:
+                        return null;
+                }
+            }));
+        }
+
+        [HttpPost]
+        [ActionName("comments")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> commentsPost(string year, string month, string slug, string userComment, string sinceTimestamp = "", string replyTo = "")
+        {
+            // Make sure replyTo doesnt have a nesting level equal or greater than the site level
+            var replyTimestampId = new ArticleReactionTimestampId(replyTo);
+            while (replyTimestampId.NestingLevel >= WebSiteOptions.CommentNestLevels && !String.IsNullOrEmpty(replyTimestampId.ReactingToId))
+            {
+                replyTimestampId = new ArticleReactionTimestampId(replyTimestampId.ReactingToId);
+            }
+
+            var articleSlug = $"{year}/{month}/{slug}";
+            if (! await _articleManager.ValidateReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, (await GetApplicationUserAsync(_userManager)).IsAdministrator))
+            {
+                return BadRequest();
+            }
+
+            var timestamp = DateTime.UtcNow;
+            var timestampId = await articleStore.AddReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, timestamp, replyTimestampId.TimestampId);
+            if (String.IsNullOrEmpty(timestampId))
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return new JsonResult(
+                    new BlogArticleReaction
+                    {
+                        commentId = (new ArticleReactionTimestampId(timestampId)).ReactionId,
+                        articleSlug = articleSlug,
+                        authorName = CurrentUserName,
+                        authorImageUrl = "/images/unknownPersonPlaceholder.png",
+                        timestamp = timestamp.ToString("O"),
+                        isMine = true,
+                        canReply = false,
+                        canHide = false,
+                        canDelete = false,
+                        editState = "saving",
+                        htmlContent = @"<div class=""spinner-border m-5"" role=""status"">
+                                            <span class=""sr-only"">Saving your comment...</span>
+                                        </div>",
+                        replyToId = replyTimestampId.ReactionId
+                    }
+                    );
+            }
+        }
+
+        private string _DisplayAsText(ArticleReactionEditState editState)
+        {
+            return editState == ArticleReactionEditState.Original ? "" : $"{editState.ToString().ToLowerInvariant()}";
         }
     }
 }

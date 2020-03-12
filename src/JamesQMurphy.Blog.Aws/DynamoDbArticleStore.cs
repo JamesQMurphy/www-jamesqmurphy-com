@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace JamesQMurphy.Blog.Aws
@@ -15,13 +16,31 @@ namespace JamesQMurphy.Blog.Aws
             public string DynamoDbIndexName { get; set; }
         }
 
+        // Columns
         private const string SLUG = "slug";
         private const string TIMESTAMP = "timestamp";
+        private const string ARTICLE_TYPE = "articleType";
         private const string TITLE = "title";
         private const string DESCRIPTION = "description";
         private const string CONTENT = "content";
-        private const string ARTICLE_TYPE = "articleType";
+        private const string STATUS = "status";
+        private const string AUTHOR_ID = "authorId";
+        private const string AUTHOR_NAME = "authorName";
+
+        // Column values
         private const string ARTICLE_TYPE_PUBLISHED = "published";
+        private const string ARTICLE_TYPE_COMMENT = "comment";
+        private const string ARTICLE_TYPE_COMMENTEDIT = "commentEdit";
+        private const string ARTICLE_TYPE_COMMENTHIDE = "commentHide";
+        private const string ARTICLE_TYPE_COMMENTDELETE = "commentDelete";
+        private const string STATUS_LOCKED = "locked";
+        private const string STATUS_ORIGINAL = "original";
+        private const string STATUS_EDITED = "edited";
+        private const string STATUS_HIDDEN = "hidden";
+        private const string STATUS_DELETED = "deleted";
+
+        // Misc constants
+        private const string GREATER_THAN_Z = "~~";
 
         private readonly IAmazonDynamoDB _dbClient;
         private readonly Options _options;
@@ -108,6 +127,71 @@ namespace JamesQMurphy.Blog.Aws
             return result.Items.ConvertAll(i => new Article { Metadata = ToArticleMetadata(i), Content = i[CONTENT].S });
         }
 
+        public async Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+        {
+            if (String.IsNullOrWhiteSpace(sinceTimestamp))
+            {
+                sinceTimestamp = "0";
+            }
+            QueryRequest queryRequest = new QueryRequest
+            {
+                TableName = _options.DynamoDbTableName,
+                Select = Select.ALL_ATTRIBUTES,
+                KeyConditionExpression = $"{SLUG} = :v_articleSlug and #ts > :v_since",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    {"#ts", TIMESTAMP }
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":v_articleSlug", new AttributeValue { S = articleSlug }},
+                    {":v_since", new AttributeValue { S = sinceTimestamp + GREATER_THAN_Z }}
+                },
+                Limit = pageSize,
+                ScanIndexForward = !latest,
+            };
+            var result = await _dbClient.QueryAsync(queryRequest);
+            return result.Items
+                .Where( rec => rec[ARTICLE_TYPE].S != ARTICLE_TYPE_PUBLISHED )
+                .Select(i => ToArticleReaction(i));
+        }
+
+        public async Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+        {
+            var reactionId = new ArticleReactionTimestampId(timestamp, replyingTo);
+            var d = new Document
+            {
+                [SLUG] = articleSlug,
+                [TIMESTAMP] = reactionId.TimestampId,
+                [CONTENT] = content,
+                [AUTHOR_ID] = userId,
+                [AUTHOR_NAME] = userName,
+            };
+            switch (articleReactionType)
+            {
+                case ArticleReactionType.Comment:
+                    d[ARTICLE_TYPE] = ARTICLE_TYPE_COMMENT;
+                    break;
+
+                case ArticleReactionType.Edit:
+                    d[ARTICLE_TYPE] = ARTICLE_TYPE_COMMENTEDIT;
+                    break;
+
+                case ArticleReactionType.Hide:
+                    d[ARTICLE_TYPE] = ARTICLE_TYPE_COMMENTHIDE;
+                    break;
+
+                case ArticleReactionType.Delete:
+                    d[ARTICLE_TYPE] = ARTICLE_TYPE_COMMENTDELETE;
+                    break;
+
+                default:
+                    throw new ArgumentException($"Unknown reaction type {articleReactionType}", "articleReactionType");
+            }
+            var table = Table.LoadTable(_dbClient, _options.DynamoDbTableName);
+            _ = await table.PutItemAsync(d);
+            return reactionId.ReactionId;
+        }
 
         private static ArticleMetadata ToArticleMetadata(Dictionary<string, AttributeValue> attributeMap)
         {
@@ -116,23 +200,87 @@ namespace JamesQMurphy.Blog.Aws
                 Slug = attributeMap[SLUG].S,
                 PublishDate = DateTime.Parse(attributeMap[TIMESTAMP].S).ToUniversalTime(),
                 Title = attributeMap[TITLE].S,
-                Description = attributeMap.ContainsKey(DESCRIPTION) ? attributeMap[DESCRIPTION].S : ""
+                Description = attributeMap.ContainsKey(DESCRIPTION) ? attributeMap[DESCRIPTION].S : "",
+                LockedForComments = attributeMap.ContainsKey(STATUS) && attributeMap[STATUS].S == STATUS_LOCKED,
             };
         }
 
-        private static Document FromArticleMetadata(ArticleMetadata user)
+        private static Document FromArticleMetadata(ArticleMetadata articleMetadata)
         {
             var d = new Document
             {
-                [SLUG] = user.Slug,
-                [TIMESTAMP] = user.PublishDate.ToString("O"),
-                [TITLE] = user.Title
+                [SLUG] = articleMetadata.Slug,
+                [TIMESTAMP] = articleMetadata.PublishDate.ToString("O"),
+                [TITLE] = articleMetadata.Title
             };
-            if (!String.IsNullOrWhiteSpace(user.Description))
+            if (!String.IsNullOrWhiteSpace(articleMetadata.Description))
             {
-                d[DESCRIPTION] = user.Description;
+                d[DESCRIPTION] = articleMetadata.Description;
+            }
+            if (articleMetadata.LockedForComments)
+            {
+                d[STATUS] = STATUS_LOCKED;
             }
             return d;
+        }
+
+        private static ArticleReaction ToArticleReaction(Dictionary<string, AttributeValue> attributeMap)
+        {
+            var reaction = new ArticleReaction()
+            {
+                ArticleSlug = attributeMap[SLUG].S,
+                TimestampId = attributeMap[TIMESTAMP].S,
+                AuthorId = attributeMap[AUTHOR_ID].S,
+                AuthorName = attributeMap[AUTHOR_NAME].S,
+                EditState = attributeMap.ContainsKey(STATUS) ? (ArticleReactionEditState)Enum.Parse(typeof(ArticleReactionEditState), attributeMap[STATUS].S) : ArticleReactionEditState.Original,
+                Content = attributeMap[CONTENT].S,
+            };
+            switch(attributeMap[ARTICLE_TYPE].S)
+            {
+                case ARTICLE_TYPE_COMMENT:
+                    reaction.ReactionType = ArticleReactionType.Comment;
+                    break;
+
+                case ARTICLE_TYPE_COMMENTEDIT:
+                    reaction.ReactionType = ArticleReactionType.Edit;
+                    break;
+
+                case ARTICLE_TYPE_COMMENTHIDE:
+                    reaction.ReactionType = ArticleReactionType.Hide;
+                    break;
+
+                case ARTICLE_TYPE_COMMENTDELETE:
+                    reaction.ReactionType = ArticleReactionType.Delete;
+                    break;
+
+                default:
+                    throw new Exception($"Unknown {ARTICLE_TYPE} value \"{attributeMap[ARTICLE_TYPE].S}\"");
+            }
+            if (attributeMap.ContainsKey(STATUS))
+            {
+                switch (attributeMap[STATUS].S)
+                {
+                    case STATUS_ORIGINAL:
+                        reaction.EditState = ArticleReactionEditState.Original;
+                        break;
+
+                    case STATUS_EDITED:
+                        reaction.EditState = ArticleReactionEditState.Edited;
+                        break;
+
+                    case STATUS_HIDDEN:
+                        reaction.EditState = ArticleReactionEditState.Hidden;
+                        break;
+
+                    case STATUS_DELETED:
+                        reaction.EditState = ArticleReactionEditState.Deleted;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            return reaction;
         }
 
     }

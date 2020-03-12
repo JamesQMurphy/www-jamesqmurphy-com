@@ -12,6 +12,7 @@ namespace JamesQMurphy.Blog
         private const string slugFieldName = "slug";
         private const string publishDateFieldName = "publish-date";
         private const string descriptionFieldName = "description";
+        private const string lockedForCommentsFieldName = "locked-for-comments";
         private const string yamlHeader = "---";
         private const string yamlFooter = "...";
 
@@ -23,6 +24,7 @@ namespace JamesQMurphy.Blog
         public string Slug { get => _slug; set => _slug = value ?? string.Empty; }
         public string Description { get => _description; set => _description = value ?? string.Empty; }
         public DateTime PublishDate { get; set; }
+        public bool LockedForComments { get; set; }
 
         public static async Task<ArticleMetadata> ReadFromAsync(TextReader reader)
         {
@@ -70,6 +72,10 @@ namespace JamesQMurphy.Blog
 
                                 case descriptionFieldName:
                                     articleMetadata.Description = value;
+                                    break;
+
+                                case lockedForCommentsFieldName:
+                                    articleMetadata.LockedForComments = Boolean.Parse(value);
                                     break;
 
                                 default:

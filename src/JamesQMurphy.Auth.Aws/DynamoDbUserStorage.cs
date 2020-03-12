@@ -31,12 +31,12 @@ namespace JamesQMurphy.Auth.Aws
         private readonly Table _table;
         private readonly Options _options;
 
-        public DynamoDbUserStorage(IAmazonDynamoDB dynamoDbClient, ILogger<DynamoDbUserStorage> logger, Options settings)
+        public DynamoDbUserStorage(IAmazonDynamoDB dynamoDbClient, ILogger<DynamoDbUserStorage> logger, Options options)
         {
             _dynamoDbClient = dynamoDbClient;
             _logger = logger;
-            _table = Table.LoadTable(dynamoDbClient, settings.DynamoDbTableName);
-            _options = settings;
+            _table = Table.LoadTable(dynamoDbClient, options.DynamoDbTableName);
+            _options = options;
         }
 
         public async Task<ApplicationUserRecord> SaveAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default)

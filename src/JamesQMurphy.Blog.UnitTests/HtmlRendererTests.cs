@@ -131,6 +131,59 @@ namespace Tests
             AssertEquivalentHtml(expected, actual);
         }
 
+        [Test]
+        public void ScriptTagsUnsafeOnly()
+        {
+            var markdown = "<script>alert('Pwned');</script>";
+            var expectedUnsafe = @"<script>alert('Pwned');</script>";
+            var actualUnsafe = _defaultRenderer.RenderHtml(markdown);
+            AssertEquivalentHtml(expectedUnsafe, actualUnsafe);
+
+            var expectedSafe = @"<p>&lt;script&gt;alert('Pwned');&lt;/script&gt;</p>";
+            var actualSafe = _defaultRenderer.RenderHtmlSafe(markdown);
+            AssertEquivalentHtml(expectedSafe, actualSafe);
+        }
+
+        [Test]
+        public void LineBreaksNotAskedFor()
+        {
+            var markdown = "Abc\nDef";
+            var expected = @"<p>AbcDef</p>";    // AssertEquivalentHtml strips \n and \r
+            var actual = _defaultRenderer.RenderHtmlSafe(markdown, false);
+
+            AssertEquivalentHtml(expected, actual);
+        }
+
+        [Test]
+        public void LineBreaksAskedFor()
+        {
+            var markdown = "Abc\nDef";
+            var expected = @"<p>Abc<br>Def</p>";
+            var actual = _defaultRenderer.RenderHtmlSafe(markdown, true);
+
+            AssertEquivalentHtml(expected, actual);
+        }
+
+        [Test]
+        public void LineBreaksAskedForButNotNeeded()
+        {
+            var markdown = "Abc\n\nDef";
+            var expected = @"<p>Abc</p><p>Def</p>";
+            var actual = _defaultRenderer.RenderHtmlSafe(markdown, true);
+
+            AssertEquivalentHtml(expected, actual);
+        }
+
+        [Test]
+        public void LineBreaksAskedForButNotNeeded2()
+        {
+            var markdown = "Abc\n";
+            var expected = @"<p>Abc</p>";
+            var actual = _defaultRenderer.RenderHtmlSafe(markdown, true);
+
+            AssertEquivalentHtml(expected, actual);
+        }
+
 
     }
 }

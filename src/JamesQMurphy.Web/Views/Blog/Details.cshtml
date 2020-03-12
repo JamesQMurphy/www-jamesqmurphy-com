@@ -1,3 +1,117 @@
 ﻿@model JamesQMurphy.Blog.Article
 
 <vc:article article="@Model"></vc:article>
+<p>&nbsp;</p>
+<h2>Comments</h2>
+<hr />
+<div class="container px-0" id="commentsRoot">
+    <template id="commentTemplate">
+        <div class="jqm-comment media my-3" id="{commentId}" data-timestamp="{timestamp}">
+            <div class="jqm-comment-user-icon">
+                <img class="img-fluid" src="{authorImageUrl}">
+            </div>
+            <div class="jqm-comment-body media-body pl-3 text-break">
+                <div class="d-flex justify-content-between">
+                    <span><b id="{commentId}/authorName">{authorName}</b> <span class="text-muted" style="display:inline-block;">{timeAgo}</span> <span class="text-muted">{editState}</span></span>
+                    <span>{trashButton}<br /></span>
+                </div>
+                {htmlContent}
+                <div class="jqm-comment-controls d-flex justify-content-between">
+                    {replyButton}
+                </div>
+                <div class="media my-3" id="{commentId}/more" data-timestamp="z">
+                    <span class="btn btn-sm btn-link p-0" id="{commentId}{VIEW_MORE_CTL_SUFFIX}" style="display:none">
+                        <i class="fas fa-caret-down fa-small"></i> View Replies
+                    </span>
+                    &nbsp;
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="replyToCommentTemplate">
+        <form method="post" class="mx-3" id="{commentId}/reply">
+            <label class="row" for="userComment">
+                <b>Add a public reply to {authorName}'s comment</b>
+            </label>
+            <div class="row mb-3">
+                <textarea name="commentContent" id="userComment{commentId}" maxlength="1000" style="min-width: 100%"></textarea>
+            </div>
+            <div class="row justify-content-end">
+                <span class="btn btn-secondary mx-2" id="{commentId}{CANCELREPLY_CTL_SUFFIX}">Cancel</span>
+                <input type="button" class="btn btn-primary" value="Reply" id="{commentId}{SUBMITREPLY_CTL_SUFFIX}" />
+            </div>
+        </form>
+    </template>
+    <div class="modal" tabindex="-1" role="dialog" id="CommentTooSmall">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Not Enough Characters</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Comments must be at least three characters long.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Got It</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="media my-3" id="commentsRoot/more" data-timestamp="z">
+        <span class="btn btn-sm btn-link p-0" id="commentsRoot_viewMoreCtl" style="display:none">
+            <i class="fas fa-caret-down fa-small"></i> Show More Comments
+        </span>
+        &nbsp;
+    </div>
+</div>
+@if (Model.LockedForComments)
+{
+    <p class="text-center">
+        <b>This discussion has been locked.</b>
+        <br/>
+        No new comments can be posted.
+    </p>
+}
+else
+{
+    <div class="container-fluid" id="addComment">
+        @if ((bool)ViewData["isLoggedIn"])
+        {
+            <form method="post">
+                <label class="row pt-3 pb-1 border-top" for="userComment">
+                    <b>What's on your mind?</b>
+                </label>
+                <div class="row mb-3">
+                    <textarea name="commentContent" id="userComment" maxlength="1000" style="min-width: 100%"></textarea>
+                </div>
+                <div class="row justify-content-end">
+                    <input type="button" class="btn btn-primary" value="Post Your Comment" id="submitUserComment" />
+                </div>
+            </form>
+        }
+        else
+        {
+            <p class="text-center">
+                Want to leave a comment?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.register)" asp-route-returnurl="@ViewData["returnUrl"]">Sign up</a>! <br />
+                Already signed up?  <a asp-controller="account" asp-action="@nameof(JamesQMurphy.Web.Controllers.accountController.login)" asp-route-returnurl="@ViewData["returnUrl"]">Sign in</a>!
+            </p>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col col-sm-8 col-md-6 col-lg-5">
+                        <vc:external-login-buttons caption="Sign in with {0}"></vc:external-login-buttons>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript" src="/dist/lib/mermaid/dist/mermaid.min.js" asp-append-version="true"></script>
+    <script>mermaid.initialize({ startOnLoad: true });</script>
+    <script type="text/javascript" src="/dist/lib/moment/moment.min.js" asp-append-version="true"></script>
+    <script src="~/js/blogComments.js" asp-append-version="true"></script>
+}

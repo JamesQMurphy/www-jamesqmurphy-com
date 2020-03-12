@@ -45,6 +45,16 @@ namespace Tests
             {
                 return InMemoryArticleStore.GetLastArticlesAsync(numberOfArticles);
             }
+
+            public Task<IEnumerable<ArticleReaction>> GetArticleReactions(string articleSlug, string sinceTimestamp = "", int pageSize = 50, bool latest = false)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<string> AddReaction(string articleSlug, ArticleReactionType articleReactionType, string content, string userId, string userName, DateTime timestamp, string replyingTo = "")
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private TrackableInMemoryArticleStore _trackableInMemoryArticleStore;

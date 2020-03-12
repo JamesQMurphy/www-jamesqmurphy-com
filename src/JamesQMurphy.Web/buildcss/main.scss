@@ -38,6 +38,11 @@ article {
     }
 }
 
+.jqm-comment-user-icon {
+    width: 3rem;
+    height: 3rem;
+}
+
 // Override Bootstrap elements
 
 // <code>
@@ -68,13 +73,29 @@ pre {
     height: 100%;
 }
 
+// Fix link buttons in IE and Safari
+span.btn {
+    cursor: pointer;
+}
+
 // Brand-specific colors
 .btn-github {
     color: #fff;
     background-color: #24292E;
     border-color: #24292E;
+
     &:hover {
         color: #fff;
+    }
+}
+
+.btn-google {
+    color: #000;
+    background-color: #fff;
+    border-color: #777;
+
+    &:hover {
+        color: #777;
     }
 }
 

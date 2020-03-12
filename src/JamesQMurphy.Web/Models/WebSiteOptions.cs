@@ -16,6 +16,7 @@ namespace JamesQMurphy.Web.Models
         public string SiteUrl {get; set; } = "";
         public string ImageBasePath { get; set; } = "";
         public int ArticlesInRss { get; set; } = 1;
+        public int CommentNestLevels { get; set; } = 2;
 
         public string TwitterLink => $"https://twitter.com/{TwitterAccount}?ref_src=twsrc%5Etfw";
         public string GithubLink => $"https://github.com/{GithubAccount}";
