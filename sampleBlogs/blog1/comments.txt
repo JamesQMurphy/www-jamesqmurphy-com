@@ -113,3 +113,20 @@ OrdinaryUser
 Comment
 Original
 oh boy
+-------------------------------------------------------------
+0/contact
+2020-03-14T14:10:03.0637499Z
+
+
+Comment
+Original
+Testing to see if submitting via the contact page will submit a comment.
+What's going on here?  Does this work?
+-------------------------------------------------------------
+0/contact
+2020-03-14T14:10:44.9635549Z
++++User+++
+OrdinaryUser
+Comment
+Original
+And this is sending a comment when I am logged into the system.

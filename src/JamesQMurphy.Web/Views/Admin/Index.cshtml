@@ -1,1 +1,6 @@
-﻿<h1>Admin Console</h1>
+﻿@using JamesQMurphy.Web.Controllers
+
+<h1>Admin Console</h1>
+
+<a asp-controller="admin" asp-action="@nameof(adminController.contact)">Contact Us Submissions</a><br/>
+<a asp-controller="admin" asp-action="@nameof(adminController.testemail)">Test Email</a>

@@ -1,6 +1,6 @@
-﻿using JamesQMurphy.Web.Models;
+﻿using JamesQMurphy.Blog;
+using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.ContactViewModels;
-using JamesQMurphy.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -8,11 +8,11 @@ namespace JamesQMurphy.Web.Controllers
 {
     public class contactController : JqmControllerBase
     {
-        private readonly IEmailGenerator _emailGenerator;
+        private readonly IArticleStore _articleStore;
 
-        public contactController(IEmailGenerator emailGenerator, WebSiteOptions webSiteOptions) : base(webSiteOptions)
+        public contactController(IArticleStore articleStore, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
-            _emailGenerator = emailGenerator;
+            _articleStore = articleStore;
         }
 
         [HttpGet]
@@ -30,7 +30,7 @@ namespace JamesQMurphy.Web.Controllers
             ViewData[Constants.VIEWDATA_NOPRIVACYCONSENT] = true;
             if (ModelState.IsValid)
             {
-                await _emailGenerator.GenerateEmailAsync(WebSiteOptions.CommentsEmail, EmailType.Comments, new string[] { CurrentUserName, model.Comments});
+                await _articleStore.AddReaction(Constants.SLUG_CONTACT_US, ArticleReactionType.Comment, model.Comments, CurrentUserId, CurrentUserName, System.DateTime.UtcNow);
                 return RedirectToAction(nameof(commentsConfirmation));
             }
             return View();

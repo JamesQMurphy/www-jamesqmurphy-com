@@ -1,0 +1,31 @@
+﻿@model IEnumerable<JamesQMurphy.Web.Models.AdminViewModels.ContactUsReaction>
+@{
+    ViewData[Constants.VIEWDATA_PAGETITLE] = "Contact Us Submissions";
+}
+
+<vc:title-heading title="@ViewData[Constants.VIEWDATA_PAGETITLE]"></vc:title-heading>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Username</th>
+            <th scope="col">Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var reaction in Model)
+        {
+            <tr>
+                <td>
+                    @{var d = System.DateTime.Parse(reaction.timestamp).ToUniversalTime();}
+                    @d.ToShortDateString()
+                    @d.ToShortTimeString()
+                    UTC
+                </td>
+                <td>@reaction.userName</td>
+                <td>@Html.Raw(reaction.htmlContent)</td>
+            </tr>
+        }
+    </tbody>
+</table>
