@@ -236,9 +236,9 @@ namespace JamesQMurphy.Blog.Aws
             {
                 ArticleSlug = attributeMap[SLUG].S,
                 TimestampId = attributeMap[TIMESTAMP].S,
-                AuthorId = attributeMap[AUTHOR_ID].S,
-                AuthorName = attributeMap[AUTHOR_NAME].S,
-                EditState = attributeMap.ContainsKey(STATUS) ? (ArticleReactionEditState)Enum.Parse(typeof(ArticleReactionEditState), attributeMap[STATUS].S) : ArticleReactionEditState.Original,
+                AuthorId = attributeMap.ContainsKey(AUTHOR_ID) ? attributeMap[AUTHOR_ID].S : "",
+                AuthorName = attributeMap.ContainsKey(AUTHOR_NAME) ? attributeMap[AUTHOR_NAME].S : "",
+                EditState = ArticleReactionEditState.Original,
                 Content = attributeMap[CONTENT].S,
             };
             switch(attributeMap[ARTICLE_TYPE].S)
