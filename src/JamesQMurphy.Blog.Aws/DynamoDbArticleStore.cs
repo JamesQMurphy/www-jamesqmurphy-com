@@ -164,9 +164,15 @@ namespace JamesQMurphy.Blog.Aws
                 [SLUG] = articleSlug,
                 [TIMESTAMP] = reactionId.TimestampId,
                 [CONTENT] = content,
-                [AUTHOR_ID] = userId,
-                [AUTHOR_NAME] = userName,
             };
+            if (!String.IsNullOrWhiteSpace(userId))
+            {
+                d[AUTHOR_ID] = userId;
+            }
+            if (!String.IsNullOrWhiteSpace(userName))
+            {
+                d[AUTHOR_NAME] = userName;
+            }
             switch (articleReactionType)
             {
                 case ArticleReactionType.Comment:
