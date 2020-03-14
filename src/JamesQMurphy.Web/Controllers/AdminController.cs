@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using JamesQMurphy.Blog;
 using JamesQMurphy.Email;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.AdminViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
@@ -14,10 +15,14 @@ namespace JamesQMurphy.Web.Controllers
     public class adminController : JqmControllerBase
     {
         private readonly IEmailService _emailService;
+        private readonly IArticleStore _articleStore;
+        private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
 
-        public adminController(IEmailService emailService, WebSiteOptions webSiteOptions) : base(webSiteOptions)
+        public adminController(IEmailService emailService, IArticleStore articleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             _emailService = emailService;
+            _articleStore = articleStore;
+            _markdownHtmlRenderer = markdownHtmlRenderer;
         }
 
         public IActionResult index()
@@ -28,6 +33,19 @@ namespace JamesQMurphy.Web.Controllers
         public IActionResult throwerror()
         {
             throw new Exception("This is a test exception");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> contact()
+        {
+            var reactions = await _articleStore.GetArticleReactions(Constants.SLUG_CONTACT_US, latest: true);
+
+            return View(reactions.Select(r=>new ContactUsReaction {
+                timestamp = r.TimestampAsString,
+                userId = r.AuthorId,
+                userName = String.IsNullOrWhiteSpace(r.AuthorName) ? "(anonymous)" : r.AuthorName,
+                htmlContent = _markdownHtmlRenderer.RenderHtmlSafe(r.Content, keepLineBreaks: true)
+            }));
         }
 
         [HttpGet]
