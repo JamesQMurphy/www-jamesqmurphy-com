@@ -39,6 +39,10 @@
                         <a class="nav-item nav-link text-dark" asp-controller="blog" asp-action="index">Blog</a>
                         <a class="nav-item nav-link text-dark" asp-controller="home" asp-action="about">About</a>
                         <a class="nav-item nav-link text-dark" href="~/contact">Contact</a>
+                        @if (User.IsInRole(JamesQMurphy.Auth.ApplicationRole.ADMINISTRATOR))
+                        {
+                            <a class="nav-item nav-link text-dark" href="~/admin">Admin</a>
+                        }
                     </div>
                 </div>
                 @if (String.IsNullOrWhiteSpace(currentUserId))

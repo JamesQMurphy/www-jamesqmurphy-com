@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace JamesQMurphy.Web.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = JamesQMurphy.Auth.ApplicationRole.ADMINISTRATOR)]
     public class adminController : JqmControllerBase
     {
         private readonly IEmailService _emailService;

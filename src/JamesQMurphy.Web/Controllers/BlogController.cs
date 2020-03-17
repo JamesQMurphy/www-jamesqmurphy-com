@@ -15,14 +15,12 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly IArticleStore articleStore;
         private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ArticleManager _articleManager;
 
-        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, UserManager<ApplicationUser> userManager, WebSiteOptions webSiteOptions) : base(webSiteOptions)
+        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
             _markdownHtmlRenderer = markdownHtmlRenderer;
-            _userManager = userManager;
             _articleManager = new ArticleManager(articleStore);
         }
 
@@ -49,8 +47,7 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> details(string year, string month, string slug)
         {
             var article = await articleStore.GetArticleAsync($"{year}/{month}/{slug}");
-            var currentUser = await GetApplicationUserAsync(_userManager);
-            var canModeratePosts = currentUser == null ? false : currentUser.IsAdministrator;
+            var canModeratePosts = User.IsInRole(ApplicationRole.ADMINISTRATOR);
 
             ViewData["isLoggedIn"] = this.IsLoggedIn;
             ViewData["returnUrl"] = $"{HttpContext?.Request?.Path}#addComment";
@@ -111,8 +108,7 @@ namespace JamesQMurphy.Web.Controllers
             var articleSlug = $"{year}/{month}/{slug}";
             var article = await articleStore.GetArticleAsync(articleSlug);
             var reactions = await articleStore.GetArticleReactions(articleSlug, sinceTimestamp, 50);
-            var currentUser = await GetApplicationUserAsync(_userManager);
-            var canModeratePosts = currentUser == null ? false : currentUser.IsAdministrator;
+            var canModeratePosts = User.IsInRole(ApplicationRole.ADMINISTRATOR);
 
             string RenderCommentHtml(string content)
             {
@@ -181,7 +177,7 @@ namespace JamesQMurphy.Web.Controllers
             }
 
             var articleSlug = $"{year}/{month}/{slug}";
-            if (! await _articleManager.ValidateReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, (await GetApplicationUserAsync(_userManager)).IsAdministrator))
+            if (! await _articleManager.ValidateReaction(articleSlug, ArticleReactionType.Comment, userComment, CurrentUserId, CurrentUserName, User.IsInRole(ApplicationRole.ADMINISTRATOR)))
             {
                 return BadRequest();
             }
