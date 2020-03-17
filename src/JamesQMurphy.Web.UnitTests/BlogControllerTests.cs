@@ -16,13 +16,10 @@ namespace JamesQMurphy.Web.UnitTests
         {
             articleStore = new InMemoryArticleStore();
             controller = new Controllers.blogController(articleStore, new DefaultMarkdownHtmlRenderer(), null, new WebSiteOptions());
-            controller.ControllerContext = new ControllerContext
+            controller.ControllerContext.HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext
             {
-                HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext
-                {
-                    // No claims; i.e., not logged in
-                    User = new System.Security.Claims.ClaimsPrincipal()
-                }
+                // No claims; i.e., not logged in
+                User = new System.Security.Claims.ClaimsPrincipal()
             };
         }
 
