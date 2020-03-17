@@ -15,14 +15,12 @@ namespace JamesQMurphy.Web.Controllers
     {
         private readonly IArticleStore articleStore;
         private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ArticleManager _articleManager;
 
-        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, UserManager<ApplicationUser> userManager, WebSiteOptions webSiteOptions) : base(webSiteOptions)
+        public blogController(IArticleStore iarticleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             articleStore = iarticleStore;
             _markdownHtmlRenderer = markdownHtmlRenderer;
-            _userManager = userManager;
             _articleManager = new ArticleManager(articleStore);
         }
 
@@ -49,7 +47,6 @@ namespace JamesQMurphy.Web.Controllers
         public async Task<IActionResult> details(string year, string month, string slug)
         {
             var article = await articleStore.GetArticleAsync($"{year}/{month}/{slug}");
-            var currentUser = await GetApplicationUserAsync(_userManager);
             var canModeratePosts = User.IsInRole(ApplicationRole.ADMINISTRATOR);
 
             ViewData["isLoggedIn"] = this.IsLoggedIn;
