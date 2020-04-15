@@ -352,7 +352,7 @@ Resources:
       Handler: JamesQMurphy.Web::JamesQMurphy.Web.LambdaEntryPoint::FunctionHandlerAsync
       MemorySize: 512
       Role: !GetAtt TheRoleForTheLambdaFunction.Arn
-      Runtime: provided  # custom runtime
+      Runtime: dotnetcore3.1
       Timeout: 15
       Environment:
         Variables:
