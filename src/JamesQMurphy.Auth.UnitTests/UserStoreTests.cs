@@ -90,5 +90,51 @@ namespace JamesQMurphy.Web.UnitTests
             Assert.AreEqual(userId, user.UserId);
         }
 
+        [Test]
+        public void GetAll_EmptyList()
+        {
+            Assert.IsEmpty(_applicationUserStore.GetAll().GetAwaiter().GetResult());
+        }
+
+        [Test]
+        public void GetAll_WithUsers()
+        {
+            ApplicationUser[] users = new ApplicationUser[]
+            {
+                new ApplicationUser
+                {
+                    UserName = "user1",
+                    Email = "user1email"
+                },
+                new ApplicationUser
+                {
+                    UserName = "user2",
+                    Email = "user2email"
+                },
+                new ApplicationUser
+                {
+                    UserName = "user3",
+                    Email = "user3email"
+                },
+
+            };
+
+            Dictionary<string, ApplicationUser> dictUsers = new Dictionary<string, ApplicationUser>();
+            foreach(var user in users)
+            {
+                dictUsers[user.UserName] = user;
+                _applicationUserStore.CreateAsync(user).Wait();
+
+            }
+
+            var usersFromStore = new List<ApplicationUser>( _applicationUserStore.GetAll().GetAwaiter().GetResult());
+            Assert.AreEqual(dictUsers.Count, usersFromStore.Count);
+            foreach(var userFromStore in usersFromStore)
+            {
+                Assert.IsTrue(dictUsers.ContainsKey(userFromStore.UserName));
+                Assert.AreEqual(dictUsers[userFromStore.UserName].Email, userFromStore.Email);
+            }
+
+        }
     }
 }

@@ -13,7 +13,8 @@ namespace JamesQMurphy.Auth
         IUserPasswordStore<ApplicationUser>,
         IUserEmailStore<ApplicationUser>,
         IUserLoginStore<ApplicationUser>,
-        IUserRoleStore<ApplicationUser>
+        IUserRoleStore<ApplicationUser>,
+        IQueryableUserStore<ApplicationUser>
     {
         private readonly IApplicationUserStorage _storage;
 
@@ -104,10 +105,20 @@ namespace JamesQMurphy.Auth
             return records.Any() ? new ApplicationUser(records) : null;
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetAll(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var applicationUserRecords = await _storage.GetAllUserRecordsAsync(cancellationToken);
+            return applicationUserRecords.GroupBy(
+                rec => rec.UserId,
+                (userid, records) => new ApplicationUser(records)
+            );
+        }
+
         #endregion
 
         #region IDisposable Implementation
         private bool disposedValue = false; // To detect redundant calls
+
         public void Dispose()
         {
             if (!disposedValue)
@@ -308,6 +319,10 @@ namespace JamesQMurphy.Auth
         {
             throw new NotImplementedException();
         }
+        #endregion
+
+        #region IQueryableUserStore<ApplicationUser> implementation
+        public IQueryable<ApplicationUser> Users => GetAll().GetAwaiter().GetResult().AsQueryable();
         #endregion
     }
 }

@@ -1,0 +1,24 @@
+﻿@model IEnumerable<JamesQMurphy.Web.Models.AdminViewModels.UserModel>
+@{
+    ViewData[Constants.VIEWDATA_PAGETITLE] = "User Management";
+}
+
+<vc:title-heading title="@ViewData[Constants.VIEWDATA_PAGETITLE]"></vc:title-heading>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Username</th>
+            <th scope="col">User Id</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var user in Model)
+        {
+            <tr>
+                <td>@user.userName</td>
+                <td>@user.userId</td>
+            </tr>
+        }
+    </tbody>
+</table>
