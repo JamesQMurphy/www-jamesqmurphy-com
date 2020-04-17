@@ -89,7 +89,7 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> users()
+        public IActionResult users()
         {
             return View(
                 _userManager.Users.Select(au => new UserModel {
