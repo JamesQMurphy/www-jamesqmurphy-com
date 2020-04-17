@@ -57,7 +57,7 @@ namespace JamesQMurphy.Web.UnitTests
                     ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated, new Dictionary<string,string>{
                         { ApplicationUser.FIELD_USERNAME, "OrdinaryUser" }, { ApplicationUser.FIELD_NORMALIZEDUSERNAME, "ORDINARYUSER" }
                     }, new Dictionary<string,bool>()),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local",  userId, "USER@LOCAL", lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, "user@local",  userId, "USER@LOCAL", lastUpdated)
             };
             foreach (var rec in records)
             {
@@ -79,7 +79,7 @@ namespace JamesQMurphy.Web.UnitTests
                     ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated, new Dictionary<string,string>{
                         { ApplicationUser.FIELD_USERNAME, "OrdinaryUser" }, { ApplicationUser.FIELD_NORMALIZEDUSERNAME, "ORDINARYUSER" }
                     }, new Dictionary<string,bool>()),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, email,  userId, email, lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, email,  userId, email, lastUpdated)
             };
             foreach (var rec in records)
             {

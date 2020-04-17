@@ -74,7 +74,7 @@ namespace JamesQMurphy.Auth.Aws
 
         public async Task<IEnumerable<ApplicationUserRecord>> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
         {
-            return await FindByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress, cancellationToken);
+            return await FindByProviderAndKeyAsync(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, normalizedEmailAddress, cancellationToken);
         }
 
         public async Task<IEnumerable<ApplicationUserRecord>> FindByUserNameAsync(string normalizedUserName, CancellationToken cancellationToken)

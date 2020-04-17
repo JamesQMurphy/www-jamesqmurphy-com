@@ -200,7 +200,7 @@ namespace JamesQMurphy.Web.UnitTests
             };
             Assert.AreEqual(oldEmail, user.Email);
 
-            user.AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, newEmail, user.UserId));
+            user.AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, newEmail, user.UserId));
             Assert.AreEqual(newEmail, user.Email);
         }
 

@@ -45,24 +45,24 @@ namespace JamesQMurphy.Auth
 
         public string Email
         {
-            get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.Key ?? "";
+            get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER)?.Key ?? "";
             set
             {
                 if (Email != value)
                 {
-                    AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, value, UserId));
+                    AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, value, UserId));
                 }
             }
         }
 
         public string NormalizedEmail
         {
-            get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAIL)?.NormalizedKey ?? "";
+            get => GetUserRecordOrNull(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER)?.NormalizedKey ?? "";
             set
             {
                 if (NormalizedEmail != value)
                 {
-                    GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAIL, nameof(Email)).NormalizedKey = value;
+                    GetUserRecordOrThrow(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, nameof(Email)).NormalizedKey = value;
                 }
             }
         }
@@ -81,14 +81,14 @@ namespace JamesQMurphy.Auth
 
         public bool EmailConfirmed
         {
-            get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_EMAILCONFIRMED);
-            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_EMAILCONFIRMED, nameof(Email), value);
+            get => GetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, FIELD_EMAILCONFIRMED);
+            set => SetBoolAttribute(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, FIELD_EMAILCONFIRMED, nameof(Email), value);
         }
 
         public string PasswordHash
         {
-            get => GetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_PASSWORDHASH);
-            set => SetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAIL, FIELD_PASSWORDHASH, nameof(Email), value);
+            get => GetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, FIELD_PASSWORDHASH);
+            set => SetStringAttribute(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, FIELD_PASSWORDHASH, nameof(Email), value);
         }
 
         public bool IsAdministrator
