@@ -104,6 +104,10 @@ namespace JamesQMurphy.Web.Controllers
                     lastUpdatedUtc = au.LastUpdated
                 });
             }
+
+            // Sort in decending order
+            userModels.Sort((u1, u2) => u2.lastUpdatedUtc.CompareTo(u1.lastUpdatedUtc));
+
             return View(userModels);
         }
     }
