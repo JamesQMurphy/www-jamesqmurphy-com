@@ -10,6 +10,8 @@
         <tr>
             <th scope="col">Username</th>
             <th scope="col">User Id</th>
+            <th scope="col">Email</th>
+            <th scope="col">External Logins</th>
         </tr>
     </thead>
     <tbody>
@@ -18,6 +20,26 @@
             <tr>
                 <td>@user.userName</td>
                 <td>@user.userId</td>
+                <td>
+                    @if (!String.IsNullOrWhiteSpace(user.email))
+                    {
+                        <span>@user.email</span>
+                        if (user.emailVerified)
+                        {
+                            <span class="fas fa-check-circle"></span>
+                        }
+                        else
+                        {
+                            <span>(not verified)</span>
+                        }
+                    }
+                </td>
+                <td>
+                    @foreach(var login in user.externalLogins)
+                    {
+                        <div>@login.Item2</div>
+                    }
+                </td>
             </tr>
         }
     </tbody>

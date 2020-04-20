@@ -89,14 +89,21 @@ namespace JamesQMurphy.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult users()
+        public async Task<IActionResult> users()
         {
-            return View(
-                _userManager.Users.Select(au => new UserModel {
+            var userModels = new List<UserModel>();
+            foreach (var au in _userManager.Users)
+            {
+                userModels.Add(new UserModel
+                {
                     userId = au.UserId,
-                    userName = au.UserName
-                })
-            );
+                    userName = au.UserName,
+                    email = au.Email ?? "",
+                    emailVerified = au.EmailConfirmed,
+                    externalLogins = (await _userManager.GetLoginsAsync(au)).Select(login => (login.LoginProvider, login.ProviderDisplayName))
+                });
+            }
+            return View(userModels);
         }
     }
 }
