@@ -136,5 +136,56 @@ namespace JamesQMurphy.Web.UnitTests
             }
 
         }
+
+        [Test]
+        public void ExternalLogins_EmptyUser()
+        {
+            var user = new ApplicationUser();
+            var logins = _applicationUserStore.GetLoginsAsync(user, CancellationToken.None).GetAwaiter().GetResult();
+            Assert.IsEmpty(logins);
+        }
+
+        [Test]
+        public void ExternalLogins_EmailUser()
+        {
+            var user = new ApplicationUser
+            {
+                UserName = "someUser",
+                Email = "someEmail@local"
+            };
+            var logins = _applicationUserStore.GetLoginsAsync(user, CancellationToken.None).GetAwaiter().GetResult();
+            Assert.IsEmpty(logins);
+        }
+
+        [Test]
+        public void ExternalLogins_ExternalUser()
+        {
+            var user = new ApplicationUser
+            {
+                UserName = "someUser"
+            };
+            var provider = "someProvider";
+            var providerKey = "someProviderKey";
+            var providerDisplayName = "Some Provider Display Name";
+            var userLoginInfo = new Microsoft.AspNetCore.Identity.UserLoginInfo(provider, providerKey, providerDisplayName);
+            _applicationUserStore.AddLoginAsync(user, userLoginInfo, CancellationToken.None).GetAwaiter().GetResult();
+            _ = _applicationUserStore.UpdateAsync(user).GetAwaiter().GetResult();
+
+            var loginsReturned = _applicationUserStore.GetLoginsAsync(user, CancellationToken.None).GetAwaiter().GetResult();
+            Assert.AreEqual(1, loginsReturned.Count);
+            Assert.AreEqual(provider, loginsReturned[0].LoginProvider);
+            Assert.AreEqual(providerKey, loginsReturned[0].ProviderKey);
+            Assert.AreEqual(providerDisplayName, loginsReturned[0].ProviderDisplayName);
+
+            _applicationUserStore.RemoveLoginAsync(user, provider, providerKey, CancellationToken.None).GetAwaiter().GetResult();
+            _ = _applicationUserStore.UpdateAsync(user).GetAwaiter().GetResult();
+            var userReturned = _applicationUserStore.FindById(user.UserId).GetAwaiter().GetResult();
+
+            var loginsReturnedAfterRemove = _applicationUserStore.GetLoginsAsync(userReturned, CancellationToken.None).GetAwaiter().GetResult();
+            Assert.IsEmpty(loginsReturnedAfterRemove);
+        }
+
+
+
     }
 }

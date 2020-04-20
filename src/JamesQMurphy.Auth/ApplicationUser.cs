@@ -11,6 +11,7 @@ namespace JamesQMurphy.Auth
         public const string FIELD_PASSWORDHASH = "passwordHash";
         public const string FIELD_EMAILCONFIRMED = "emailConfirmed";
         public const string FIELD_ISADMINISTRATOR = "isAdministrator";
+        public const string FIELD_PROVIDERDISPLAYNAME = "providerDisplayName";
 
         private readonly Dictionary<string, ApplicationUserRecord> records = new Dictionary<string, ApplicationUserRecord>();
 

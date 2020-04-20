@@ -299,7 +299,7 @@ namespace JamesQMurphy.Auth
         public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
             var newApplicationUserRecord = new ApplicationUserRecord(login.LoginProvider, login.ProviderKey, user.UserId);
-            newApplicationUserRecord.SetStringAttribute("providerDisplayName", login.ProviderDisplayName);
+            newApplicationUserRecord.SetStringAttribute(ApplicationUser.FIELD_PROVIDERDISPLAYNAME, login.ProviderDisplayName);
             user.AddOrReplaceUserRecord(newApplicationUserRecord);
             return Task.CompletedTask;
         }
@@ -312,12 +312,16 @@ namespace JamesQMurphy.Auth
 
         public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var logins = user.ApplicationUserRecords
+                .Where(rec => (rec.Provider != ApplicationUserRecord.RECORD_TYPE_ID) && (rec.Provider != ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER))
+                .Select(rec => new UserLoginInfo(rec.Provider, rec.Key, rec.StringAttributes[ApplicationUser.FIELD_PROVIDERDISPLAYNAME]))
+                .ToList() as IList<UserLoginInfo>;
+            return Task.FromResult(logins);
         }
 
-        public Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
+        public async Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _storage.DeleteAsync(new ApplicationUserRecord(loginProvider, providerKey, user.UserId));
         }
         #endregion
 
