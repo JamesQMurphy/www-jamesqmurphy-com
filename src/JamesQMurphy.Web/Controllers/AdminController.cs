@@ -1,8 +1,10 @@
-﻿using JamesQMurphy.Blog;
+﻿using JamesQMurphy.Auth;
+using JamesQMurphy.Blog;
 using JamesQMurphy.Email;
 using JamesQMurphy.Web.Models;
 using JamesQMurphy.Web.Models.AdminViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,12 +19,19 @@ namespace JamesQMurphy.Web.Controllers
         private readonly IEmailService _emailService;
         private readonly IArticleStore _articleStore;
         private readonly IMarkdownHtmlRenderer _markdownHtmlRenderer;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public adminController(IEmailService emailService, IArticleStore articleStore, IMarkdownHtmlRenderer markdownHtmlRenderer, WebSiteOptions webSiteOptions) : base(webSiteOptions)
+        public adminController(
+            IEmailService emailService,
+            IArticleStore articleStore,
+            IMarkdownHtmlRenderer markdownHtmlRenderer,
+            UserManager<ApplicationUser> userManager,
+            WebSiteOptions webSiteOptions) : base(webSiteOptions)
         {
             _emailService = emailService;
             _articleStore = articleStore;
             _markdownHtmlRenderer = markdownHtmlRenderer;
+            _userManager = userManager;
         }
 
         public IActionResult index()
@@ -77,6 +86,29 @@ namespace JamesQMurphy.Web.Controllers
 
             }
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> users()
+        {
+            var userModels = new List<UserModel>();
+            foreach (var au in _userManager.Users)
+            {
+                userModels.Add(new UserModel
+                {
+                    userId = au.UserId,
+                    userName = au.UserName,
+                    email = au.Email ?? "",
+                    emailVerified = au.EmailConfirmed,
+                    externalLogins = (await _userManager.GetLoginsAsync(au)).Select(login => (login.LoginProvider, login.ProviderDisplayName)),
+                    lastUpdatedUtc = au.LastUpdated
+                });
+            }
+
+            // Sort in decending order
+            userModels.Sort((u1, u2) => u2.lastUpdatedUtc.CompareTo(u1.lastUpdatedUtc));
+
+            return View(userModels);
         }
     }
 }

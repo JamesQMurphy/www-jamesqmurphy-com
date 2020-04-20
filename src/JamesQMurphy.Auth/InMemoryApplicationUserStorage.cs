@@ -19,7 +19,7 @@ namespace JamesQMurphy.Auth
             var userId = "+++User+++";
             var user = new ApplicationUser(new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "user@local", userId, "USER@LOCAL", lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, "user@local", userId, "USER@LOCAL", lastUpdated)
             });
             user.UserName = "OrdinaryUser";
             user.NormalizedUserName = "ORDINARYUSER";
@@ -33,7 +33,7 @@ namespace JamesQMurphy.Auth
             var adminUserId = "x+xAdminx+x";
             var adminUser = new ApplicationUser(new[]{
                 new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, adminUserId, adminUserId, adminUserId, lastUpdated),
-                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, "admin@local", adminUserId, "ADMIN@LOCAL", lastUpdated)
+                new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, "admin@local", adminUserId, "ADMIN@LOCAL", lastUpdated)
             });
             adminUser.UserName = "TheAdministrator";
             adminUser.NormalizedUserName = "THEADMINISTRATOR";
@@ -48,13 +48,13 @@ namespace JamesQMurphy.Auth
 
         public Task<ApplicationUserRecord> SaveAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _dictByProviderAndNormalizedKey[(applicationUserRecord.Provider, applicationUserRecord.NormalizedKey)] = applicationUserRecord;
+            var savedRecord = ApplicationUserRecord.CreateCleanRecord(applicationUserRecord, DateTime.UtcNow);
+            _dictByProviderAndNormalizedKey[(applicationUserRecord.Provider, applicationUserRecord.NormalizedKey)] = savedRecord;
             if (!_dictByUserIdAndProvider.TryGetValue(applicationUserRecord.UserId, out Dictionary<string, ApplicationUserRecord> dictRec))
             {
                 dictRec = new Dictionary<string, ApplicationUserRecord>();
                 _dictByUserIdAndProvider.Add(applicationUserRecord.UserId, dictRec);
             }
-            var savedRecord = ApplicationUserRecord.CreateCleanRecord(applicationUserRecord, DateTime.UtcNow);
             dictRec[applicationUserRecord.Provider] = savedRecord;
             return Task.FromResult(savedRecord);
         }
@@ -90,9 +90,9 @@ namespace JamesQMurphy.Auth
 
         public Task<IEnumerable<ApplicationUserRecord>> FindByEmailAddressAsync(string normalizedEmailAddress, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_dictByProviderAndNormalizedKey.ContainsKey((ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress)))
+            if (_dictByProviderAndNormalizedKey.ContainsKey((ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, normalizedEmailAddress)))
             {
-                return FindByIdAsync(_dictByProviderAndNormalizedKey[(ApplicationUserRecord.RECORD_TYPE_EMAIL, normalizedEmailAddress)].UserId, cancellationToken);
+                return FindByIdAsync(_dictByProviderAndNormalizedKey[(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, normalizedEmailAddress)].UserId, cancellationToken);
             }
             else
             {

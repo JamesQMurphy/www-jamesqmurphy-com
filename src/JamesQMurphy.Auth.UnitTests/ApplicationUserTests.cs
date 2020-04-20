@@ -200,7 +200,7 @@ namespace JamesQMurphy.Web.UnitTests
             };
             Assert.AreEqual(oldEmail, user.Email);
 
-            user.AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAIL, newEmail, user.UserId));
+            user.AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, newEmail, user.UserId));
             Assert.AreEqual(newEmail, user.Email);
         }
 
@@ -334,6 +334,50 @@ namespace JamesQMurphy.Web.UnitTests
             var key = "key";
             var rec = new ApplicationUserRecord("provider", "key", "userId");
             Assert.AreEqual(key, rec.NormalizedKey);
+        }
+
+        [Test]
+        public void CannotReadLastUpdatedForNewUser()
+        {
+            var user = new ApplicationUser();
+            Assert.Throws(Is.TypeOf<InvalidOperationException>(),
+                delegate
+                {
+                    var d = user.LastUpdated;
+                }
+                );
+        }
+
+        [Test]
+        public void CannotReadLastUpdatedForDirtyUser()
+        {
+            var userId = "someUserId";
+            var lastUpdated = DateTime.UtcNow;
+            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated);
+            var user = new ApplicationUser(new[] { idRecord });
+            user.IsAdministrator = true;
+
+            Assert.IsTrue(idRecord.IsDirty);
+            Assert.Throws(Is.TypeOf<InvalidOperationException>(),
+                delegate
+                {
+                    var d = user.LastUpdated;
+                }
+                );
+        }
+
+        [Test]
+        public void LastUpdated()
+        {
+            var userId = "someUserId";
+            var email = "someEmail@local";
+            var lastUpdated = DateTime.UtcNow;
+            var idRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, userId, userId, userId, lastUpdated.AddDays(-1));
+            var emailRecord = new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER, email, userId, email, lastUpdated);
+            var user = new ApplicationUser(new[] { idRecord, emailRecord });
+
+            Assert.IsFalse(idRecord.IsDirty);
+            Assert.AreEqual(lastUpdated, user.LastUpdated);
         }
 
     }

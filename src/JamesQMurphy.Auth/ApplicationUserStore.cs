@@ -13,7 +13,8 @@ namespace JamesQMurphy.Auth
         IUserPasswordStore<ApplicationUser>,
         IUserEmailStore<ApplicationUser>,
         IUserLoginStore<ApplicationUser>,
-        IUserRoleStore<ApplicationUser>
+        IUserRoleStore<ApplicationUser>,
+        IQueryableUserStore<ApplicationUser>
     {
         private readonly IApplicationUserStorage _storage;
 
@@ -104,10 +105,20 @@ namespace JamesQMurphy.Auth
             return records.Any() ? new ApplicationUser(records) : null;
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetAll(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var applicationUserRecords = await _storage.GetAllUserRecordsAsync(cancellationToken);
+            return applicationUserRecords.GroupBy(
+                rec => rec.UserId,
+                (userid, records) => new ApplicationUser(records)
+            );
+        }
+
         #endregion
 
         #region IDisposable Implementation
         private bool disposedValue = false; // To detect redundant calls
+
         public void Dispose()
         {
             if (!disposedValue)
@@ -288,7 +299,7 @@ namespace JamesQMurphy.Auth
         public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
             var newApplicationUserRecord = new ApplicationUserRecord(login.LoginProvider, login.ProviderKey, user.UserId);
-            newApplicationUserRecord.SetStringAttribute("providerDisplayName", login.ProviderDisplayName);
+            newApplicationUserRecord.SetStringAttribute(ApplicationUser.FIELD_PROVIDERDISPLAYNAME, login.ProviderDisplayName);
             user.AddOrReplaceUserRecord(newApplicationUserRecord);
             return Task.CompletedTask;
         }
@@ -301,13 +312,21 @@ namespace JamesQMurphy.Auth
 
         public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var logins = user.ApplicationUserRecords
+                .Where(rec => (rec.Provider != ApplicationUserRecord.RECORD_TYPE_ID) && (rec.Provider != ApplicationUserRecord.RECORD_TYPE_EMAILPROVIDER))
+                .Select(rec => new UserLoginInfo(rec.Provider, rec.Key, rec.StringAttributes[ApplicationUser.FIELD_PROVIDERDISPLAYNAME]))
+                .ToList() as IList<UserLoginInfo>;
+            return Task.FromResult(logins);
         }
 
-        public Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
+        public async Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _storage.DeleteAsync(new ApplicationUserRecord(loginProvider, providerKey, user.UserId));
         }
+        #endregion
+
+        #region IQueryableUserStore<ApplicationUser> implementation
+        public IQueryable<ApplicationUser> Users => GetAll().GetAwaiter().GetResult().AsQueryable();
         #endregion
     }
 }
