@@ -15,11 +15,8 @@ namespace JamesQMurphy.Auth
 
         private readonly Dictionary<string, ApplicationUserRecord> records = new Dictionary<string, ApplicationUserRecord>();
 
-        public ApplicationUser()
+        public ApplicationUser() : this(Enumerable.Empty<ApplicationUserRecord>())
         {
-            // Create a single ApplicationUserRecord to represent the ID
-            var miniGuid = NewMiniGuid();
-            AddOrReplaceUserRecord(new ApplicationUserRecord(ApplicationUserRecord.RECORD_TYPE_ID, miniGuid, miniGuid));
         }
 
         public ApplicationUser(IEnumerable<ApplicationUserRecord> applicationUserRecords)
