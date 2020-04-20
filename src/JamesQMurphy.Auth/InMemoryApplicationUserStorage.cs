@@ -48,13 +48,13 @@ namespace JamesQMurphy.Auth
 
         public Task<ApplicationUserRecord> SaveAsync(ApplicationUserRecord applicationUserRecord, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _dictByProviderAndNormalizedKey[(applicationUserRecord.Provider, applicationUserRecord.NormalizedKey)] = applicationUserRecord;
+            var savedRecord = ApplicationUserRecord.CreateCleanRecord(applicationUserRecord, DateTime.UtcNow);
+            _dictByProviderAndNormalizedKey[(applicationUserRecord.Provider, applicationUserRecord.NormalizedKey)] = savedRecord;
             if (!_dictByUserIdAndProvider.TryGetValue(applicationUserRecord.UserId, out Dictionary<string, ApplicationUserRecord> dictRec))
             {
                 dictRec = new Dictionary<string, ApplicationUserRecord>();
                 _dictByUserIdAndProvider.Add(applicationUserRecord.UserId, dictRec);
             }
-            var savedRecord = ApplicationUserRecord.CreateCleanRecord(applicationUserRecord, DateTime.UtcNow);
             dictRec[applicationUserRecord.Provider] = savedRecord;
             return Task.FromResult(savedRecord);
         }

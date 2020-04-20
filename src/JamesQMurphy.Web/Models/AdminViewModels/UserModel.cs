@@ -12,5 +12,6 @@ namespace JamesQMurphy.Web.Models.AdminViewModels
         public string email { get; set; }
         public bool emailVerified { get; set; }
         public IEnumerable<(string,string)> externalLogins { get; set; }
+        public DateTime lastUpdatedUtc { get; set; }
     }
 }

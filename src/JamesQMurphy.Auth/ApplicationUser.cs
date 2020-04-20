@@ -24,7 +24,7 @@ namespace JamesQMurphy.Auth
 
         public ApplicationUser(IEnumerable<ApplicationUserRecord> applicationUserRecords)
         {
-            foreach(var record in applicationUserRecords)
+            foreach (var record in applicationUserRecords)
             {
                 if ((records.Count == 0) && (record.Provider != ApplicationUserRecord.RECORD_TYPE_ID))
                 {
@@ -43,6 +43,23 @@ namespace JamesQMurphy.Auth
         public IReadOnlyCollection<ApplicationUserRecord> ApplicationUserRecords => records.Values;
 
         public string UserId => records.Values.First().UserId;
+
+        public DateTime LastUpdated
+        {
+            get
+            {
+                DateTime dateToReturn = DateTime.MinValue;
+                foreach (var record in ApplicationUserRecords)
+                {
+                    if (record.IsDirty)
+                    {
+                        throw new InvalidOperationException("Cannot access LastUpdated value for a user with unsaved records");
+                    }
+                    dateToReturn = record.LastUpdated > dateToReturn ? record.LastUpdated : dateToReturn;
+                }
+                return dateToReturn;
+            }
+        }
 
         public string Email
         {

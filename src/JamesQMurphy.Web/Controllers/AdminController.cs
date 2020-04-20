@@ -100,7 +100,8 @@ namespace JamesQMurphy.Web.Controllers
                     userName = au.UserName,
                     email = au.Email ?? "",
                     emailVerified = au.EmailConfirmed,
-                    externalLogins = (await _userManager.GetLoginsAsync(au)).Select(login => (login.LoginProvider, login.ProviderDisplayName))
+                    externalLogins = (await _userManager.GetLoginsAsync(au)).Select(login => (login.LoginProvider, login.ProviderDisplayName)),
+                    lastUpdatedUtc = au.LastUpdated
                 });
             }
             return View(userModels);

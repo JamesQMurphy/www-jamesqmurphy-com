@@ -12,6 +12,7 @@
             <th scope="col">User Id</th>
             <th scope="col">Email</th>
             <th scope="col">External Logins</th>
+            <th scope="col">Last Updated</th>
         </tr>
     </thead>
     <tbody>
@@ -39,6 +40,11 @@
                     {
                         <div>@login.Item2</div>
                     }
+                </td>
+                <td>
+                    @user.lastUpdatedUtc.ToShortDateString()
+                    @user.lastUpdatedUtc.ToShortTimeString()
+                    UTC
                 </td>
             </tr>
         }
