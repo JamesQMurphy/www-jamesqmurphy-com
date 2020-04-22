@@ -21,7 +21,7 @@ namespace JamesQMurphy.Email.Aws
             _options = options;
         }
 
-        public async Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
+        public async Task<EmailResult> SendEmailAsync(EmailMessage emailMessage)
         {
             using (var client = new AmazonSimpleEmailServiceClient())
             {
@@ -30,21 +30,21 @@ namespace JamesQMurphy.Email.Aws
                     Source = _options.FromAddress,
                     Destination = new Destination()
                     {
-                        ToAddresses = new List<string> { emailAddress }
+                        ToAddresses = new List<string> { emailMessage.EmailAddress }
                     },
                     Message = new Message()
                     {
-                        Subject = new Content(subject),
+                        Subject = new Content(emailMessage.Subject),
                         Body = new Body()
                     }
                 };
-                if (message.Trim().ToLowerInvariant().StartsWith("<html>"))
+                if (emailMessage.Body.Trim().ToLowerInvariant().StartsWith("<html>"))
                 {
-                    sendRequest.Message.Body.Html = new Content(message);
+                    sendRequest.Message.Body.Html = new Content(emailMessage.Body);
                 }
                 else
                 {
-                    sendRequest.Message.Body.Text = new Content(message);
+                    sendRequest.Message.Body.Text = new Content(emailMessage.Body);
                 }
                 var response = await client.SendEmailAsync(sendRequest);
                 return new EmailResult

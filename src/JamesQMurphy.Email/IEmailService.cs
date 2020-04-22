@@ -13,6 +13,6 @@ namespace JamesQMurphy.Email
 
     public interface IEmailService
     {
-        Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message);
+        Task<EmailResult> SendEmailAsync(EmailMessage emailMessage);
     }
 }

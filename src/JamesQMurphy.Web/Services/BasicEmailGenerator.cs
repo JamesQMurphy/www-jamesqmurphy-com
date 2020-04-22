@@ -160,7 +160,11 @@ Comments:
 
             }
 
-            _ = await _emailService.SendEmailAsync(emailAddress, subject, message);
+            _ = await _emailService.SendEmailAsync(new EmailMessage {
+                EmailAddress = emailAddress,
+                Subject = subject,
+                Body = message
+            });
         }
     }
 }
