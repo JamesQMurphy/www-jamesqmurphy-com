@@ -22,7 +22,7 @@ namespace JamesQMurphy.Email.Mailgun
 			_options = options;
 		}
 
-		public async Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
+		public async Task<EmailResult> SendEmailAsync(EmailMessage emailMessage)
         {
 			RestClient client = new RestClient();
 			client.BaseUrl = new Uri(_options.ServiceUrl);
@@ -31,15 +31,15 @@ namespace JamesQMurphy.Email.Mailgun
 			request.AddParameter("domain", _options.MailDomain, ParameterType.UrlSegment);
 			request.Resource = "{domain}/messages";
 			request.AddParameter("from", _options.FromAddress);
-			request.AddParameter("to", emailAddress);
-			request.AddParameter("subject", subject);
-			if (message.Trim().ToLowerInvariant().StartsWith("<html>"))
+			request.AddParameter("to", emailMessage.EmailAddress);
+			request.AddParameter("subject", emailMessage.Subject);
+			if (emailMessage.Body.Trim().ToLowerInvariant().StartsWith("<html>"))
 			{
-				request.AddParameter("html", message);
+				request.AddParameter("html", emailMessage.Body);
 			}
 			else
 			{
-				request.AddParameter("text", message);
+				request.AddParameter("text", emailMessage.Body);
 			}
 			request.Method = Method.POST;
 			var restResponse = await client.ExecuteAsync(request);

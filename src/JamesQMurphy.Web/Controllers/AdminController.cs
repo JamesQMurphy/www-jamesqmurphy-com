@@ -69,11 +69,12 @@ namespace JamesQMurphy.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _emailService.SendEmailAsync(
-                    model.Email,
-                    $"Test message from {WebSiteOptions.WebSiteTitle}",
-                    $"This is a test message from {WebSiteOptions.WebSiteTitle}.{Environment.NewLine}{Environment.NewLine}{model.Message}"
-                    );
+                var result = await _emailService.SendEmailAsync(new EmailMessage
+                {
+                    EmailAddress = model.Email,
+                    Subject = $"Test message from {WebSiteOptions.WebSiteTitle}",
+                    Body = $"This is a test message from {WebSiteOptions.WebSiteTitle}.{Environment.NewLine}{Environment.NewLine}{model.Message}"
+                });
 
                 if (result.Success)
                 {
