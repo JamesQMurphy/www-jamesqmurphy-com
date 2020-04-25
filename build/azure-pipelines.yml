@@ -10,8 +10,8 @@ pool:
 
 variables:
   versionMajor: 0
-  versionMinor: 4
-  versionPatch: 6
+  versionMinor: 5
+  versionPatch: 0
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.processLogsPackageName: JamesQMurphy.ProcessCloudWatchLogs.$(Build.BuildNumber).zip
