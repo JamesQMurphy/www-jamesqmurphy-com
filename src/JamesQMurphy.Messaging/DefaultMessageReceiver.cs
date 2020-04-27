@@ -21,6 +21,8 @@ namespace JamesQMurphy.Messaging
             {
                 _messageReceivedEvents[messageType] = new MessageReceivedEvent();
             }
+
+            MessageHandlers.RegisterAllHandlers(this);
         }
 
         public void AddMessageHandler(MessageTypes messageType, MessageReceivedDelegate handler)

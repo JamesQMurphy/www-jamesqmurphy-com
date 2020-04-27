@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JamesQMurphy.Messaging", "J
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Messaging.UnitTests", "JamesQMurphy.Messaging.UnitTests\JamesQMurphy.Messaging.UnitTests.csproj", "{DC035B06-8709-4965-A1AD-7B793EEF4ACB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JamesQMurphy.Messaging.Aws", "JamesQMurphy.Messaging.Aws\JamesQMurphy.Messaging.Aws.csproj", "{6340A51F-D2C4-466C-AC8D-5275B2059A1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{DC035B06-8709-4965-A1AD-7B793EEF4ACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC035B06-8709-4965-A1AD-7B793EEF4ACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC035B06-8709-4965-A1AD-7B793EEF4ACB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6340A51F-D2C4-466C-AC8D-5275B2059A1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6340A51F-D2C4-466C-AC8D-5275B2059A1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6340A51F-D2C4-466C-AC8D-5275B2059A1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6340A51F-D2C4-466C-AC8D-5275B2059A1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
