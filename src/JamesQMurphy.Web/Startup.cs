@@ -67,34 +67,6 @@ namespace JamesQMurphy.Web
             {
                 services.AddDataProtection()
                     .PersistKeysToAWSSystemsManager($"/{webSiteOptions.AppName}/DataProtection");
-
-                // Load certain secrets from AWS SSM, if available
-                using (var ssmClient = new AmazonSimpleSystemsManagementClient())
-                {
-                    // AWS SSM keys cannot have colons, so replace them with forward slashes
-                    var keys = new List<string>
-                    {
-                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_ID.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_SECRET.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_ID.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_SECRET.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GOOGLE_CLIENT_ID.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GOOGLE_CLIENT_SECRET.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{EMAIL_SERVICEAPIKEY.Replace(':','/')}"
-                    };
-                    var response = ssmClient.GetParametersAsync(
-                        new Amazon.SimpleSystemsManagement.Model.GetParametersRequest
-                        {
-                            Names = keys,
-                            WithDecryption = true
-                        }
-                    ).GetAwaiter().GetResult();
-                    foreach(var p in response.Parameters)
-                    {
-                        // Replace the Configuration key with the SSM key, minus the app name and slashes
-                        Configuration[p.Name.Replace($"/{ webSiteOptions.AppName}/", "").Replace('/',':')] = p.Value;
-                    }
-                }
             }
 
             switch (Configuration["UserStore:Service"])
