@@ -52,7 +52,13 @@ namespace JamesQMurphy.Lambda.EmailSender
                 context.Logger.LogLine($"({sqsMessage.MessageId}) Subject: {body}");
 
                 // Send the e-mail
-                var result = emailService.SendEmailAsync(recipient, subject, body).GetAwaiter().GetResult();
+                var emailMessage = new Email.EmailMessage
+                {
+                    EmailAddress = recipient,
+                    Subject = subject,
+                    Body = body
+                };
+                var result = emailService.SendEmailAsync(emailMessage).GetAwaiter().GetResult();
                 context.Logger.LogLine($"({sqsMessage.MessageId}) Email service returned success: {result.Success} details: {result.Details}");
             }
         }

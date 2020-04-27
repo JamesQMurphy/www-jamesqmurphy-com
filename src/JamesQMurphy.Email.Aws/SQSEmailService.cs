@@ -27,12 +27,12 @@ namespace JamesQMurphy.Email.Aws
 
         }
 
-        public async Task<EmailResult> SendEmailAsync(string emailAddress, string subject, string message)
+        public async Task<EmailResult> SendEmailAsync(EmailMessage emailMessage)
         {
             var sbQueueMessage = new StringBuilder();
-            sbQueueMessage.AppendLine(emailAddress);
-            sbQueueMessage.AppendLine(subject);
-            sbQueueMessage.AppendLine(message);
+            sbQueueMessage.AppendLine(emailMessage.EmailAddress);
+            sbQueueMessage.AppendLine(emailMessage.Subject);
+            sbQueueMessage.AppendLine(emailMessage.Body);
 
             var sendMessageRequest = new SendMessageRequest(_options.QueueUrl, sbQueueMessage.ToString());
 
