@@ -56,7 +56,7 @@ namespace JamesQMurphy.Aws.Configuration
         {
             try
             {
-
+                Console.WriteLine($"TryGet key:{key}");
                 var response = ParameterStoreConfigurationSource.AmazonSimpleSystemsManagementClient.GetParameterAsync(
                     new GetParameterRequest
                     {
@@ -64,10 +64,12 @@ namespace JamesQMurphy.Aws.Configuration
                         WithDecryption = true
                     }).GetAwaiter().GetResult();
                 value = response.Parameter.Value;
+                Console.WriteLine($"TryGet returned value {value} for key {key}");
                 return true;
             }
-            catch(Amazon.Runtime.AmazonServiceException)
+            catch(Amazon.Runtime.AmazonServiceException e)
             {
+                Console.WriteLine($"TryGet key {key} got exception {e.Message} {e.Source}");
                 value = null;
                 return false;
             }
