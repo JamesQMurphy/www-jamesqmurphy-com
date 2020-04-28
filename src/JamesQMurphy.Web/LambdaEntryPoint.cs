@@ -16,6 +16,7 @@ namespace JamesQMurphy.Web
                     // we can get the AppName, which will be the root of the SMS Parameter Store config
                     var webSiteOptions = new WebSiteOptions();
                     builderContext.Configuration.Bind(webSiteOptions);
+                    System.Console.WriteLine($"builderContext.Configuration[WebSiteTitle]-> {builderContext.Configuration["WebSiteTitle"]}");
 
                     // Now add the Parameter Store as a config source
                     config.AddSmsParameterStore($"/{webSiteOptions.AppName}");
