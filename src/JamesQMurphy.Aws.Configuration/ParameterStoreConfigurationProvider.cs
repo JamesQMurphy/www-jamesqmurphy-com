@@ -46,7 +46,8 @@ namespace JamesQMurphy.Aws.Configuration
             }
         }
 
-        public IChangeToken GetReloadToken() => null;
+        private IChangeToken _changeToken = new ConfigurationReloadToken();
+        public IChangeToken GetReloadToken() => _changeToken;
 
         public void Load() {}
         public void Set(string key, string value) { }
