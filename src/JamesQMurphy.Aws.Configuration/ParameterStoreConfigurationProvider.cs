@@ -21,7 +21,7 @@ namespace JamesQMurphy.Aws.Configuration
 
             try
             {
-                string nextToken = null;
+                string nextToken = default;
                 do
                 {
                     var response = ParameterStoreConfigurationSource.AmazonSimpleSystemsManagementClient.GetParametersByPathAsync(
