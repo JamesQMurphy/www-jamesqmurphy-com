@@ -17,6 +17,7 @@ namespace JamesQMurphy.Aws.Configuration
 
         public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
         {
+            if (parentPath == null) throw new ArgumentNullException("parentPath");
             var listEarlierKeys = new List<string>(earlierKeys);
 
             try
@@ -31,6 +32,7 @@ namespace JamesQMurphy.Aws.Configuration
                             WithDecryption = true,
                             NextToken = nextToken
                         }).GetAwaiter().GetResult();
+                    if (response == null) throw new ApplicationException("response is null");
                     var keysToAdd = response.Parameters
                         .Select(p => p.Name)
                         .Where(k => !listEarlierKeys.Contains(k));
