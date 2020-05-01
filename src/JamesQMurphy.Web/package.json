@@ -34,7 +34,7 @@
     "bootstrap": "^4.3.1",
     "clean-css-cli": "^4.3.0",
     "copyfiles": "^2.1.0",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "jquery-validation": "^1.19.0",
     "jquery-validation-unobtrusive": "^3.2.11",
     "mermaid": "^8.2.5",
