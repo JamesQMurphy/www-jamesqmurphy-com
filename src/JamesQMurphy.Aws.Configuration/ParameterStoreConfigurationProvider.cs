@@ -7,18 +7,17 @@ using System.Linq;
 
 namespace JamesQMurphy.Aws.Configuration
 {
-    public class ParameterStoreConfigurationProvider : IConfigurationProvider
+    public class ParameterStoreConfigurationProvider : HeirarchicalDiscoveryConfigurationProvider
     {
         public ParameterStoreConfigurationSource ParameterStoreConfigurationSource { get; }
         public ParameterStoreConfigurationProvider(ParameterStoreConfigurationSource parameterStoreConfigurationSource)
+            : base("/", parameterStoreConfigurationSource.BasePath)
         {
             ParameterStoreConfigurationSource = parameterStoreConfigurationSource;
         }
 
-        public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
+        protected override bool TryLoadKeysUnder(string basePath, IDictionary<string, string> keyValuePairs)
         {
-            var listEarlierKeys = new List<string>(earlierKeys);
-
             try
             {
                 string nextToken = default;
@@ -27,51 +26,48 @@ namespace JamesQMurphy.Aws.Configuration
                     var response = ParameterStoreConfigurationSource.AmazonSimpleSystemsManagementClient.GetParametersByPathAsync(
                         new GetParametersByPathRequest
                         {
-                            Path = $"{ParameterStoreConfigurationSource.BasePath}{ConvertToSMSHeirarchy(parentPath)}",
+                            Path = basePath,
                             WithDecryption = true,
+                            Recursive = true,
                             NextToken = nextToken
                         }).GetAwaiter().GetResult();
-                    var keysToAdd = response.Parameters
-                        .Select(p => p.Name)
-                        .Where(k => !listEarlierKeys.Contains(k));
-                    listEarlierKeys.AddRange(keysToAdd);
+
+                    // Store the keys/values that we got back
+                    foreach (var parameter in response.Parameters)
+                    {
+                        keyValuePairs[parameter.Name] = parameter.Value;
+                    }
+
                     nextToken = response.NextToken;
                 } while (!String.IsNullOrEmpty(nextToken));
-
-                return listEarlierKeys;
             }
             catch (Amazon.Runtime.AmazonServiceException)
             {
-                return earlierKeys;
+                // Typically an IAM permissions issue, but whatever the issue,
+                // we cannot search the path
+                return false;
             }
+            return true;
         }
 
-        private IChangeToken _changeToken = new ConfigurationReloadToken();
-        public IChangeToken GetReloadToken() => _changeToken;
-
-        public void Load() {}
-        public void Set(string key, string value) { }
-
-        public bool TryGet(string key, out string value)
+        protected override bool TryLoadKey(string key, out string value)
         {
             try
             {
                 var response = ParameterStoreConfigurationSource.AmazonSimpleSystemsManagementClient.GetParameterAsync(
                     new GetParameterRequest
                     {
-                        Name = $"{ParameterStoreConfigurationSource.BasePath}{ConvertToSMSHeirarchy(key)}",
+                        Name = key,
                         WithDecryption = true
                     }).GetAwaiter().GetResult();
                 value = response.Parameter.Value;
                 return true;
             }
-            catch(Amazon.Runtime.AmazonServiceException e)
+            catch (Amazon.Runtime.AmazonServiceException)
             {
                 value = null;
                 return false;
             }
         }
-
-        private static string ConvertToSMSHeirarchy(string parameterName) => parameterName?.Replace(':', '/') ?? "";
     }
 }
