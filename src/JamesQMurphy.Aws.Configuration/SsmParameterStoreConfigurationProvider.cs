@@ -7,12 +7,12 @@ using System.Linq;
 
 namespace JamesQMurphy.Aws.Configuration
 {
-    public class ParameterStoreConfigurationProvider : ConfigurationProvider
+    public class SsmParameterStoreConfigurationProvider : ConfigurationProvider
     {
         public static readonly string KeyDelimiter = "/";
 
-        public ParameterStoreConfigurationSource ParameterStoreConfigurationSource { get; }
-        public ParameterStoreConfigurationProvider(ParameterStoreConfigurationSource parameterStoreConfigurationSource)
+        public SsmParameterStoreConfigurationSource ParameterStoreConfigurationSource { get; }
+        public SsmParameterStoreConfigurationProvider(SsmParameterStoreConfigurationSource parameterStoreConfigurationSource)
         {
             ParameterStoreConfigurationSource = parameterStoreConfigurationSource;
         }

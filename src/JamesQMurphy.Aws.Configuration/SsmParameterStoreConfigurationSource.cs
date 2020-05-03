@@ -6,30 +6,30 @@ using System.Text;
 
 namespace JamesQMurphy.Aws.Configuration
 {
-    public class ParameterStoreConfigurationSource : IConfigurationSource
+    public class SsmParameterStoreConfigurationSource : IConfigurationSource
     {
         public string BasePath { get; }
         public AmazonSimpleSystemsManagementClient AmazonSimpleSystemsManagementClient { get; }
-        public ParameterStoreConfigurationSource(string basePath, AmazonSimpleSystemsManagementClient amazonSimpleSystemsManagementClient)
+        public SsmParameterStoreConfigurationSource(string basePath, AmazonSimpleSystemsManagementClient amazonSimpleSystemsManagementClient)
         {
             if (basePath is null)
             {
                 throw new ArgumentNullException(nameof(basePath));
             }
-            if (basePath.EndsWith("/"))
+            if (basePath.EndsWith(SsmParameterStoreConfigurationProvider.KeyDelimiter))
             {
                 BasePath = basePath;
             }
             else
             {
-                BasePath = $"{basePath}/";
+                BasePath = basePath + SsmParameterStoreConfigurationProvider.KeyDelimiter;
             }
-            AmazonSimpleSystemsManagementClient = amazonSimpleSystemsManagementClient;
+            AmazonSimpleSystemsManagementClient = amazonSimpleSystemsManagementClient ?? throw new ArgumentNullException(nameof(amazonSimpleSystemsManagementClient));
         }
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new ParameterStoreConfigurationProvider(this);
+            return new SsmParameterStoreConfigurationProvider(this);
         }
     }
 }

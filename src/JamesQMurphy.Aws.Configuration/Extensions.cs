@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Configuration
             string BasePath = "/",
             AmazonSimpleSystemsManagementClient client = null)
         {
-            configuration.Add(new ParameterStoreConfigurationSource(BasePath, client ?? new AmazonSimpleSystemsManagementClient()));
+            configuration.Add(new SsmParameterStoreConfigurationSource(BasePath, client ?? new AmazonSimpleSystemsManagementClient()));
             return configuration;
         }
     }
