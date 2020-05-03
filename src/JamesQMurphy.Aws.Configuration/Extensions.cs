@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.Configuration
 {
     public static class Extensions
     {
-        public static IConfigurationBuilder AddSmsParameterStore(
+        public static IConfigurationBuilder AddSsmParameterStore(
             this IConfigurationBuilder configuration,
             string BasePath = "/",
             AmazonSimpleSystemsManagementClient client = null)

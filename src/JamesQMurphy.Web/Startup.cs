@@ -27,7 +27,6 @@ namespace JamesQMurphy.Web
         private const string AUTH_GITHUB_CLIENT_SECRET = "Authentication:GitHub:ClientSecret";
         private const string AUTH_GOOGLE_CLIENT_ID = "Authentication:Google:ClientId";
         private const string AUTH_GOOGLE_CLIENT_SECRET = "Authentication:Google:ClientSecret";
-        private const string EMAIL_SERVICEAPIKEY = "Email:ServiceApiKey";
 
         public Startup(IConfiguration configuration)
         {

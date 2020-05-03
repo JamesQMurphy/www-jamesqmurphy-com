@@ -12,7 +12,7 @@ namespace JamesQMurphy.Web
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {
-                    config.AddSmsParameterStore($"/{System.Environment.GetEnvironmentVariable("AppName")}");
+                    config.AddSsmParameterStore($"/{System.Environment.GetEnvironmentVariable("AppName")}");
                 });
         }
     }
