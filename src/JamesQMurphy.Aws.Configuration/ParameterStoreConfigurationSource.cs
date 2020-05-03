@@ -12,6 +12,10 @@ namespace JamesQMurphy.Aws.Configuration
         public AmazonSimpleSystemsManagementClient AmazonSimpleSystemsManagementClient { get; }
         public ParameterStoreConfigurationSource(string basePath, AmazonSimpleSystemsManagementClient amazonSimpleSystemsManagementClient)
         {
+            if (basePath is null)
+            {
+                throw new ArgumentNullException(nameof(basePath));
+            }
             if (basePath.EndsWith("/"))
             {
                 BasePath = basePath;
