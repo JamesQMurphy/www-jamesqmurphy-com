@@ -367,12 +367,6 @@ Resources:
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
           ArticleStore__DynamoDbIndexName: !Ref DynamoDbIndexBlogArticlesParameter
-          Authentication__Twitter__ConsumerAPIKey: ""
-          Authentication__Twitter__ConsumerSecret: ""
-          Authentication__GitHub__ClientId: ""
-          Authentication__GitHub__ClientSecret: ""
-          Authentication__Google__ClientId: ""
-          Authentication__Google__ClientSecret: ""
           UserStore__Service: DynamoDb
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
           UserStore__UserIdIndexName: "userId-index"
