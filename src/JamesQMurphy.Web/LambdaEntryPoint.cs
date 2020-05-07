@@ -12,7 +12,15 @@ namespace JamesQMurphy.Web
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {
-                    config.AddSsmParameterStore($"/{System.Environment.GetEnvironmentVariable("AppName")}");
+                    config.Sources.Clear();
+
+                    // Configuration sources for running under AWS Lambda
+                    config
+                        .AddJsonFile("appsettings.json")
+                        .AddJsonFile($"appsettings.{builderContext.HostingEnvironment.EnvironmentName}.json")
+                        .AddSsmParameterStore($"/{System.Environment.GetEnvironmentVariable("AppName")}")
+                        .AddEnvironmentVariables();
+                    // We are intentionally omitting the command-line configuration provider
                 });
         }
     }
