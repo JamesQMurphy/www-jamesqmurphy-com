@@ -644,7 +644,7 @@ Resources:
       Handler: ProcessCloudWatchLogs::ProcessCloudWatchLogs.Bootstrap::ExecuteFunction
       MemorySize: 320
       Role: !GetAtt TheRoleForTheLogProcessingLambdaFunction.Arn
-      Runtime: dotnetcore2.1
+      Runtime: dotnetcore3.1
       Timeout: 15
 
 
