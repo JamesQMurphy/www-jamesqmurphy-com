@@ -358,11 +358,11 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
-          WebSiteOptions_WebSiteTitle: Cold-Brewed DevOps
-          WebSiteOptions_AppName: !Sub '${AppNameParameter}-${StageParameter}'
-          WebSiteOptions_SiteUrl: !Sub https://${DomainNameParameter}
-          WebSiteOptions_ImageBasePath: /blogimages
-          WebSiteOptions_DataProtection: AWS
+          WebSiteOptions__WebSiteTitle: Cold-Brewed DevOps
+          WebSiteOptions__AppName: !Sub '${AppNameParameter}-${StageParameter}'
+          WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
+          WebSiteOptions__ImageBasePath: /blogimages
+          WebSiteOptions__DataProtection: AWS
           UseStaticFiles: "false"
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
