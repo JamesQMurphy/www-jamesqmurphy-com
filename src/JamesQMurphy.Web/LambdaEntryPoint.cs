@@ -9,7 +9,7 @@ namespace JamesQMurphy.Web
         protected override void Init(IWebHostBuilder builder)
         {
             builder
-                .UseStartup<Startup>()
+                .UseStartup<StartupAws>()
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {
                     config.Sources.Clear();
@@ -17,6 +17,8 @@ namespace JamesQMurphy.Web
                     // Configuration sources for running under AWS Lambda
                     config
                         .AddJsonFile("appsettings.json", optional: false)
+
+                        .AddJsonFile("appsettings.aws.json", optional: false)
 
                         // appsettings.{EnvironmentName}.json intentionally omitted
 

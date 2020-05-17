@@ -28,14 +28,12 @@ namespace JamesQMurphy.Web
         private const string AUTH_GOOGLE_CLIENT_ID = "Authentication:Google:ClientId";
         private const string AUTH_GOOGLE_CLIENT_SECRET = "Authentication:Google:ClientSecret";
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            WebHostEnvironment = webHostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
-        public IWebHostEnvironment WebHostEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -61,14 +59,9 @@ namespace JamesQMurphy.Web
                 options.Cookie.Name = ".JQM.ResultMessages";
             });
 
+            services.AddDataProtection();
+
             var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration, "WebSiteOptions");
-            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-            services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
-            if (webSiteOptions.DataProtection == "AWS")
-            {
-                services.AddDataProtection()
-                    .PersistKeysToAWSSystemsManager($"/{System.Environment.GetEnvironmentVariable("ApplicationStageKey")}/DataProtection");
-            }
 
             switch (Configuration["UserStore:Service"])
             {
