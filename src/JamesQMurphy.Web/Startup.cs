@@ -59,7 +59,7 @@ namespace JamesQMurphy.Web
                 options.Cookie.Name = ".JQM.ResultMessages";
             });
 
-            var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
+            var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration, "WebSiteOptions");
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
             if (webSiteOptions.DataProtection == "AWS")
@@ -126,7 +126,6 @@ namespace JamesQMurphy.Web
                 });
             }
 
-            services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddHealthChecks();
             services.ConfigureApplicationCookie(options =>
             {
