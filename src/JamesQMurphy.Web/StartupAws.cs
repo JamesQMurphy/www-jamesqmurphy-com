@@ -25,7 +25,7 @@ namespace JamesQMurphy.Web
             Startup.ConfigureServices(services);
 
             services.AddDataProtection()
-                .PersistKeysToAWSSystemsManager($"/{Environment.GetEnvironmentVariable("ApplicationStageKey")}/DataProtection");
+                .PersistKeysToAWSSystemsManager($"/DataProtection/{Environment.GetEnvironmentVariable("ApplicationStageKey")}");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) => Startup.Configure(app, env);
