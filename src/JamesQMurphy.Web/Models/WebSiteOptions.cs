@@ -12,7 +12,6 @@ namespace JamesQMurphy.Web.Models
         public string DataProtection { get; set; } = "";
         public string TwitterAccount { get; set; } = "JamesQMurphy";
         public string GithubAccount { get; set; } = "JamesQMurphy";
-        public string CommentsEmail { get; set; } = "nowhere@local";
         public string SiteUrl {get; set; } = "";
         public string ImageBasePath { get; set; } = "";
         public int ArticlesInRss { get; set; } = 1;
