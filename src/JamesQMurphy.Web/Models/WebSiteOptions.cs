@@ -8,7 +8,6 @@ namespace JamesQMurphy.Web.Models
     public class WebSiteOptions
     {
         public string WebSiteTitle { get; set; } = "Website";
-        public string DataProtection { get; set; } = "";
         public string TwitterAccount { get; set; } = "JamesQMurphy";
         public string GithubAccount { get; set; } = "JamesQMurphy";
         public string SiteUrl {get; set; } = "";
