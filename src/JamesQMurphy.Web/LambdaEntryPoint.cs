@@ -17,10 +17,10 @@ namespace JamesQMurphy.Web
                     // Configuration sources for running under AWS Lambda
                     config
                         .AddJsonFile("appsettings.json", optional: false)
-                        .AddJsonFile($"appsettings.{builderContext.HostingEnvironment.EnvironmentName}.json", optional: true)
-                        .AddSsmParameterStore($"/{System.Environment.GetEnvironmentVariable("AppName")}")
+                        // appsettings.{EnvironmentName}.json intentionally omitted
+                        .AddSsmParameterStore($"/{builderContext.HostingEnvironment.ApplicationName}")
                         .AddEnvironmentVariables();
-                    // We are intentionally omitting the command-line configuration provider
+                        // Command-line configuration provider intentionally omitted
                 });
         }
     }

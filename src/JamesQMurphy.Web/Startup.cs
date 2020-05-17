@@ -28,12 +28,14 @@ namespace JamesQMurphy.Web
         private const string AUTH_GOOGLE_CLIENT_ID = "Authentication:Google:ClientId";
         private const string AUTH_GOOGLE_CLIENT_SECRET = "Authentication:Google:ClientSecret";
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             Configuration = configuration;
+            WebHostEnvironment = webHostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment WebHostEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -65,7 +67,7 @@ namespace JamesQMurphy.Web
             if (webSiteOptions.DataProtection == "AWS")
             {
                 services.AddDataProtection()
-                    .PersistKeysToAWSSystemsManager($"/{webSiteOptions.AppName}/DataProtection");
+                    .PersistKeysToAWSSystemsManager($"/{WebHostEnvironment.ApplicationName}/DataProtection");
             }
 
             switch (Configuration["UserStore:Service"])
