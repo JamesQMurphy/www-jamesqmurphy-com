@@ -62,7 +62,8 @@ Parameters:
 
   CommentsEmailParameter:
     Type: String
-    Description: Email for comments
+    Description: DEPRECATED
+    Default: DEPRECATED
 
   CertificateArnParameter:
     Type: String
@@ -357,12 +358,11 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
-          WebSiteTitle: Cold-Brewed DevOps
-          AppName: !Sub '${AppNameParameter}-${StageParameter}'
-          CommentsEmail: !Ref CommentsEmailParameter
-          SiteUrl: !Sub https://${DomainNameParameter}
-          ImageBasePath: /blogimages
-          DataProtection: AWS
+          WebSiteOptions_WebSiteTitle: Cold-Brewed DevOps
+          WebSiteOptions_AppName: !Sub '${AppNameParameter}-${StageParameter}'
+          WebSiteOptions_SiteUrl: !Sub https://${DomainNameParameter}
+          WebSiteOptions_ImageBasePath: /blogimages
+          WebSiteOptions_DataProtection: AWS
           UseStaticFiles: "false"
           ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
