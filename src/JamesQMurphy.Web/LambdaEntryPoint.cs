@@ -17,9 +17,15 @@ namespace JamesQMurphy.Web
                     // Configuration sources for running under AWS Lambda
                     config
                         .AddJsonFile("appsettings.json", optional: false)
+
                         // appsettings.{EnvironmentName}.json intentionally omitted
-                        .AddSsmParameterStore($"/{builderContext.HostingEnvironment.ApplicationName}")
+
+                        // We can't use builderContext.ApplicationName thanks to this issue:
+                        // https://github.com/dotnet/aspnetcore/issues/11085
+                        .AddSsmParameterStore($"/{System.Environment.GetEnvironmentVariable("ApplicationStageKey")}")
+
                         .AddEnvironmentVariables();
+
                         // Command-line configuration provider intentionally omitted
                 });
         }

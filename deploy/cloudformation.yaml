@@ -358,7 +358,7 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
-          ASPNETCORE_APPLICATIONNAME: !Sub '${AppNameParameter}-${StageParameter}'
+          ApplicationStageKey: !Sub '${AppNameParameter}-${StageParameter}'
           WebSiteOptions__WebSiteTitle: Cold-Brewed DevOps
           WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
           WebSiteOptions__ImageBasePath: /blogimages
