@@ -67,7 +67,7 @@ namespace JamesQMurphy.Web
             if (webSiteOptions.DataProtection == "AWS")
             {
                 services.AddDataProtection()
-                    .PersistKeysToAWSSystemsManager($"/{WebHostEnvironment.ApplicationName}/DataProtection");
+                    .PersistKeysToAWSSystemsManager($"/{System.Environment.GetEnvironmentVariable("ApplicationStageKey")}/DataProtection");
             }
 
             switch (Configuration["UserStore:Service"])
