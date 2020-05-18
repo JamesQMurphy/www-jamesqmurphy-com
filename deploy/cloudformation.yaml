@@ -222,7 +222,7 @@ Resources:
                   - 'ssm:GetParameter'
                   - 'ssm:GetParameters'
                   - 'ssm:GetParametersByPath'
-                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/AppSettings/all*'
         - PolicyName: 'SendEmailAs-no-reply@jamesqmurphy.com'
           PolicyDocument:
             Version: 2012-10-17
@@ -614,7 +614,7 @@ Resources:
           Email__FromAddress: "Cold-Brewed DevOps <no-reply@mg.jamesqmurphy.com>"
           Email__MailDomain: mg.jamesqmurphy.com
           Email__ServiceUrl: https://api.mailgun.net/v3
-          Email__ServiceApiKeyName: !Sub '/${AppNameParameter}-${StageParameter}/Email/ServiceApiKey'
+          Email__ServiceApiKeyName: !Sub '/AppSettings/all/Email/ServiceApiKey'
 
 
   TheEmailSenderEventSourceMapping:
