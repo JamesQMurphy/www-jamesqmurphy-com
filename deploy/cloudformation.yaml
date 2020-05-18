@@ -614,7 +614,7 @@ Resources:
           Email__FromAddress: "Cold-Brewed DevOps <no-reply@mg.jamesqmurphy.com>"
           Email__MailDomain: mg.jamesqmurphy.com
           Email__ServiceUrl: https://api.mailgun.net/v3
-          Email__ServiceApiKeyName: !Sub '/${AppNameParameter}-${StageParameter}/Email/ServiceApiKey'
+          Email__ServiceApiKeyName: !Sub '/AppSettings/all/Email/ServiceApiKey'
 
 
   TheEmailSenderEventSourceMapping:
