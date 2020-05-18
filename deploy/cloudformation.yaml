@@ -367,6 +367,7 @@ Resources:
           Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
           UseStaticFiles: "false"
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
+          WebSiteOptions__WebSiteTitle: !Sub '{{resolve:ssm:/play/${AppNameParameter}-${StageParameter}/p1:1}}'
           WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
           WebSiteOptions__ImageBasePath: /blogimages
       Tags:
