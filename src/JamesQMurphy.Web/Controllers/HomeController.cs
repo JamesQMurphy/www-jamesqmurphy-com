@@ -24,7 +24,7 @@ namespace JamesQMurphy.Web.Controllers
         {
             // Need to optimize this
             var lastTwoArticles = await articleStore.GetLastArticlesAsync(2);
-            var lastTwoArticlesList = lastTwoArticles.ToList();
+            var lastTwoArticlesList = lastTwoArticles.Append(null).Append(null).ToList();
             var homePageItems = new HomePageItems(lastTwoArticlesList[0], lastTwoArticlesList[1]);
 
             return View(homePageItems);

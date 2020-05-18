@@ -186,12 +186,13 @@ namespace JamesQMurphy.Web
                 app.UseStaticFiles();
             }
             // If using a LocalFolder article store, map ImageBasePath to the article store path so that the images load
-            if ((Configuration["ArticleStore:Service"] == "LocalFolder") && (Configuration["ImageBasePath"] != "/"))
+            var imageBasePath = Configuration["WebSiteOptions:ImageBasePath"];
+            if ((Configuration["ArticleStore:Service"] == "LocalFolder") && (imageBasePath != "/"))
             {
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(Path.GetFullPath(Configuration["ArticleStore:Path"])),
-                    RequestPath = Configuration["ImageBasePath"]
+                    RequestPath = imageBasePath
                 });
             }
 
