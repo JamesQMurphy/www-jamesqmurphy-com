@@ -40,11 +40,6 @@ Parameters:
     Description: Name of the DynamoDB table for blog articles
     Default: dev-blog
 
-  DynamoDbIndexBlogArticlesParameter:
-    Type: String
-    Description: Name of the DynamoDB index for blog articles
-    Default: articleType-timestamp-index
-
   DynamoDbTableUsersParameter:
     Type: String
     Description: Name of the DynamoDB table for users
@@ -367,19 +362,13 @@ Resources:
       Environment:
         Variables:
           ApplicationStageKey: !Sub '${AppNameParameter}-${StageParameter}'
-          WebSiteOptions__WebSiteTitle: Cold-Brewed DevOps
-          WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
-          WebSiteOptions__ImageBasePath: /blogimages
-          UseStaticFiles: "false"
-          ArticleStore__Service: DynamoDb
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
-          ArticleStore__DynamoDbIndexName: !Ref DynamoDbIndexBlogArticlesParameter
-          UserStore__Service: DynamoDb
-          UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
-          UserStore__UserIdIndexName: "userId-index"
-          UserStore__NormalizedUserNameIndexName: "normalizedUsername-index"
           Email__Service: SQS
           Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
+          UseStaticFiles: "false"
+          UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
+          WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
+          WebSiteOptions__ImageBasePath: /blogimages
       Tags:
         - Key: app
           Value: !Ref AppNameParameter
