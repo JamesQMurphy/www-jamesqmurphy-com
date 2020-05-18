@@ -368,6 +368,7 @@ Resources:
           UseStaticFiles: "false"
           UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
           WebSiteOptions__WebSiteTitle: !Sub '{{resolve:ssm:/play/${AppNameParameter}-${StageParameter}/p1:1}}'
+          WebSiteOptions__TestForRole: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:/play/${AppNameParameter}-${StageParameter}/p2:1}}*'
           WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
           WebSiteOptions__ImageBasePath: /blogimages
       Tags:
