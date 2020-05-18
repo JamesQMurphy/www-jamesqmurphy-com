@@ -27,7 +27,6 @@ namespace JamesQMurphy.Web
         private const string AUTH_GITHUB_CLIENT_SECRET = "Authentication:GitHub:ClientSecret";
         private const string AUTH_GOOGLE_CLIENT_ID = "Authentication:Google:ClientId";
         private const string AUTH_GOOGLE_CLIENT_SECRET = "Authentication:Google:ClientSecret";
-        private const string EMAIL_SERVICEAPIKEY = "Email:ServiceApiKey";
 
         public Startup(IConfiguration configuration)
         {
@@ -60,42 +59,9 @@ namespace JamesQMurphy.Web
                 options.Cookie.Name = ".JQM.ResultMessages";
             });
 
-            var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration);
-            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-            services.AddAWSService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
-            if (webSiteOptions.DataProtection == "AWS")
-            {
-                services.AddDataProtection()
-                    .PersistKeysToAWSSystemsManager($"/{webSiteOptions.AppName}/DataProtection");
+            services.AddDataProtection();
 
-                // Load certain secrets from AWS SSM, if available
-                using (var ssmClient = new AmazonSimpleSystemsManagementClient())
-                {
-                    // AWS SSM keys cannot have colons, so replace them with forward slashes
-                    var keys = new List<string>
-                    {
-                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_ID.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_TWITTER_CLIENT_SECRET.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_ID.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GITHUB_CLIENT_SECRET.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GOOGLE_CLIENT_ID.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{AUTH_GOOGLE_CLIENT_SECRET.Replace(':','/')}",
-                        $"/{webSiteOptions.AppName}/{EMAIL_SERVICEAPIKEY.Replace(':','/')}"
-                    };
-                    var response = ssmClient.GetParametersAsync(
-                        new Amazon.SimpleSystemsManagement.Model.GetParametersRequest
-                        {
-                            Names = keys,
-                            WithDecryption = true
-                        }
-                    ).GetAwaiter().GetResult();
-                    foreach(var p in response.Parameters)
-                    {
-                        // Replace the Configuration key with the SSM key, minus the app name and slashes
-                        Configuration[p.Name.Replace($"/{ webSiteOptions.AppName}/", "").Replace('/',':')] = p.Value;
-                    }
-                }
-            }
+            var webSiteOptions = services.ConfigurePoco<WebSiteOptions>(Configuration, "WebSiteOptions");
 
             switch (Configuration["UserStore:Service"])
             {
@@ -155,7 +121,6 @@ namespace JamesQMurphy.Web
                 });
             }
 
-            services.ConfigurePoco<WebSiteOptions>(Configuration);
             services.AddHealthChecks();
             services.ConfigureApplicationCookie(options =>
             {
@@ -221,12 +186,13 @@ namespace JamesQMurphy.Web
                 app.UseStaticFiles();
             }
             // If using a LocalFolder article store, map ImageBasePath to the article store path so that the images load
-            if ((Configuration["ArticleStore:Service"] == "LocalFolder") && (Configuration["ImageBasePath"] != "/"))
+            var imageBasePath = Configuration["WebSiteOptions:ImageBasePath"];
+            if ((Configuration["ArticleStore:Service"] == "LocalFolder") && (imageBasePath != "/"))
             {
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(Path.GetFullPath(Configuration["ArticleStore:Path"])),
-                    RequestPath = Configuration["ImageBasePath"]
+                    RequestPath = imageBasePath
                 });
             }
 

@@ -33,6 +33,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="appsettings.Development.json" />
+  </ItemGroup>  
   
   <ItemGroup>
     <PackageReference Include="Amazon.AspNetCore.DataProtection.SSM" Version="1.1.0" />
@@ -52,6 +56,7 @@
   <ItemGroup>
     <ProjectReference Include="..\JamesQMurphy.Auth.Aws\JamesQMurphy.Auth.Aws.csproj" />
     <ProjectReference Include="..\JamesQMurphy.Auth\JamesQMurphy.Auth.csproj" />
+    <ProjectReference Include="..\JamesQMurphy.Aws.Configuration\JamesQMurphy.Aws.Configuration.csproj" />
     <ProjectReference Include="..\JamesQMurphy.Blog.Aws\JamesQMurphy.Blog.Aws.csproj" />
     <ProjectReference Include="..\JamesQMurphy.Blog\JamesQMurphy.Blog.csproj" />
     <ProjectReference Include="..\JamesQMurphy.Email.Aws\JamesQMurphy.Email.Aws.csproj" />

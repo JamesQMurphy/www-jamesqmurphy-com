@@ -40,11 +40,6 @@ Parameters:
     Description: Name of the DynamoDB table for blog articles
     Default: dev-blog
 
-  DynamoDbIndexBlogArticlesParameter:
-    Type: String
-    Description: Name of the DynamoDB index for blog articles
-    Default: articleType-timestamp-index
-
   DynamoDbTableUsersParameter:
     Type: String
     Description: Name of the DynamoDB table for users
@@ -62,7 +57,8 @@ Parameters:
 
   CommentsEmailParameter:
     Type: String
-    Description: Email for comments
+    Description: DEPRECATED
+    Default: DEPRECATED
 
   CertificateArnParameter:
     Type: String
@@ -139,7 +135,17 @@ Resources:
                   - 'dynamodb:Scan'
                   - 'dynamodb:UpdateItem'
                 Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}*'
-        - PolicyName: !Sub SSM-WriteParameters
+        - PolicyName: !Sub SSM-ReadParametersForAppSettings
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ssm:GetParametersByPath'
+                Resource:
+                  - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/AppSettings/all*'
+                  - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/AppSettings/${AppNameParameter}-${StageParameter}*'
+        - PolicyName: !Sub SSM-WriteParametersForDataProtection
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -147,9 +153,8 @@ Resources:
                 Action:
                   - 'ssm:PutParameter'
                   - 'ssm:AddTagsToResource'
-                  - 'ssm:GetParameters'
                   - 'ssm:GetParametersByPath'
-                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppNameParameter}-${StageParameter}*'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/DataProtection/${AppNameParameter}-${StageParameter}*'
         - PolicyName: !Sub SQS-SendMessage-${StageParameter}-EmailQueue
           PolicyDocument:
             Version: 2012-10-17
@@ -356,28 +361,14 @@ Resources:
       Timeout: 15
       Environment:
         Variables:
-          WebSiteTitle: Cold-Brewed DevOps
-          AppName: !Sub '${AppNameParameter}-${StageParameter}'
-          CommentsEmail: !Ref CommentsEmailParameter
-          SiteUrl: !Sub https://${DomainNameParameter}
-          ImageBasePath: /blogimages
-          DataProtection: AWS
-          UseStaticFiles: "false"
-          ArticleStore__Service: DynamoDb
+          ApplicationStageKey: !Sub '${AppNameParameter}-${StageParameter}'
           ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
-          ArticleStore__DynamoDbIndexName: !Ref DynamoDbIndexBlogArticlesParameter
-          Authentication__Twitter__ConsumerAPIKey: ""
-          Authentication__Twitter__ConsumerSecret: ""
-          Authentication__GitHub__ClientId: ""
-          Authentication__GitHub__ClientSecret: ""
-          Authentication__Google__ClientId: ""
-          Authentication__Google__ClientSecret: ""
-          UserStore__Service: DynamoDb
-          UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
-          UserStore__UserIdIndexName: "userId-index"
-          UserStore__NormalizedUserNameIndexName: "normalizedUsername-index"
           Email__Service: SQS
           Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
+          UseStaticFiles: "false"
+          UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
+          WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
+          WebSiteOptions__ImageBasePath: /blogimages
       Tags:
         - Key: app
           Value: !Ref AppNameParameter

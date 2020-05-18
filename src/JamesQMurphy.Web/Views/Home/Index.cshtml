@@ -24,28 +24,34 @@
                     <h1>Latest Blog Posts</h1>
                 </div>
             </div>
-            <article class="container-fluid">
-                <div class="row border-top p-1">
-                    <div>
-                        @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
+            @if (Model.Article1 != null)
+            {
+                <article class="container-fluid">
+                    <div class="row border-top p-1">
+                        <div>
+                            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article1.Metadata, displayCompact = false })
+                        </div>
+                        <div>
+                            @Html.Raw(Renderer.RenderHtml(Model.Article1Teaser))
+                        </div>
+                        <div class="container-fluid text-right"><a href="/blog/@Model.Article1.Slug">Read more&gt;&gt;</a></div>
                     </div>
-                    <div>
-                        @Html.Raw(Renderer.RenderHtml(Model.Article1Teaser))
+                </article>
+            }
+            @if (Model.Article2 != null)
+            {
+                <article class="container-fluid">
+                    <div class="row border-top p-1">
+                        <div>
+                            @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
+                        </div>
+                        <div>
+                            @Html.Raw(Renderer.RenderHtml(Model.Article2Teaser))
+                        </div>
+                        <div class="container-fluid text-right"><a href="/blog/@Model.Article2.Slug">Read more&gt;&gt;</a></div>
                     </div>
-                    <div class="container-fluid text-right"><a href="/blog/@Model.Article1.Slug">Read more&gt;&gt;</a></div>
-                </div>
-            </article>
-            <article class="container-fluid">
-                <div class="row border-top p-1">
-                    <div>
-                        @await Component.InvokeAsync(nameof(JamesQMurphy.Web.ViewComponents.ArticleMetadataListing), new { articleMetadata = Model.Article2.Metadata, displayCompact = false })
-                    </div>
-                    <div>
-                        @Html.Raw(Renderer.RenderHtml(Model.Article2Teaser))
-                    </div>
-                    <div class="container-fluid text-right"><a href="/blog/@Model.Article2.Slug">Read more&gt;&gt;</a></div>
-                </div>
-            </article>
+                </article>
+            }
             <div class="container-fluid">
                 <div class="row border-top p-1">
                     <a asp-area="" asp-controller="Blog" asp-action="Index">See all blog posts&gt;&gt;</a>
