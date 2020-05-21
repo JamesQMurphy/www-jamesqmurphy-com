@@ -37,13 +37,13 @@ Parameters:
 
   DynamoDbTableBlogArticlesParameter:
     Type: String
-    Description: Name of the DynamoDB table for blog articles
-    Default: dev-blog
+    Description: DEPRECATED
+    Default: DEPRECATED
 
   DynamoDbTableUsersParameter:
     Type: String
-    Description: Name of the DynamoDB table for users
-    Default: dev-users
+    Description: DEPRECATED
+    Default: DEPRECATED
 
   DomainNameParameter:
     Type: String
@@ -105,7 +105,7 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-        - PolicyName: !Sub DynamoDbReadWriteAccess-${DynamoDbTableBlogArticlesParameter}
+        - PolicyName: !Sub 'DynamoDbReadWriteAccess-{{resolve:ssm:/AppSettings/${AppNameParameter}-${StageParameter}/ArticleStore/DynamoDbTableName:1}}'
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -119,8 +119,8 @@ Resources:
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
                   - 'dynamodb:UpdateItem'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableBlogArticlesParameter}*'
-        - PolicyName: !Sub DynamoDbReadWriteAccess-${DynamoDbTableUsersParameter}
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:/AppSettings/${AppNameParameter}-${StageParameter}/ArticleStore/DynamoDbTableName:1}}*'
+        - PolicyName: !Sub 'DynamoDbReadWriteAccess-{{resolve:ssm:/AppSettings/${AppNameParameter}-${StageParameter}/UserStore/DynamoDbTableName:1}}'
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -134,7 +134,7 @@ Resources:
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
                   - 'dynamodb:UpdateItem'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableUsersParameter}*'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:/AppSettings/${AppNameParameter}-${StageParameter}/ArticleStore/DynamoDbTableName:1}}*'
         - PolicyName: !Sub SSM-ReadParametersForAppSettings
           PolicyDocument:
             Version: 2012-10-17
@@ -362,11 +362,9 @@ Resources:
       Environment:
         Variables:
           ApplicationStageKey: !Sub '${AppNameParameter}-${StageParameter}'
-          ArticleStore__DynamoDbTableName: !Ref DynamoDbTableBlogArticlesParameter
           Email__Service: SQS
           Email__QueueUrl: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${StageParameter}-EmailQueue'
           UseStaticFiles: "false"
-          UserStore__DynamoDbTableName: !Ref DynamoDbTableUsersParameter
           WebSiteOptions__SiteUrl: !Sub https://${DomainNameParameter}
           WebSiteOptions__ImageBasePath: /blogimages
       Tags:
