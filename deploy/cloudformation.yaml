@@ -134,7 +134,7 @@ Resources:
                   - 'dynamodb:Query'
                   - 'dynamodb:Scan'
                   - 'dynamodb:UpdateItem'
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:/AppSettings/${AppNameParameter}-${StageParameter}/ArticleStore/DynamoDbTableName:1}}*'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:/AppSettings/${AppNameParameter}-${StageParameter}/UserStore/DynamoDbTableName:1}}*'
         - PolicyName: !Sub SSM-ReadParametersForAppSettings
           PolicyDocument:
             Version: 2012-10-17
