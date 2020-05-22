@@ -22,8 +22,6 @@ namespace JamesQMurphy.Web
 
                         // appsettings.{EnvironmentName}.json intentionally omitted
 
-                        .AddSsmParameterStore("/AppSettings/all")
-
                         // We can't use builderContext.ApplicationName thanks to this issue:
                         // https://github.com/dotnet/aspnetcore/issues/11085
                         .AddSsmParameterStore($"/AppSettings/{System.Environment.GetEnvironmentVariable("ApplicationStageKey")}")
