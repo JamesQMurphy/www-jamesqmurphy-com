@@ -60,10 +60,16 @@ Parameters:
     Description: Name to use for the API Gateway Stage
     Default: website
 
+  DeployLogProcessorParameter:
+    Type: String
+    Description: Whether or not to deploy the LogProcessor.  If deploying to a new stack, choose false.
+    Default: true
+
 
 Conditions:
    AreMappingToCustomDomain: !Not [!Equals [!Ref DomainNameParameter, '']]
    AreWarmingTheLambda: !Not [!Equals [!Ref WarmUrlParameter, '']]
+   AreDeployingLogProcessor: !Equals [!Ref DeployLogProcessorParameter, 'true']
 
 Resources:
 
@@ -285,6 +291,7 @@ Resources:
 
   TheRoleForTheLogProcessingLambdaFunction:
     Type: 'AWS::IAM::Role'
+    Condition: AreDeployingLogProcessor
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -609,6 +616,7 @@ Resources:
 
   TheLogProcessingLambdaFunction:
     Type: 'AWS::Lambda::Function'
+    Condition: AreDeployingLogProcessor
     Properties:
       Code:
         S3Bucket: !Ref S3BucketForCodeParameter
@@ -624,6 +632,7 @@ Resources:
 
   TheLambdaInvokePermissionForCloudWatchResource:
     Type: 'AWS::Lambda::Permission'
+    Condition: AreDeployingLogProcessor
     Properties:
       FunctionName: !GetAtt TheLogProcessingLambdaFunction.Arn
       Action: 'lambda:InvokeFunction'
@@ -633,6 +642,7 @@ Resources:
 
   TheSubscriptionFilterForTheLogProcessingLambdaFunction:
     Type: 'AWS::Logs::SubscriptionFilter'
+    Condition: AreDeployingLogProcessor
     DependsOn:
       - TheBasePathMapping
     Properties:
