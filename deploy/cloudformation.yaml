@@ -634,7 +634,7 @@ Resources:
   TheSubscriptionFilterForTheLogProcessingLambdaFunction:
     Type: 'AWS::Logs::SubscriptionFilter'
     DependsOn:
-      - TheDeploymentStage
+      - TheBasePathMapping
     Properties:
       DestinationArn: !GetAtt TheLogProcessingLambdaFunction.Arn
       FilterPattern:  ""
