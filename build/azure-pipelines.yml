@@ -11,7 +11,7 @@ pool:
 variables:
   versionMajor: 0
   versionMinor: 5
-  versionPatch: 2
+  versionPatch: 3
   buildConfiguration: 'Release'
   JQM.packageName: JamesQMurphy.Web.$(Build.BuildNumber).zip
   JQM.processLogsPackageName: JamesQMurphy.ProcessCloudWatchLogs.$(Build.BuildNumber).zip
@@ -48,7 +48,7 @@ steps:
 - script: dotnet tool install Amazon.Lambda.Tools --tool-path $(JQM.toolInstallDir)
   displayName: Install Amazon.Lambda.Tools
 
-- script: ./dotnet-lambda package -c $(buildConfiguration) -pl $(Build.SourcesDirectory)/src/JamesQMurphy.Web -o $(Build.ArtifactStagingDirectory)/$(JQM.packageName) --msbuild-parameters "--self-contained false --runtime rhel-x64"
+- script: ./dotnet-lambda package -c $(buildConfiguration) -pl $(Build.SourcesDirectory)/src/JamesQMurphy.Web -o $(Build.ArtifactStagingDirectory)/$(JQM.packageName) --msbuild-parameters "-p:PublishReadyToRun=true --self-contained false --runtime rhel-x64"
   displayName: Run dotnet-lambda package for $(JQM.packageName)
   workingDirectory: $(JQM.toolInstallDir)
 
