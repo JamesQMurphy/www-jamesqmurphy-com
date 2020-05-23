@@ -35,16 +35,6 @@ Parameters:
     Description: Stage (environment)
     Default: dev
 
-  DynamoDbTableBlogArticlesParameter:
-    Type: String
-    Description: DEPRECATED
-    Default: DEPRECATED
-
-  DynamoDbTableUsersParameter:
-    Type: String
-    Description: DEPRECATED
-    Default: DEPRECATED
-
   DomainNameParameter:
     Type: String
     Description: Custom Domain Name (e.g., www.jamesqmurphy.com).  Leave blank if not mapping to a custom URL.
@@ -52,13 +42,8 @@ Parameters:
 
   WarmUrlParameter:
     Type: String
-    Description: URL for CloudWatch to call to keep Lambda function warm
-    Default: '/warm'
-
-  CommentsEmailParameter:
-    Type: String
-    Description: DEPRECATED
-    Default: DEPRECATED
+    Description: URL for CloudWatch to call to keep Lambda function warm.  Leave blank to skip Lambda warming.
+    Default: ''
 
   CertificateArnParameter:
     Type: String
