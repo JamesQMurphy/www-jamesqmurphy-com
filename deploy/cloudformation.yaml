@@ -128,7 +128,6 @@ Resources:
                 Action:
                   - 'ssm:GetParametersByPath'
                 Resource:
-                  - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/AppSettings/all*'
                   - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/AppSettings/${AppNameParameter}-${StageParameter}*'
         - PolicyName: !Sub SSM-WriteParametersForDataProtection
           PolicyDocument:
