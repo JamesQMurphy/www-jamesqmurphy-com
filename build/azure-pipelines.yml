@@ -42,6 +42,8 @@ steps:
 
 - task: PowerShell@2
   displayName: Set build number
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
   inputs:
     filePath: build/set-build-number.ps1
 
