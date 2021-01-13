@@ -35,7 +35,7 @@
     "clean-css-cli": "^4.3.0",
     "copyfiles": "^2.1.0",
     "jquery": "^3.5.1",
-    "jquery-validation": "^1.19.0",
+    "jquery-validation": "^1.19.3",
     "jquery-validation-unobtrusive": "^3.2.11",
     "mermaid": "^8.2.5",
     "moment": "^2.24.0",
